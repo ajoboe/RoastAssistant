@@ -17,9 +17,11 @@ import java.util.Locale;
 import static android.os.SystemClock.*;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int REQUEST_CODE_TEMPERATURE = 10;
     Chronometer mChronometerRoastTime;
     Button mButtonStartStopRoast;
     int mSecondsElapsed;
+    boolean mRoastIsRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK && data != null) {
             switch (requestCode) {
-                case 10:
+                case REQUEST_CODE_TEMPERATURE:
                     ArrayList<String> res = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     Toast.makeText(getApplicationContext(), res.toString(), Toast.LENGTH_LONG).show();
 //                    int intFound = getNumberFromResult(data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS));
@@ -56,13 +58,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     public void startRoast(View view) {
-        Toast toast = Toast.makeText(this, "Roast started.",
+        Toast toast = Toast.makeText(this, R.string.string_roast_started_message,
                 Toast.LENGTH_SHORT);
         toast.show();
         mChronometerRoastTime.setBase(elapsedRealtime());
         mChronometerRoastTime.start();
         mButtonStartStopRoast.setText(R.string.string_button_end_roast);
         mSecondsElapsed = 0;
+        mRoastIsRunning = true;
 
         mChronometerRoastTime.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
@@ -76,18 +79,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void endRoast(View view) {
-        Toast toast = Toast.makeText(this, "Roast ended.",
+        Toast toast = Toast.makeText(this, R.string.string_roast_ended_message,
                 Toast.LENGTH_SHORT);
         toast.show();
         mChronometerRoastTime.stop();
         mButtonStartStopRoast.setText(R.string.string_button_start_roast);
-
+        mRoastIsRunning = false;
     }
 
     public void recordTemperature(View view) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
-        startActivityForResult(intent, 10);
+        startActivityForResult(intent, REQUEST_CODE_TEMPERATURE);
+    }
+
+    public void toggleRoast(View view) {
+        if(!mRoastIsRunning) {
+            startRoast(view);
+        } else {
+            endRoast(view);
+        }
     }
 }
