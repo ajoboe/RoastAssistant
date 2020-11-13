@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Roast Assistant 1</string>
+    <string name="roast_start_time">0</string>
+    <string name="string_button_start_roast">Start Roast</string>
+    <string name="string_button_end_roast">End Roast</string>
+    <string name="button_first_crack">1C</string>
+    <string name="zero_percent">0%</string>
+    <string name="string_25_percent">25%</string>
+    <string name="string_50_percent">50%</string>
+    <string name="string_75_percent">75%</string>
+    <string name="string_100_percent">100%</string>
+    <string name="string_start_temperature">68</string>
+    <string name="label_current_temperature">Current Temperature</string>
+    <string name="string_label_power">Power</string>
+    <string name="string_chronometer">0</string>
+    <string name="text_new_roast">New roast</string>
+</resources>
