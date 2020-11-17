@@ -153,14 +153,12 @@ public class MainActivity extends AppCompatActivity {
                     // fall through
                 case REQUEST_CODE_TEMPERATURE:
                     String stringCurrTemp = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0).replaceAll("[^0-9]", "");
-                    // make sure the temperature change isn't crazy huge
                     if(isValidTemperature(stringCurrTemp)) {
                         recordTemperature(Integer.parseInt(stringCurrTemp));
                         if (isFirstCrack) {
                             record1cInfo();
                         }
                     } else {
-                        // TODO
                         Toast.makeText(getApplicationContext(), "These aren't the numbers we're looking for...try that again", Toast.LENGTH_LONG);
                         if (isFirstCrack) {
                             queryTemperature(REQUEST_CODE_1C);
