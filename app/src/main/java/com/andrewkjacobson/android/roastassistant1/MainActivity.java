@@ -152,126 +152,121 @@ public class MainActivity extends AppCompatActivity {
                     m1cOccurred = true;
                     // fall through
                 case REQUEST_CODE_TEMPERATURE:
-//                    ArrayList<String> recognizerResult = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-//                    String stringCurrTemp = recognizerResult.get(0).replaceAll("[^0-9]", "");
                     String stringCurrTemp = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0).replaceAll("[^0-9]", "");
                     // make sure the temperature change isn't crazy huge
                     if(isValidTemperature(stringCurrTemp)) {
-                        if (stringCurrTemp.length() > 0
-                                && Integer.valueOf(stringCurrTemp) < getLastRecordedTemperature() + mAllowedTempChange
-                                && Integer.valueOf(stringCurrTemp) > getLastRecordedTemperature() - mAllowedTempChange) {
-                            recordTemperature(Integer.parseInt(stringCurrTemp));
-                            if (isFirstCrack) {
-                                record1cInfo();
-                            }
-                        } else {
-                            // TODO
-                            Toast.makeText(getApplicationContext(), "These aren't the numbers we're looking for...try that again", Toast.LENGTH_LONG);
-                            if (isFirstCrack) {
-                                queryTemperature(REQUEST_CODE_1C);
-                            } else {
-                                queryTemperature(REQUEST_CODE_TEMPERATURE);
-                            }
+                        recordTemperature(Integer.parseInt(stringCurrTemp));
+                        if (isFirstCrack) {
+                            record1cInfo();
                         }
-                        break;
+                    } else {
+                        // TODO
+                        Toast.makeText(getApplicationContext(), "These aren't the numbers we're looking for...try that again", Toast.LENGTH_LONG);
+                        if (isFirstCrack) {
+                            queryTemperature(REQUEST_CODE_1C);
+                        } else {
+                            queryTemperature(REQUEST_CODE_TEMPERATURE);
+                        }
                     }
-            } else {
-                Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
+                    break;
             }
+        } else {
+            Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
         }
-
-        private void record1cInfo() {
-            ((TextView) findViewById(R.id.text_1c_temperature)).setText(getLastRecordedTemperature() + " degrees");
-            ((TextView) findViewById(R.id.text_1c_time)).setText(mChronometerRoastTime.getText());
-            m1cTimeInSeconds = mSecondsElapsed;
-            update1cPercent();
-        }
-
-        public void recordTemperature(int temperature) {
-            recordReading(temperature, getLastRecordedPower());
-        }
-
-        public void recordPower(int power) {
-            recordReading(getLastRecordedTemperature(), power);
-        }
-
-        public void recordReading(int temperature, int power) {
-            mReadings.add(new RoastReading(mSecondsElapsed, temperature, power));
-            mTextCurrentTemperature.setText(Integer.toString(temperature));
-            updateGraph(mSecondsElapsed, temperature, power);
-        }
-
-        public void update1cPercent() {
-            float fPercentage = ((float) m1cTimeInSeconds) / ((float) mSecondsElapsed) * 100;
-            String percentage = String.format("%.2f", fPercentage) + "%";
-            ((TextView) findViewById(R.id.text_1c_percent)).setText(percentage);
-        }
-
-        public void toggleRoast(View view) {
-            if (!mRoastIsRunning) {
-                startRoast(view);
-            } else {
-                endRoast();
-            }
-        }
-
-        public void initGraph() {
-            mGraph.setVisibility(View.VISIBLE);
-            try {
-                mGraphSeriesTemperature = new LineGraphSeries<>(
-                        new DataPoint[]{
-                                new DataPoint(0, mStartingTemperature)
-                        });
-                mGraphSeriesTemperature.setColor(Color.BLUE);
-                mGraphSeriesTemperature.setTitle("Temperature");
-                mGraph.addSeries(mGraphSeriesTemperature);
-                mGraphSeriesPower = new LineGraphSeries<>(
-                        new DataPoint[]{
-                                new DataPoint(0, mStartingPower)
-                        });
-                mGraphSeriesPower.setColor(Color.RED);
-                mGraphSeriesPower.setTitle("Power");
-                mGraph.addSeries(mGraphSeriesPower);
-                updateGraph(0, mStartingTemperature, mStartingPower);
-
-                mGraph.getViewport().setXAxisBoundsManual(true);
-                mGraph.getViewport().setMinX(0);
-                mGraph.getViewport().setMaxX(2);
-                mGraph.getViewport().setYAxisBoundsManual(true);
-                mGraph.getViewport().setMinY(mStartingTemperature - 20);
-                mGraph.getViewport().setMaxY(400);
-                mGraph.getViewport().setScalable(true);
-                mGraph.getViewport().setScrollable(true);
-                mGraph.getLegendRenderer().setVisible(true);
-                mGraph.getSecondScale().addSeries(mGraphSeriesPower);
-                mGraph.getSecondScale()
-            } catch (IllegalArgumentException e) {
-                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                System.err.println("graph failed to initialize.");
-            }
-        }
-
-        public void updateGraph(int time, int temperature, int power) {
-            try {
-                mGraphSeriesTemperature.appendData(new DataPoint(time, temperature), true, 40);
-                mGraphSeriesPower.appendData(new DataPoint(time, power), true, 40);
-                mGraph.getViewport().setMaxX(mGraph.getViewport().getMaxX(true) + 1);
-                mGraph.getViewport().scrollToEnd();
-            } catch (IllegalArgumentException e) {
-                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                System.err.println("failed to update graph.");
-            }
-        }
-
-        public void buttonRecordTemperatureClicked(View view) {
-            queryTemperature(REQUEST_CODE_TEMPERATURE);
-        }
-
-        public void buttonFirstCrackClicked(View view) {
-            queryTemperature(REQUEST_CODE_1C); // updates 1c related TextViews
-        }
-
     }
+
+    private void record1cInfo() {
+        ((TextView) findViewById(R.id.text_1c_temperature)).setText(getLastRecordedTemperature() + " degrees");
+        ((TextView) findViewById(R.id.text_1c_time)).setText(mChronometerRoastTime.getText());
+        m1cTimeInSeconds = mSecondsElapsed;
+        update1cPercent();
+    }
+
+    public void recordTemperature(int temperature) {
+        recordReading(temperature, getLastRecordedPower());
+    }
+
+    public void recordPower(int power) {
+        recordReading(getLastRecordedTemperature(), power);
+    }
+
+    public void recordReading(int temperature, int power) {
+        mReadings.add(new RoastReading(mSecondsElapsed, temperature, power));
+        mTextCurrentTemperature.setText(Integer.toString(temperature));
+        updateGraph(mSecondsElapsed, temperature, power);
+    }
+
+    public void update1cPercent() {
+        float fPercentage = ((float) m1cTimeInSeconds) / ((float) mSecondsElapsed) * 100;
+        String percentage = String.format("%.2f", fPercentage) + "%";
+        ((TextView) findViewById(R.id.text_1c_percent)).setText(percentage);
+    }
+
+    public void toggleRoast(View view) {
+        if (!mRoastIsRunning) {
+            startRoast(view);
+        } else {
+            endRoast();
+        }
+    }
+
+    public void initGraph() {
+        mGraph.setVisibility(View.VISIBLE);
+        try {
+            mGraphSeriesTemperature = new LineGraphSeries<>(
+                    new DataPoint[]{
+                            new DataPoint(0, mStartingTemperature)
+                    });
+            mGraphSeriesTemperature.setColor(Color.BLUE);
+            mGraphSeriesTemperature.setTitle("Temperature");
+            mGraph.addSeries(mGraphSeriesTemperature);
+            mGraphSeriesPower = new LineGraphSeries<>(
+                    new DataPoint[]{
+                            new DataPoint(0, mStartingPower)
+                    });
+            mGraphSeriesPower.setColor(Color.RED);
+            mGraphSeriesPower.setTitle("Power");
+            mGraph.addSeries(mGraphSeriesPower);
+            updateGraph(0, mStartingTemperature, mStartingPower);
+
+            mGraph.getViewport().setXAxisBoundsManual(true);
+            mGraph.getViewport().setMinX(0);
+            mGraph.getViewport().setMaxX(2);
+            mGraph.getViewport().setYAxisBoundsManual(true);
+            mGraph.getViewport().setMinY(mStartingTemperature - 20);
+            mGraph.getViewport().setMaxY(400);
+            mGraph.getViewport().setScalable(true);
+            mGraph.getViewport().setScrollable(true);
+            mGraph.getLegendRenderer().setVisible(true);
+            mGraph.getSecondScale().addSeries(mGraphSeriesPower);
+            mGraph.getSecondScale()
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+            System.err.println("graph failed to initialize.");
+        }
+    }
+
+    public void updateGraph(int time, int temperature, int power) {
+        try {
+            mGraphSeriesTemperature.appendData(new DataPoint(time, temperature), true, 40);
+            mGraphSeriesPower.appendData(new DataPoint(time, power), true, 40);
+            mGraph.getViewport().setMaxX(mGraph.getViewport().getMaxX(true) + 1);
+            mGraph.getViewport().scrollToEnd();
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+            System.err.println("failed to update graph.");
+        }
+    }
+
+    public void buttonRecordTemperatureClicked(View view) {
+        queryTemperature(REQUEST_CODE_TEMPERATURE);
+    }
+
+    public void buttonFirstCrackClicked(View view) {
+        queryTemperature(REQUEST_CODE_1C); // updates 1c related TextViews
+    }
+
+}
 
     private boolean isValidTemperature(String temperature) {
         return temperature.length() > 0
