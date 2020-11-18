@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -132,6 +133,17 @@ public class MainActivity extends AppCompatActivity {
         mChronometerRoastTime.stop();
         mButtonStartEndRoast.setText(R.string.string_button_start_roast);
         mRoastIsRunning = false;
+
+        storeRoast();
+    }
+
+    private void storeRoast() {
+        // save time, temp, power info
+        // save 1c info
+        // save bitmap of graph
+        // HOW TO GET BITMAP OF THE GRAPH
+        Bitmap bitmap = mGraph.takeSnapshot();
+        //The runtime permission WRITE_EXTERNAL_STORAGE is needed!
     }
 
     public void queryTemperature(int requestCode) {
@@ -209,35 +221,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initGraph() {
-        mGraph.setVisibility(View.VISIBLE);
         try {
-            mGraphSeriesTemperature = new LineGraphSeries<>(
-                    new DataPoint[]{
-                            new DataPoint(0, mStartingTemperature)
-                    });
+            // GRAPH SETTINGS
+            mGraph.setVisibility(View.VISIBLE);
+            mGraph.setTitle("Temperature and Power");
+            mGraph.getGridLabelRenderer().setPadding(25); // otherwise right side labels are cut off
+            mGraph.getViewport().setScalable(false);
+            mGraph.getViewport().setScrollable(false);
+
+            // TEMPERATURE SERIES
+            mGraphSeriesTemperature = new LineGraphSeries<>();
             mGraphSeriesTemperature.setColor(Color.BLUE);
             mGraphSeriesTemperature.setTitle("Temperature");
+            mGraph.getGridLabelRenderer().setVerticalAxisTitle("Temperature");
             mGraph.addSeries(mGraphSeriesTemperature);
-            mGraphSeriesPower = new LineGraphSeries<>(
-                    new DataPoint[]{
-                            new DataPoint(0, mStartingPower)
-                    });
-            mGraphSeriesPower.setColor(Color.RED);
-            mGraphSeriesPower.setTitle("Power");
-            mGraph.addSeries(mGraphSeriesPower);
-            updateGraph(0, mStartingTemperature, mStartingPower);
-
-            mGraph.getViewport().setXAxisBoundsManual(true);
-            mGraph.getViewport().setMinX(0);
-            mGraph.getViewport().setMaxX(2);
             mGraph.getViewport().setYAxisBoundsManual(true);
             mGraph.getViewport().setMinY(mStartingTemperature - 20);
             mGraph.getViewport().setMaxY(400);
-            mGraph.getViewport().setScalable(true);
-            mGraph.getViewport().setScrollable(true);
-            mGraph.getLegendRenderer().setVisible(true);
+
+            // POWER SERIES
+            mGraphSeriesPower = new LineGraphSeries<>();
+            mGraphSeriesPower.setColor(Color.RED);
+            mGraphSeriesPower.setTitle("Power");
             mGraph.getSecondScale().addSeries(mGraphSeriesPower);
-            mGraph.getSecondScale()
+            mGraph.getSecondScale().setVerticalAxisTitle("Power");
+            mGraph.getSecondScale().setMinY(0);
+            mGraph.getSecondScale().setMaxY(100);
+            mGraph.getGridLabelRenderer().setVerticalLabelsSecondScaleColor(Color.RED);
+
+            // feed initial values to the graph
+            updateGraph(0, mStartingTemperature, mStartingPower);
         } catch (IllegalArgumentException e) {
             Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             System.err.println("graph failed to initialize.");
@@ -246,10 +259,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateGraph(int time, int temperature, int power) {
         try {
-            mGraphSeriesTemperature.appendData(new DataPoint(time, temperature), true, 40);
-            mGraphSeriesPower.appendData(new DataPoint(time, power), true, 40);
-            mGraph.getViewport().setMaxX(mGraph.getViewport().getMaxX(true) + 1);
-            mGraph.getViewport().scrollToEnd();
+            mGraphSeriesTemperature.appendData(new DataPoint(time, temperature), false, 99999);
+            mGraphSeriesPower.appendData(new DataPoint(time, power), false, 99999);
         } catch (IllegalArgumentException e) {
             Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             System.err.println("failed to update graph.");
@@ -263,8 +274,6 @@ public class MainActivity extends AppCompatActivity {
     public void buttonFirstCrackClicked(View view) {
         queryTemperature(REQUEST_CODE_1C); // updates 1c related TextViews
     }
-
-}
 
     private boolean isValidTemperature(String temperature) {
         return temperature.length() > 0
