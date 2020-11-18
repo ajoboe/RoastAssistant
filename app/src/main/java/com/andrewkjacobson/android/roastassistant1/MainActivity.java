@@ -25,6 +25,10 @@ import java.util.Locale;
 
 import static android.os.SystemClock.*;
 
+
+// add previous roast graph overlay! (from LJ)
+// have an upload area for users to upload their roasts
+
 public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_TEMPERATURE = 10;
     public static final int REQUEST_CODE_1C = 20;
@@ -44,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     boolean mRoastIsRunning = false;
     boolean m1cOccurred = false;
-
 
     GraphView mGraph;
     LineGraphSeries<DataPoint> mGraphSeriesTemperature;
