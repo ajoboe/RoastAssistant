@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_new_roast"
+        android:title="New roast"
+        android:icon="@drawable/ic_action_new_roast"
+        app:showAsAction="always"
+        android:orderInCategory="10" />
+    <item android:id="@+id/action_share"
+        android:title="Share"
+        android:icon="@drawable/ic_action_share"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="20" />
+    <item android:id="@+id/action_settings"
+        android:title="Settings"
+        app:showAsAction="never"
+        android:orderInCategory="100" />
+</menu>

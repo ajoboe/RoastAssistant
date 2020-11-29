@@ -1,17 +1,46 @@
 package com.andrewkjacobson.android.roastassistant1;
+// todo get settings working
+// todo save roast
+// todo fix slow graph update bug
 
+// todo convert graph to actual time in min:seconds
+// todo what happens if leave program for a sec?
+// todo if time=zero, overwrite the roast reading list (temp and pow)
+// todo require that a power be entered before starting
+// todo     or just a default starting power
+// todo control when and how much graph is added as time goes by
+// todo only allow 1c to happen once? or at least say "are you sure?"
+// todo clear everything on "Start Roast"...
+// todo deal with rotations (onSaveInstanceState?)
+// todo add previous roast graph overlay! (from LJ)
+// todo have an upload area for users to upload their roasts
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.util.Log;
+import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.RadioGroup;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,80 +49,194 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 
 import static android.os.SystemClock.*;
 
 
-// add previous roast graph overlay! (from LJ)
-// have an upload area for users to upload their roasts
 
+
+/**
+ * @author      Andrew Jacobson <ajoboe@gmail.com>
+ * @version     1.0
+ * @since       1.0          (the version of the package this class was first added to)
+ */
 public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_TEMPERATURE = 10;
     public static final int REQUEST_CODE_1C = 20;
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    // keys for saving instance state
+    private final String SECONDS_ELAPSED_KEY = "seconds elapsed";
+    private final String FIRST_CRACK_TIME_KEY = "first crack time";
+    private final String READINGS_KEY = "readings";
+    private final String ROAST_RUNNING_KEY = "roast running";
+
+
+    // move to settings
     final int mTemperatureCheckFrequency = 15;
     final int mAllowedTempChange = 50;
     final int mStartingTemperature = 68;
-    final int mStartingPower = 0;
+    final int mStartingPower = 0; // need to set the widget too
+    // maybe add color customization too
+    // end move to settings
 
+    // controls
     Chronometer mChronometerRoastTime;
     Button mButtonStartEndRoast;
     TextView mTextCurrentTemperature;
-
-    int mSecondsElapsed;
-    int m1cTimeInSeconds = -1;
-    //    List<Integer> mTemperatures;
-    List<RoastReading> mReadings;
-
-    boolean mRoastIsRunning = false;
-    boolean m1cOccurred = false;
-
     GraphView mGraph;
     LineGraphSeries<DataPoint> mGraphSeriesTemperature;
     LineGraphSeries<DataPoint> mGraphSeriesPower;
 
+    // fields
+    int mSecondsElapsed;
+    int m1cTimeInSeconds = -1;
+    boolean mRoastIsRunning = false;
+    ArrayList<RoastReading> mReadings;
+    SparseArray<RoastReading> mReadingsSparceArray;
 
+
+    /**
+     * Short one line description.                           (1)
+     * <p>
+     * Longer description. If there were any, it would be    (2)
+     * here.
+     * <p>
+     * And even more explanations to follow in consecutive
+     * paragraphs separated by HTML paragraph breaks.
+     *
+     * @param  savedInstanceState Description text text text.          (3)
+     * @return Description text text text.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(LOG_TAG, "-------");
+        Log.d(LOG_TAG, "onCreate");
+
         setContentView(R.layout.activity_main);
+//        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(findViewById(R.id.toolbar));
         mChronometerRoastTime = (Chronometer) findViewById(R.id.chrono_roast_time);
         mButtonStartEndRoast = (Button) findViewById(R.id.button_start_end_roast);
         mTextCurrentTemperature = (TextView) findViewById(R.id.text_current_temperature);
-//        mTemperatures = new ArrayList<>();
         mReadings = new ArrayList<>();
-//        mTemperatures.add(mStartingTemperature);
+        mReadingsSparceArray = new SparseArray<>();
         mGraph = (GraphView) findViewById(R.id.graph);
         initGraph();
 
-        RadioGroup rgPower = ((RadioGroup) findViewById(R.id.radio_group_powers));
-        recordReading(mStartingTemperature, mStartingPower);
-        rgPower.setOnCheckedChangeListener((group, checkedId) -> {
-            // checkedId is the RadioButton selected
-            int power =0;
-            switch (checkedId) {
-                case R.id.radio_button_0:
-                    power = 0;
-                    break;
-                case R.id.radio_button_25:
-                    power = 25;
-                    break;
-                case R.id.radio_button_50:
-                    power = 50;
-                    break;
-                case R.id.radio_button_75:
-                    power = 75;
-                    break;
-                case R.id.radio_button_100:
-                    power = 100;
-                    break;
-            }
-            // save power change time / power
-            recordPower(power);
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
 
-            // update graph series
+//todo        String name = sharedPreferences.getString(“temperature_check_frequency”, "");
+
+        recordReading(mStartingTemperature, mStartingPower);
+
+
+        if(savedInstanceState != null) {
+            mSecondsElapsed =savedInstanceState.getInt(SECONDS_ELAPSED_KEY);
+
+            m1cTimeInSeconds = savedInstanceState.getInt(FIRST_CRACK_TIME_KEY);
+            mReadings = savedInstanceState.getParcelableArrayList(READINGS_KEY);
+            mTextCurrentTemperature.setText(Integer.toString(getLastRecordedTemperature()));
+
+            mRoastIsRunning = savedInstanceState.getBoolean(ROAST_RUNNING_KEY);
+        }
+
+   // Restore the saved instance state.
+//        if (savedInstanceState != null) {
+//
+//            mCount = savedInstanceState.getInt(COUNT_KEY);
+//            if (mCount != 0) {
+//                mShowCountTextView.setText(String.format("%s", mCount));
+//            }
+//
+//            mColor = savedInstanceState.getInt(COLOR_KEY);
+//            mShowCountTextView.setBackgroundColor(mColor);
+////        }
+//    }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(LOG_TAG, "onSaveInstanceState");
+        // todo save graph state???
+
+        // fields to save
+        outState.putInt(SECONDS_ELAPSED_KEY, mSecondsElapsed);
+        outState.putInt(FIRST_CRACK_TIME_KEY, m1cTimeInSeconds);
+        outState.putParcelableArrayList(READINGS_KEY, mReadings);
+        outState.putBoolean(ROAST_RUNNING_KEY, mRoastIsRunning);
+
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                // User chose the "Settings" item, show the app settings UI...
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+            case R.id.action_share:
+                Toast.makeText(getApplicationContext(), R.string.string_coming_soon, Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_new_roast:
+                showNewRoastDialog();
+                return true;
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    public void showNewRoastDialog() {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainActivity.this);
+//        alertBuilder.setTitle("Clear current roast?");
+        alertBuilder.setMessage("Clear the current roast and start a new one?");
+        alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                newRoast();
+            }
         });
+        alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(), "New roast canceled.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        alertBuilder.show();
+    }
+    public void newRoast() {
+
+
+
+        if (Build.VERSION.SDK_INT >= 11) {
+            recreate();
+        } else {
+            Intent intent = getIntent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            finish();
+            overridePendingTransition(0, 0);
+
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+        }
     }
 
     public int getLastRecordedTemperature() {
@@ -116,9 +259,9 @@ public class MainActivity extends AppCompatActivity {
 
         // todo move to method chronometerTickListener()
         mChronometerRoastTime.setOnChronometerTickListener(chronometer -> {
-            if (m1cOccurred) update1cPercent();
+            if(firstCrackOccurred()) update1cPercent();
 
-            if ((mSecondsElapsed + 5) % mTemperatureCheckFrequency == 0) { // fire five seconds before each time increment
+            if((mSecondsElapsed + 5) % mTemperatureCheckFrequency == 0) { // fire five seconds before each time increment
                 queryTemperature(REQUEST_CODE_TEMPERATURE);
             }
             mSecondsElapsed++;
@@ -127,6 +270,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void chronometerTickListener() {
 
+    }
+
+    public boolean firstCrackOccurred() {
+        return m1cTimeInSeconds != -1;
     }
 
     public void endRoast() {
@@ -159,33 +306,39 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && data != null) {
-            boolean isFirstCrack = false;
-            switch (requestCode) {
-                case REQUEST_CODE_1C:
-                    isFirstCrack = true;
-                    m1cOccurred = true;
-                    // fall through
-                case REQUEST_CODE_TEMPERATURE:
-                    String stringCurrTemp = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0).replaceAll("[^0-9]", "");
-                    if(isValidTemperature(stringCurrTemp)) {
-                        recordTemperature(Integer.parseInt(stringCurrTemp));
-                        if (isFirstCrack) {
-                            record1cInfo();
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "These aren't the numbers we're looking for...try that again", Toast.LENGTH_LONG);
-                        if (isFirstCrack) {
-                            queryTemperature(REQUEST_CODE_1C);
-                        } else {
-                            queryTemperature(REQUEST_CODE_TEMPERATURE);
-                        }
-                    }
-                    break;
-            }
-        } else {
-            Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
+        switch (requestCode) {
+            case REQUEST_CODE_1C:
+                if(resultCode == RESULT_OK && data != null) processRecognizerResults(data, true);
+                else Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
+                break;
+            case REQUEST_CODE_TEMPERATURE:
+                if(resultCode == RESULT_OK && data != null) processRecognizerResults(data, false);
+                else Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
+                break;
         }
+    }
+
+
+    private void processRecognizerResults(Intent data, boolean isFirstCrack) {
+        String stringCurrTemp = stringTempFromResult(data);
+        if (isValidTemperature(stringCurrTemp)) {
+            recordTemperature(Integer.parseInt(stringCurrTemp));
+            if(isFirstCrack) record1cInfo();
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "These aren't the numbers we're looking for...try that again",
+                    Toast.LENGTH_LONG);
+            if (isFirstCrack) {
+                queryTemperature(REQUEST_CODE_1C);
+            } else {
+                queryTemperature(REQUEST_CODE_TEMPERATURE);
+            }
+        }
+    }
+
+    private String stringTempFromResult(Intent data) {
+        return data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                .get(0).replaceAll("[^0-9]", "");
     }
 
     private void record1cInfo() {
@@ -199,13 +352,16 @@ public class MainActivity extends AppCompatActivity {
         recordReading(temperature, getLastRecordedPower());
     }
 
+    /** records power and updates graph **/
     public void recordPower(int power) {
         recordReading(getLastRecordedTemperature(), power);
     }
 
     public void recordReading(int temperature, int power) {
         mReadings.add(new RoastReading(mSecondsElapsed, temperature, power));
+        mReadingsSparceArray.put(mSecondsElapsed, new RoastReading(mSecondsElapsed, temperature, power));
         mTextCurrentTemperature.setText(Integer.toString(temperature));
+        Log.d(LOG_TAG, "New reading recorded..." + mReadings.get(mReadings.size()-1));
         updateGraph(mSecondsElapsed, temperature, power);
     }
 
@@ -227,16 +383,16 @@ public class MainActivity extends AppCompatActivity {
         try {
             // GRAPH SETTINGS
             mGraph.setVisibility(View.VISIBLE);
-            mGraph.setTitle("Temperature and Power");
-            mGraph.getGridLabelRenderer().setPadding(25); // otherwise right side labels are cut off
+//            mGraph.setTitle("Temperature and Power");
+//            mGraph.getGridLabelRenderer().setPadding(25); // otherwise right side labels are cut off
             mGraph.getViewport().setScalable(false);
             mGraph.getViewport().setScrollable(false);
 
             // TEMPERATURE SERIES
             mGraphSeriesTemperature = new LineGraphSeries<>();
             mGraphSeriesTemperature.setColor(Color.BLUE);
-            mGraphSeriesTemperature.setTitle("Temperature");
-            mGraph.getGridLabelRenderer().setVerticalAxisTitle("Temperature");
+            mGraph.getGridLabelRenderer().setVerticalLabelsColor(Color.BLUE);
+            mGraph.getGridLabelRenderer().setLabelVerticalWidth(50);
             mGraph.addSeries(mGraphSeriesTemperature);
             mGraph.getViewport().setYAxisBoundsManual(true);
             mGraph.getViewport().setMinY(mStartingTemperature - 20);
@@ -245,12 +401,11 @@ public class MainActivity extends AppCompatActivity {
             // POWER SERIES
             mGraphSeriesPower = new LineGraphSeries<>();
             mGraphSeriesPower.setColor(Color.RED);
-            mGraphSeriesPower.setTitle("Power");
+            mGraph.getGridLabelRenderer().setVerticalLabelsSecondScaleColor(Color.RED);
+            mGraph.getGridLabelRenderer().setSecondScaleLabelVerticalWidth(50); // todo doesn't do anything
             mGraph.getSecondScale().addSeries(mGraphSeriesPower);
-            mGraph.getSecondScale().setVerticalAxisTitle("Power");
             mGraph.getSecondScale().setMinY(0);
             mGraph.getSecondScale().setMaxY(100);
-            mGraph.getGridLabelRenderer().setVerticalLabelsSecondScaleColor(Color.RED);
 
             // feed initial values to the graph
             updateGraph(0, mStartingTemperature, mStartingPower);
@@ -282,5 +437,33 @@ public class MainActivity extends AppCompatActivity {
         return temperature.length() > 0
                 && Integer.valueOf(temperature) < getLastRecordedTemperature() + mAllowedTempChange
                 && Integer.valueOf(temperature) > getLastRecordedTemperature() - mAllowedTempChange;
+    }
+
+    public void onRadioButtonPowerClicked(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+        int power =0;
+        switch (view.getId()) {
+            case R.id.radio_button_0:
+                if(checked) power = 0;
+                break;
+            case R.id.radio_button_25:
+                if(checked) power = 25;
+                break;
+            case R.id.radio_button_50:
+                if(checked) power = 50;
+                break;
+            case R.id.radio_button_75:
+                if(checked) power = 75;
+                break;
+            case R.id.radio_button_100:
+                if(checked) power = 100;
+                break;
+            default:
+                // do nothing
+                break;
+        }
+        Log.d(LOG_TAG, "Power changed to " + Integer.toString(power));
+        // save power change time / power
+        recordPower(power);
     }
 }
