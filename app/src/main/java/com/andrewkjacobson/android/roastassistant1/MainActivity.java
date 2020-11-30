@@ -73,13 +73,15 @@ public class MainActivity extends AppCompatActivity {
     private final String FIRST_CRACK_TIME_KEY = "first crack time";
     private final String READINGS_KEY = "readings";
     private final String ROAST_RUNNING_KEY = "roast running";
+    private final String CHRONO_BASE_KEY = "chronometer base";
+    private final String CURRENT_READING_KEY = "current reading";
 
 
     // move to settings
     final int mTemperatureCheckFrequency = 15;
     final int mAllowedTempChange = 50;
     final int mStartingTemperature = 68;
-    final int mStartingPower = 0; // need to set the widget too
+    final int mStartingPower = 100; // need to set the widget too
     // maybe add color customization too
     // end move to settings
 
@@ -94,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
     // fields
     int mSecondsElapsed;
     int m1cTimeInSeconds = -1;
+    RoastReading mCurrentReading;
     boolean mRoastIsRunning = false;
-    ArrayList<RoastReading> mReadings;
     SparseArray<RoastReading> mReadingsSparceArray;
 
 
@@ -114,16 +116,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG_TAG, "-------");
-        Log.d(LOG_TAG, "onCreate");
-
         setContentView(R.layout.activity_main);
-//        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        // controls
         setSupportActionBar(findViewById(R.id.toolbar));
         mChronometerRoastTime = (Chronometer) findViewById(R.id.chrono_roast_time);
         mButtonStartEndRoast = (Button) findViewById(R.id.button_start_end_roast);
         mTextCurrentTemperature = (TextView) findViewById(R.id.text_current_temperature);
-        mReadings = new ArrayList<>();
+        setPowerRadioButton(mStartingPower);
+
+        mCurrentReading = new RoastReading(0, mStartingTemperature, mStartingPower);
         mReadingsSparceArray = new SparseArray<>();
         mGraph = (GraphView) findViewById(R.id.graph);
         initGraph();
@@ -135,29 +137,43 @@ public class MainActivity extends AppCompatActivity {
 
         recordReading(mStartingTemperature, mStartingPower);
 
+        // set tick listener
+        mChronometerRoastTime.setOnChronometerTickListener(chronometer -> {
+            if(firstCrackOccurred()) update1cPercent();
+            if((mSecondsElapsed + 5) % mTemperatureCheckFrequency == 0) { // fire five seconds before each time increment
+                queryTemperature(REQUEST_CODE_TEMPERATURE);
+            }
+            mSecondsElapsed++;
+        });
 
+        // Restore saved instance
         if(savedInstanceState != null) {
-            mSecondsElapsed =savedInstanceState.getInt(SECONDS_ELAPSED_KEY);
+            mSecondsElapsed = savedInstanceState.getInt(SECONDS_ELAPSED_KEY);
+
+            mReadingsSparceArray = savedInstanceState.getSparseParcelableArray(READINGS_KEY);
 
             m1cTimeInSeconds = savedInstanceState.getInt(FIRST_CRACK_TIME_KEY);
-            mReadings = savedInstanceState.getParcelableArrayList(READINGS_KEY);
-            mTextCurrentTemperature.setText(Integer.toString(getLastRecordedTemperature()));
+            if(m1cTimeInSeconds != -1 && mReadingsSparceArray.get(m1cTimeInSeconds) != null) {
+                ((TextView) findViewById(R.id.text_1c_time)).setText(Integer.toString(m1cTimeInSeconds));
+                ((TextView) findViewById(R.id.text_1c_temperature))
+                        .setText(Integer.toString(mReadingsSparceArray.get(m1cTimeInSeconds).getTemperature()));
+            }
+
+            mCurrentReading = savedInstanceState.getParcelable(CURRENT_READING_KEY);
+            mTextCurrentTemperature.setText(Integer.toString(getCurrentReading().getTemperature()));
 
             mRoastIsRunning = savedInstanceState.getBoolean(ROAST_RUNNING_KEY);
-        }
 
-   // Restore the saved instance state.
-//        if (savedInstanceState != null) {
-//
-//            mCount = savedInstanceState.getInt(COUNT_KEY);
-//            if (mCount != 0) {
-//                mShowCountTextView.setText(String.format("%s", mCount));
-//            }
-//
-//            mColor = savedInstanceState.getInt(COLOR_KEY);
-//            mShowCountTextView.setBackgroundColor(mColor);
-////        }
-//    }
+            if(mSecondsElapsed > 0) {
+                mChronometerRoastTime.setBase(savedInstanceState.getLong(CHRONO_BASE_KEY));
+            }
+            if(mRoastIsRunning) {
+                ((Button) findViewById(R.id.button_start_end_roast)).setText(R.string.string_button_end_roast);
+                mChronometerRoastTime.start();
+            } else {
+                ((Button) findViewById(R.id.button_start_end_roast)).setText(R.string.string_button_start_roast);
+            }
+        }
     }
 
     @Override
@@ -169,8 +185,10 @@ public class MainActivity extends AppCompatActivity {
         // fields to save
         outState.putInt(SECONDS_ELAPSED_KEY, mSecondsElapsed);
         outState.putInt(FIRST_CRACK_TIME_KEY, m1cTimeInSeconds);
-        outState.putParcelableArrayList(READINGS_KEY, mReadings);
+        outState.putSparseParcelableArray(READINGS_KEY, mReadingsSparceArray);
         outState.putBoolean(ROAST_RUNNING_KEY, mRoastIsRunning);
+        outState.putLong(CHRONO_BASE_KEY, mChronometerRoastTime.getBase());
+        outState.putParcelable(CURRENT_READING_KEY, mCurrentReading);
 
 
     }
@@ -239,14 +257,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public int getLastRecordedTemperature() {
-        return mReadings.get(mReadings.size() - 1).getTemperature();
-    }
-
-    private int getLastRecordedPower() {
-        return mReadings.get(mReadings.size() - 1).getPowerPercentage();
-    }
-
     public void startRoast(View view) {
         Toast toast = Toast.makeText(this, R.string.string_roast_started_message,
                 Toast.LENGTH_SHORT);
@@ -256,20 +266,6 @@ public class MainActivity extends AppCompatActivity {
         mButtonStartEndRoast.setText(R.string.string_button_end_roast);
         mSecondsElapsed = 0;
         mRoastIsRunning = true;
-
-        // todo move to method chronometerTickListener()
-        mChronometerRoastTime.setOnChronometerTickListener(chronometer -> {
-            if(firstCrackOccurred()) update1cPercent();
-
-            if((mSecondsElapsed + 5) % mTemperatureCheckFrequency == 0) { // fire five seconds before each time increment
-                queryTemperature(REQUEST_CODE_TEMPERATURE);
-            }
-            mSecondsElapsed++;
-        });
-    }
-
-    public void chronometerTickListener() {
-
     }
 
     public boolean firstCrackOccurred() {
@@ -342,27 +338,61 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void record1cInfo() {
-        ((TextView) findViewById(R.id.text_1c_temperature)).setText(getLastRecordedTemperature() + " degrees");
+        ((TextView) findViewById(R.id.text_1c_temperature)).setText(getCurrentReading().getTemperature() + " degrees");
         ((TextView) findViewById(R.id.text_1c_time)).setText(mChronometerRoastTime.getText());
         m1cTimeInSeconds = mSecondsElapsed;
         update1cPercent();
     }
 
+    private RoastReading getCurrentReading() {
+        return mCurrentReading;
+    }
+
     public void recordTemperature(int temperature) {
-        recordReading(temperature, getLastRecordedPower());
+        recordReading(temperature, getCurrentReading().getPowerPercentage());
     }
 
     /** records power and updates graph **/
     public void recordPower(int power) {
-        recordReading(getLastRecordedTemperature(), power);
+        recordReading(getCurrentReading().getTemperature(), power);
     }
 
+    /**
+     * Records the current time, temperature and power
+     *
+     * @param temperature
+     * @param power
+     */
     public void recordReading(int temperature, int power) {
-        mReadings.add(new RoastReading(mSecondsElapsed, temperature, power));
-        mReadingsSparceArray.put(mSecondsElapsed, new RoastReading(mSecondsElapsed, temperature, power));
+        mCurrentReading = new RoastReading(mSecondsElapsed, temperature, power);
+        mReadingsSparceArray.put(mSecondsElapsed, mCurrentReading);
         mTextCurrentTemperature.setText(Integer.toString(temperature));
-        Log.d(LOG_TAG, "New reading recorded..." + mReadings.get(mReadings.size()-1));
-        updateGraph(mSecondsElapsed, temperature, power);
+        setPowerRadioButton(power);
+        Log.d(LOG_TAG, "New reading recorded..." + mCurrentReading);
+        updateGraph(mCurrentReading);
+    }
+
+    private void setPowerRadioButton(int power) {
+        switch (power) {
+            case 0:
+                ((RadioButton)findViewById(R.id.radio_button_0)).setChecked(true);
+                break;
+            case 25:
+                ((RadioButton)findViewById(R.id.radio_button_25)).setChecked(true);
+                break;
+            case 50:
+                ((RadioButton)findViewById(R.id.radio_button_50)).setChecked(true);
+                break;
+            case 75:
+                ((RadioButton)findViewById(R.id.radio_button_75)).setChecked(true);
+                break;
+            case 100:
+                ((RadioButton)findViewById(R.id.radio_button_100)).setChecked(true);
+                break;
+            default:
+                // do nothing
+                break;
+        }
     }
 
     public void update1cPercent() {
@@ -383,8 +413,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             // GRAPH SETTINGS
             mGraph.setVisibility(View.VISIBLE);
-//            mGraph.setTitle("Temperature and Power");
-//            mGraph.getGridLabelRenderer().setPadding(25); // otherwise right side labels are cut off
             mGraph.getViewport().setScalable(false);
             mGraph.getViewport().setScrollable(false);
 
@@ -408,17 +436,17 @@ public class MainActivity extends AppCompatActivity {
             mGraph.getSecondScale().setMaxY(100);
 
             // feed initial values to the graph
-            updateGraph(0, mStartingTemperature, mStartingPower);
+            updateGraph(new RoastReading(0, mStartingTemperature, mStartingPower));
         } catch (IllegalArgumentException e) {
             Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             System.err.println("graph failed to initialize.");
         }
     }
 
-    public void updateGraph(int time, int temperature, int power) {
+    public void updateGraph(RoastReading reading) {
         try {
-            mGraphSeriesTemperature.appendData(new DataPoint(time, temperature), false, 99999);
-            mGraphSeriesPower.appendData(new DataPoint(time, power), false, 99999);
+            mGraphSeriesTemperature.appendData(new DataPoint(reading.getTimeStamp(), reading.getTemperature()), false, 99999);
+            mGraphSeriesPower.appendData(new DataPoint(reading.getTimeStamp(), reading.getPowerPercentage()), false, 99999);
         } catch (IllegalArgumentException e) {
             Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             System.err.println("failed to update graph.");
@@ -435,8 +463,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isValidTemperature(String temperature) {
         return temperature.length() > 0
-                && Integer.valueOf(temperature) < getLastRecordedTemperature() + mAllowedTempChange
-                && Integer.valueOf(temperature) > getLastRecordedTemperature() - mAllowedTempChange;
+                && Integer.valueOf(temperature) < getCurrentReading().getTemperature() + mAllowedTempChange
+                && Integer.valueOf(temperature) > getCurrentReading().getTemperature() - mAllowedTempChange;
     }
 
     public void onRadioButtonPowerClicked(View view) {
