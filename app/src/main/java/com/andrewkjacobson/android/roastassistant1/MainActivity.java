@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // move to settings
-    final int mTemperatureCheckFrequency = 15;
+    int mTemperatureCheckFrequency = 0;
     final int mAllowedTempChange = 50;
     final int mStartingTemperature = 68;
     final int mStartingPower = 100; // need to set the widget too
@@ -130,10 +130,14 @@ public class MainActivity extends AppCompatActivity {
         mGraph = (GraphView) findViewById(R.id.graph);
         initGraph();
 
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
+        // settings and preferences
+        androidx.preference.PreferenceManager
+                .setDefaultValues(this, R.xml.root_preferences, false);
 
-//todo        String name = sharedPreferences.getString(“temperature_check_frequency”, "");
+        SharedPreferences sharedPreferences =
+                androidx.preference.PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
+
+        mTemperatureCheckFrequency = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_TEMP_CHECK_FREQ, "60"));
 
         recordReading(mStartingTemperature, mStartingPower);
 

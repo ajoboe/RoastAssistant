@@ -8,10 +8,12 @@
 <!--    final int mStartingPower = 0; // need to set the widget too-->
 
     <EditTextPreference
-        android:dialogMessage="Enter amount of time in seconds between temperature checks"
+        android:dialogMessage="@string/string_temperature_check_frequency_setting_summary"
+        android:summary="@string/string_temperature_check_frequency_setting_summary"
         app:key="temperature_check_frequency"
-        app:title="Temperature check frequency in seconds"
-        app:useSimpleSummaryProvider="true" />
+        app:title="Temperature check frequency"
+        app:useSimpleSummaryProvider="true"
+        android:defaultValue="60" />
 
 <!--    <PreferenceCategory app:title="@string/messages_header">-->
 

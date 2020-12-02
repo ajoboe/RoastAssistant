@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 
 public class SettingsActivity extends AppCompatActivity {
+    public static final String KEY_PREF_TEMP_CHECK_FREQ = "temperature_check_frequency";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
