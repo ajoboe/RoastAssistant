@@ -34,4 +34,7 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="string_coming_soon">Coming Soon!</string>
     <string name="string_temperature_check_frequency_setting_summary">Enter the desired number of seconds between temperature check prompts.</string>
+    <string name="string_allowed_temp_change_setting_summary">Enter the maximum allowed temperature change between readings. This is useful for increasing voice recognition accuracy.</string>
+    <string name="string_starting_temp_setting_summary">Enter the default starting temperature for your roast. This could be the ambient temperature or the pre-heat temperature. You will also be able to change this value right before you start the roast.</string>
+    <string name="string_starting_power_setting_summary">Enter the default starting power for your roast. You will also be able to change this value right before you start the roast.</string>
 </resources>

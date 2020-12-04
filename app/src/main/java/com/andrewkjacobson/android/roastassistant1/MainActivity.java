@@ -1,5 +1,4 @@
 package com.andrewkjacobson.android.roastassistant1;
-// todo get settings working
 // todo save roast
 // todo fix slow graph update bug
 
@@ -14,6 +13,7 @@ package com.andrewkjacobson.android.roastassistant1;
 // todo deal with rotations (onSaveInstanceState?)
 // todo add previous roast graph overlay! (from LJ)
 // todo have an upload area for users to upload their roasts
+// todo add color customization to settings
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,13 +77,12 @@ public class MainActivity extends AppCompatActivity {
     private final String CURRENT_READING_KEY = "current reading";
 
 
-    // move to settings
-    int mTemperatureCheckFrequency = 0;
-    final int mAllowedTempChange = 50;
-    final int mStartingTemperature = 68;
-    final int mStartingPower = 100; // need to set the widget too
-    // maybe add color customization too
-    // end move to settings
+    // settings
+    int mTemperatureCheckFrequency;
+    int mAllowedTempChange;
+    int mStartingTemperature;
+    int mStartingPower;
+    // settings
 
     // controls
     Chronometer mChronometerRoastTime;
@@ -133,11 +132,13 @@ public class MainActivity extends AppCompatActivity {
         // settings and preferences
         androidx.preference.PreferenceManager
                 .setDefaultValues(this, R.xml.root_preferences, false);
-
         SharedPreferences sharedPreferences =
                 androidx.preference.PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
-
         mTemperatureCheckFrequency = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_TEMP_CHECK_FREQ, "60"));
+        mAllowedTempChange = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ALLOWED_TEMP_CHANGE, "50"));
+        mStartingTemperature = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_TEMPERATURE, "68"));
+        mStartingPower = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_POWER, "100"));
+
 
         recordReading(mStartingTemperature, mStartingPower);
 

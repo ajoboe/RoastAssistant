@@ -2,10 +2,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
 <!--    SETTINGS TO ADD.........-->
-<!--    final int mTemperatureCheckFrequency = 15;-->
-<!--    final int mAllowedTempChange = 50;-->
-<!--    final int mStartingTemperature = 68;-->
-<!--    final int mStartingPower = 0; // need to set the widget too-->
 
     <EditTextPreference
         android:dialogMessage="@string/string_temperature_check_frequency_setting_summary"
@@ -15,7 +11,34 @@
         app:useSimpleSummaryProvider="true"
         android:defaultValue="60" />
 
-<!--    <PreferenceCategory app:title="@string/messages_header">-->
+    <EditTextPreference
+        android:dialogMessage="@string/string_allowed_temp_change_setting_summary"
+        android:summary="@string/string_allowed_temp_change_setting_summary"
+        app:key="allowed_temp_change"
+        app:title="Allowed temperature change"
+        app:useSimpleSummaryProvider="true"
+        android:defaultValue="50" />
+
+    <EditTextPreference
+        android:dialogMessage="@string/string_starting_temp_setting_summary"
+        android:summary="@string/string_starting_temp_setting_summary"
+        app:key="starting_temperature"
+        app:title="Roast starting temperature"
+        app:useSimpleSummaryProvider="true"
+        android:defaultValue="68" />
+
+    <!--    final int mStartingPower = 0; // need to set the widget too-->
+    <EditTextPreference
+        android:dialogMessage="@string/string_starting_power_setting_summary"
+        android:summary="@string/string_starting_power_setting_summary"
+        app:key="starting_power"
+        app:title="Roast starting power"
+        app:useSimpleSummaryProvider="true"
+        android:defaultValue="100" />
+
+
+
+    <!--    <PreferenceCategory app:title="@string/messages_header">-->
 
 <!--        <EditTextPreference-->
 <!--            app:key="signature"-->

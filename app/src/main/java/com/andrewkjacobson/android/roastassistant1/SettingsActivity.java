@@ -8,6 +8,9 @@ import androidx.preference.PreferenceFragmentCompat;
 
 public class SettingsActivity extends AppCompatActivity {
     public static final String KEY_PREF_TEMP_CHECK_FREQ = "temperature_check_frequency";
+    public static final String KEY_PREF_ALLOWED_TEMP_CHANGE = "allowed_temp_change";
+    public static final String KEY_PREF_STARTING_TEMPERATURE = "starting_temperature";
+    public static final String KEY_PREF_STARTING_POWER = "starting_power";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
