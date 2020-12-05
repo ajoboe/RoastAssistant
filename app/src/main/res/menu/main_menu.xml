@@ -12,6 +12,10 @@
         android:icon="@drawable/ic_action_share"
         app:showAsAction="ifRoom"
         android:orderInCategory="20" />
+    <item android:id="@+id/action_roast_details"
+        android:title="Roast details"
+        app:showAsAction="never"
+        android:orderInCategory="90" />
     <item android:id="@+id/action_settings"
         android:title="Settings"
         app:showAsAction="never"

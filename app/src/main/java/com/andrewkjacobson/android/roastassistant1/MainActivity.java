@@ -1,19 +1,42 @@
 package com.andrewkjacobson.android.roastassistant1;
-// todo save roast
-// todo fix slow graph update bug
+// todo end roast dialog with extra data
+//      roast metadata:
+//          - bean type (text...autocomplete/combobox)
+//          - roast degree (spinner...other->listener->text)
+//          - date (autofilled date widget)
+//          - batch size in grams (text)
+//          - yield in grams (text)
+//          - roast notes (multi-line text)
+//          - tasting notes (multi-line text)
+//          - roaster (autofilled text)
+//          - ambient temp (autofilled text)
+//          - preheat time
 
+// todo save roast (locally AND to Goog Drive)
+// todo apply new settings immediately
+// todo set init temp before start roast
+// todo date should be current
+// todo toolbar on roast details
+// todo toolbar on settings page
+// todo done button on roast details
+// todo suggested end roast window (on graph?)
+// todo audio end roast que
+// todo batch size -> profile suggestions
+// todo export/share to Google Sheets
+// todo find another graph implementation
+// todo full screen on roast start
 // todo convert graph to actual time in min:seconds
-// todo what happens if leave program for a sec?
+// todo update graph every second
 // todo if time=zero, overwrite the roast reading list (temp and pow)
 // todo require that a power be entered before starting
 // todo     or just a default starting power
-// todo control when and how much graph is added as time goes by
 // todo only allow 1c to happen once? or at least say "are you sure?"
-// todo clear everything on "Start Roast"...
+// todo clear everything on "Start Roast"...just call newRoast()
 // todo deal with rotations (onSaveInstanceState?)
-// todo add previous roast graph overlay! (from LJ)
+// todo add previous roast graph overlay! (from LJ and SM)
 // todo have an upload area for users to upload their roasts
 // todo add color customization to settings
+// todo add drum speed
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -212,12 +235,20 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_new_roast:
                 showNewRoastDialog();
                 return true;
+            case R.id.action_roast_details:
+                showRoastDetails();
+                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    private void showRoastDetails() {
+        Intent roastDetailsIntent = new Intent(this, RoastDetails.class);
+        startActivity(roastDetailsIntent);
     }
 
     @Override
