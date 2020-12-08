@@ -10,8 +10,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
-        <activity android:name=".RoastDetails"></activity>
+        android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
+        <activity android:name=".RoastDetailsActivity"></activity>
         <!-- android:theme="@style/Theme.RoastAssistant1" -->
         <activity
             android:name=".SettingsActivity"

@@ -1,16 +1,17 @@
 package com.andrewkjacobson.android.roastassistant1;
 // todo end roast dialog with extra data
 //      roast metadata:
+//          - need labels for everything
 //          - bean type (text...autocomplete/combobox)
-//          - roast degree (spinner...other->listener->text)
-//          - date (autofilled date widget)
-//          - batch size in grams (text)
-//          - yield in grams (text)
-//          - roast notes (multi-line text)
-//          - tasting notes (multi-line text)
+//          - roast degree (spinner...other->listener->text) <--- NEEDS FILLING
+//          - date (autofilled date widget) <--- start with curr
+//          - batch size in grams (text) <--- put a g at the end (put batch size, yield, and weight loss on same line)
+//          - yield in grams (text) <--- put a g at the end
+//          - roast notes (multi-line text) <--- doesn't look like multi
+//          - tasting notes (multi-line text) <--- "
 //          - roaster (autofilled text)
 //          - ambient temp (autofilled text)
-//          - preheat time
+//          - preheat time <--- needs adding still
 
 // todo save roast (locally AND to Goog Drive)
 // todo apply new settings immediately
@@ -41,19 +42,16 @@ package com.andrewkjacobson.android.roastassistant1;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.util.SparseArray;
@@ -71,9 +69,6 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
 import java.util.Locale;
 
 import static android.os.SystemClock.*;
@@ -89,6 +84,7 @@ import static android.os.SystemClock.*;
 public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_TEMPERATURE = 10;
     public static final int REQUEST_CODE_1C = 20;
+    public static final int REQUEST_CODE_ROAST_DETAILS_ACTIVITY = 30;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     // keys for saving instance state
@@ -141,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // controls
-        setSupportActionBar(findViewById(R.id.toolbar));
+//        setSupportActionBar(findViewById(R.id.toolbar));
         mChronometerRoastTime = (Chronometer) findViewById(R.id.chrono_roast_time);
         mButtonStartEndRoast = (Button) findViewById(R.id.button_start_end_roast);
         mTextCurrentTemperature = (TextView) findViewById(R.id.text_current_temperature);
@@ -247,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showRoastDetails() {
-        Intent roastDetailsIntent = new Intent(this, RoastDetails.class);
+        Intent roastDetailsIntent = new Intent(this, RoastDetailsActivity.class);
         startActivity(roastDetailsIntent);
     }
 
@@ -347,8 +343,13 @@ public class MainActivity extends AppCompatActivity {
                 if(resultCode == RESULT_OK && data != null) processRecognizerResults(data, false);
                 else Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
                 break;
+            case REQUEST_CODE_ROAST_DETAILS_ACTIVITY:
+                if(resultCode == RESULT_OK && data != null)
+                    storeRoastDetails(data.getParcelableExtra(RoastDetailsActivity.EXTRA_REPLY));
+                break;
         }
     }
+
 
 
     private void processRecognizerResults(Intent data, boolean isFirstCrack) {

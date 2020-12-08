@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RoastDetails">
+    tools:context=".RoastDetailsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,77 +13,144 @@
         tools:layout_editor_absoluteX="45dp"
         tools:layout_editor_absoluteY="40dp">
 
-        <EditText
-            android:id="@+id/textDate"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="date"
-            android:text="01/01/2021" />
+            android:hint="date">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="date"
+                android:text=""/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <AutoCompleteTextView
-            android:id="@+id/autoTextBeanType"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_bean_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="bean type" />
+            android:hint="bean type">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/autoTextBeanType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/textDecimalBatchSize"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_batch_size"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:text="0g" />
+            android:hint="batch size">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textDecimalBatchSize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="numberDecimal"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/textDecimalYield"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_yield"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:text="0g" />
+            android:hint="yield">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textDecimalYield"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="numberDecimal"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/textDecimalWeightLoss"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_weight_loss"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="numberDecimal"
-            android:text="0%" />
+            android:hint="weight loss">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textDecimalWeightLoss"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:text=""
+                android:inputType="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Spinner
             android:id="@+id/spinnerRoastDegree"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <EditText
-            android:id="@+id/textMultiRoastNotes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:gravity="start|top"
-            android:inputType="textMultiLine"
-            android:text="Roast notes" />
 
-        <EditText
-            android:id="@+id/textMultiTastingNotes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:gravity="start|top"
-            android:inputType="textMultiLine"
-            android:text="Tasting notes" />
 
-        <AutoCompleteTextView
-            android:id="@+id/autoTextRoaster"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_roast_notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Roaster" />
+            android:hint="roast notes">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textMultiRoastNotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:gravity="start|top"
+                android:inputType="textMultiLine"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <AutoCompleteTextView
-            android:id="@+id/autoTextAmbientTemp"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_tasting_notes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ambient temperature" />
+            android:hint="tasting notes">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textMultiTastingNotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:gravity="start|top"
+                android:inputType="textMultiLine"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_roaster"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="roaster">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/autoTextRoaster"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_ambient_temperature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="ambient temperature">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/autoTextAmbientTemp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_preheat_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="preheat time">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textPreheatTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="time"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/button_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
