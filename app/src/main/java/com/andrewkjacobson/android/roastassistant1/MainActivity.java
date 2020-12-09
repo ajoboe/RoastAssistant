@@ -1,10 +1,9 @@
 package com.andrewkjacobson.android.roastassistant1;
 
-// todo show end roast time
 // todo save roast (locally AND to Goog Drive)
 // todo redesign the look based on material principals
 
-
+// todo make sure roast is running before denying a temp check
 // todo refine roast details
 //      roast metadata:
 //          - need label roast level spinner

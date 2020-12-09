@@ -5,101 +5,165 @@
 <!--    android:layout_width="match_parent"-->
 <!--    android:layout_height="match_parent"-->
 <!--    tools:context=".MainActivity">-->
-    <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MainActivity">
-    <!--    <com.google.android.material.appbar.AppBarLayout-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:theme="@style/ThemeOverlay.AppCompat.Dark"-->
-    <!--        app:layout_constraintTop_toTopOf="parent">-->
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical"
+    android:gravity="center">
 
-    <!--        <androidx.appcompat.widget.Toolbar-->
-    <!--            android:id="@+id/toolbar"-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="?attr/actionBarSize"-->
-    <!--            android:background="?attr/colorPrimary"-->
-    <!--            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:context=".MainActivity"
+        android:layout_weight="1">
 
-    <!--    </com.google.android.material.appbar.AppBarLayout>-->
-    <!--    <androidx.appcompat.widget.Toolbar-->
-    <!--        android:id="@+id/toolbar"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="?attr/actionBarSize"-->
-    <!--        android:background="?attr/colorPrimary"-->
-    <!--        android:elevation="4dp"-->
-    <!--        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toTopOf="parent"-->
-    <!--        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />-->
+        <TextView
+            android:id="@+id/label_graph_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_graph_label_temperature"
+            android:textColor="#0000FF"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.jjoe64.graphview.GraphView
-        android:id="@+id/graph"
-        android:layout_width="match_parent"
-        android:layout_height="200dip"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="8dp" />
+        <TextView
+            android:id="@+id/label_graph_power"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_label_power"
+            android:textColor="#FF0000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graph"
+            android:layout_width="match_parent"
+            android:layout_height="300dip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/label_graph_temperature" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <Chronometer
         android:id="@+id/chrono_roast_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/string_chronometer"
         android:textSize="25sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_margin="16dp"
+        />
 
-    <Button
-        android:id="@+id/button_first_crack"
-        android:layout_width="wrap_content"
+    <!-- BIG TABLE OF STATS -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginBottom="8dp"
-        android:onClick="buttonFirstCrackClicked"
-        android:text="@string/button_first_crack"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button_start_end_roast" />
+        android:orientation="horizontal"
+        android:layout_margin="16dp"
+        >
 
-    <Button
-        android:id="@+id/button_start_end_roast"
-        android:layout_width="204dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginBottom="8dp"
-        android:onClick="toggleRoast"
-        android:text="@string/string_button_start_roast"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_first_crack"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        <!-- FIRST CRACK SECTION -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_gravity=""
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/label_first_crack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="First Crack" />
+
+
+            <TextView
+                android:id="@+id/text_1c_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0:00"/>
+
+            <TextView
+                android:id="@+id/text_1c_temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="0°"/>
+
+            <TextView
+                android:id="@+id/text_1c_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="0%"/>
+        </LinearLayout>
+
+        <!-- CURRENT STATS SECTION -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/label_curr_stats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Current Stats" />
+
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/input_layout_current_temperature"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/label_current_temperature">-->
+
+                <TextView
+                    android:id="@+id/text_current_temperature"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/string_start_temperature" />
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
+        </LinearLayout>
+
+        <!-- RECOMMENDATIONS SECTION -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/label_recommendations"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Suggestions" />
+
+        </LinearLayout>
+    </LinearLayout>
+
 
     <RadioGroup
         android:id="@+id/radio_group_powers"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/label_curr_power">
+        android:layout_margin="16dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/label_curr_power"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_label_power" />
 
         <RadioButton
             android:id="@+id/radio_button_0"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="onRadioButtonPowerClicked"
@@ -109,7 +173,7 @@
 
         <RadioButton
             android:id="@+id/radio_button_25"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="onRadioButtonPowerClicked"
@@ -120,7 +184,7 @@
 
         <RadioButton
             android:id="@+id/radio_button_50"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="onRadioButtonPowerClicked"
@@ -130,7 +194,7 @@
 
         <RadioButton
             android:id="@+id/radio_button_75"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="onRadioButtonPowerClicked"
@@ -140,126 +204,53 @@
 
         <RadioButton
             android:id="@+id/radio_button_100"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="onRadioButtonPowerClicked"
             android:text="@string/string_100_percent"
             tools:layout_editor_absoluteX="149dp"
             tools:layout_editor_absoluteY="615dp" />
-
-
     </RadioGroup>
 
 
-    <TextView
-        android:id="@+id/label_curr_power"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/string_label_power"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_1c_temperature" />
+        android:orientation="horizontal"
+        style="?android:attr/buttonBarStyle"
+        android:layout_margin="16dp"
+        >
 
-    <Button
-        android:id="@+id/button_record_temperature"
+        <Button
+            android:id="@+id/button_start_end_roast"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="toggleRoast"
+            android:text="@string/string_button_start_roast" />
+
+        <Button
+            android:id="@+id/button_first_crack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="buttonFirstCrackClicked"
+            android:text="@string/button_first_crack"
+            style="?android:attr/buttonBarButtonStyle"/>
+
+        <Button
+            android:id="@+id/button_record_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="buttonRecordTemperatureClicked"
+            android:text="@string/string_button_record_temp"
+            style="?android:attr/buttonBarButtonStyle"/>
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Group
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="buttonRecordTemperatureClicked"
-        android:text="Record Temperature"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/graph" />
-
-    <TextView
-        android:id="@+id/label_first_crack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="First Crack"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_current_temperature" />
-
-    <TextView
-        android:id="@+id/text_1c_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="0:00"
-        app:layout_constraintEnd_toStartOf="@+id/text_1c_temperature"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/label_first_crack" />
-
-    <TextView
-        android:id="@+id/text_1c_temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="0 degrees F"
-        app:layout_constraintEnd_toStartOf="@+id/text_1c_percent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/text_1c_time"
-        app:layout_constraintTop_toBottomOf="@+id/label_first_crack" />
-
-    <TextView
-        android:id="@+id/text_1c_percent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="0%"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/text_1c_temperature"
-        app:layout_constraintTop_toBottomOf="@+id/label_first_crack" />
-
-    <TextView
-        android:id="@+id/label_graph_temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:text="Temperature"
-        android:textColor="#0000FF"
-        app:layout_constraintBottom_toTopOf="@+id/graph"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/label_graph_power"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:text="@string/string_label_power"
-        android:textColor="#FF0000"
-        app:layout_constraintBottom_toTopOf="@+id/graph"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/input_layout_current_temperature"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chrono_roast_time"
-        android:hint="@string/label_current_temperature">
-
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/text_current_temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/string_start_temperature" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:id="@+id/roast_end_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        app:layout_constraintStart_toEndOf="@+id/input_layout_current_temperature"
-        app:layout_constraintTop_toTopOf="@+id/input_layout_current_temperature" />
+        android:layout_height="wrap_content" />
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>
