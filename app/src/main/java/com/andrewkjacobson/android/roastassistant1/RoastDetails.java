@@ -10,6 +10,9 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "roast_details_table")
 public class RoastDetails implements Parcelable {
+//    private final String[] roastDegrees = {"Cinnamon", "City", "City+", "Full City", "Full City+", "Viennese", "French", "Italian"};
+//    public enum RoastDegree {CINNAMON, CITY, CITY_PLUS, FULL_CITY, FULL_CITY_PLUS, VIENNESE, FRENCH, ITALIAN}
+
     @PrimaryKey(autoGenerate = true)
     private int id;
 
@@ -18,6 +21,7 @@ public class RoastDetails implements Parcelable {
     private float batchSize;
     private float yield;
     private String roastDegree;
+
     @NonNull
     @ColumnInfo(name = "roast_notes")
     private String roastNotes;
@@ -91,6 +95,10 @@ public class RoastDetails implements Parcelable {
 
     public void setYield(float yield) {
         this.yield = yield;
+    }
+
+    public float getWeightLossPercentage() {
+        return getBatchSize() > 0 ? (float)(getBatchSize() - getYield()) / (float) getBatchSize() : 0;
     }
 
     public String getRoastDegree() {

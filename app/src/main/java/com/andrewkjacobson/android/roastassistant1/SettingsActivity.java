@@ -12,7 +12,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String KEY_PREF_ALLOWED_TEMP_CHANGE = "allowed_temp_change";
     public static final String KEY_PREF_STARTING_TEMPERATURE = "starting_temperature";
     public static final String KEY_PREF_STARTING_POWER = "starting_power";
-
+    public static final String KEY_PREF_ROAST_TIME_ADDEND = "roast_time_addend";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

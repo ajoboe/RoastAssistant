@@ -26,6 +26,14 @@
         android:defaultValue="68" />
 
     <EditTextPreference
+        android:dialogMessage="@string/string_roast_time_addend_summary"
+        android:summary="@string/string_roast_time_addend_summary"
+        app:key="roast_time_addend"
+        app:title="Roast time addend"
+        app:useSimpleSummaryProvider="true"
+        android:defaultValue="0" />
+
+    <EditTextPreference
         android:dialogMessage="@string/string_starting_power_setting_summary"
         android:summary="@string/string_starting_power_setting_summary"
         app:key="starting_power"

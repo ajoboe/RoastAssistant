@@ -20,6 +20,18 @@ public class RoastReading implements Parcelable {
         setPowerPercentage(in.readInt());
     }
 
+    public static final Creator<RoastReading> CREATOR = new Creator<RoastReading>() {
+        @Override
+        public RoastReading createFromParcel(Parcel in) {
+            return new RoastReading(in);
+        }
+
+        @Override
+        public RoastReading[] newArray(int size) {
+            return new RoastReading[size];
+        }
+    };
+
     public int getTimeStamp() {
         return timeStamp;
     }

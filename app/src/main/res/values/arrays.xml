@@ -9,4 +9,16 @@
         <item>reply</item>
         <item>reply_all</item>
     </string-array>
+
+    <string-array name="roast_degree_spinner_labels_array">
+        <item>Cinnamon</item>
+        <item>City</item>
+        <item>City+</item>
+        <item>Full City</item>
+        <item>Full City+</item>
+        <item>Viennese</item>
+        <item>French</item>
+        <item>Italian</item>
+    </string-array>
+
 </resources>

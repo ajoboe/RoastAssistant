@@ -1,25 +1,26 @@
 package com.andrewkjacobson.android.roastassistant1;
-// todo end roast dialog with extra data
-//      roast metadata:
-//          - need labels for everything
-//          - bean type (text...autocomplete/combobox)
-//          - roast degree (spinner...other->listener->text) <--- NEEDS FILLING
-//          - date (autofilled date widget) <--- start with curr
-//          - batch size in grams (text) <--- put a g at the end (put batch size, yield, and weight loss on same line)
-//          - yield in grams (text) <--- put a g at the end
-//          - roast notes (multi-line text) <--- doesn't look like multi
-//          - tasting notes (multi-line text) <--- "
-//          - roaster (autofilled text)
-//          - ambient temp (autofilled text)
-//          - preheat time <--- needs adding still
 
+// todo show end roast time
 // todo save roast (locally AND to Goog Drive)
-// todo apply new settings immediately
+// todo redesign the look based on material principals
+
+
+// todo refine roast details
+//      roast metadata:
+//          - need label roast level spinner
+//          - switch to autocomplete for:
+//              - bean type
+//              - roaster
+//              -
+//          - add date picker
+//          - add postfixes for ambient temp, batch size and yield
+//          - ambient temp (autofilled...how? setting? prev value? other? outdoor temp?)
+
+// todo add setting for adding "coast time" to roast
+// todo narrow the graph vertically
+// todo social aspect
+// todo add graph temp labels at beginning, end, and peak
 // todo set init temp before start roast
-// todo date should be current
-// todo toolbar on roast details
-// todo toolbar on settings page
-// todo done button on roast details
 // todo suggested end roast window (on graph?)
 // todo audio end roast que
 // todo batch size -> profile suggestions
@@ -27,21 +28,21 @@ package com.andrewkjacobson.android.roastassistant1;
 // todo find another graph implementation
 // todo full screen on roast start
 // todo convert graph to actual time in min:seconds
-// todo update graph every second
-// todo if time=zero, overwrite the roast reading list (temp and pow)
-// todo require that a power be entered before starting
-// todo     or just a default starting power
+// todo add graph update interval to settings
+// todo if time=zero+addend, overwrite the roast reading list (temp and pow) for any reading before the clock starts
 // todo only allow 1c to happen once? or at least say "are you sure?"
 // todo clear everything on "Start Roast"...just call newRoast()
-// todo deal with rotations (onSaveInstanceState?)
 // todo add previous roast graph overlay! (from LJ and SM)
 // todo have an upload area for users to upload their roasts
 // todo add color customization to settings
-// todo add drum speed
+// todo add drum speed (enable in settings)
+// todo roast starting power setting should have limited options
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -51,7 +52,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.util.SparseArray;
@@ -69,6 +69,7 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.util.List;
 import java.util.Locale;
 
 import static android.os.SystemClock.*;
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     int mAllowedTempChange;
     int mStartingTemperature;
     int mStartingPower;
-    // settings
+    int mRoastTimeInSecAddend;
 
     // controls
     Chronometer mChronometerRoastTime;
@@ -112,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
     LineGraphSeries<DataPoint> mGraphSeriesPower;
 
     // fields
+    RoastDetailsViewModel mRoastDetailsViewModel;
     int mSecondsElapsed;
     int m1cTimeInSeconds = -1;
     RoastReading mCurrentReading;
@@ -135,7 +137,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mRoastDetailsViewModel = new ViewModelProvider(this).get(RoastDetailsViewModel.class);
+        mRoastDetailsViewModel.getAllRoasts().observe(this, new Observer<List<RoastDetails>>() {
+            @Override
+            public void onChanged(List<RoastDetails> roastDetails) {
 
+            }
+        });
         // controls
 //        setSupportActionBar(findViewById(R.id.toolbar));
         mChronometerRoastTime = (Chronometer) findViewById(R.id.chrono_roast_time);
@@ -157,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         mAllowedTempChange = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ALLOWED_TEMP_CHANGE, "50"));
         mStartingTemperature = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_TEMPERATURE, "68"));
         mStartingPower = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_POWER, "100"));
-
+        mRoastTimeInSecAddend = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ROAST_TIME_ADDEND, "0"));
 
         recordReading(mStartingTemperature, mStartingPower);
 
@@ -244,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showRoastDetails() {
         Intent roastDetailsIntent = new Intent(this, RoastDetailsActivity.class);
-        startActivity(roastDetailsIntent);
+        startActivityForResult(roastDetailsIntent, REQUEST_CODE_ROAST_DETAILS_ACTIVITY);
     }
 
     @Override
@@ -273,9 +281,6 @@ public class MainActivity extends AppCompatActivity {
         alertBuilder.show();
     }
     public void newRoast() {
-
-
-
         if (Build.VERSION.SDK_INT >= 11) {
             recreate();
         } else {
@@ -293,11 +298,12 @@ public class MainActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(this, R.string.string_roast_started_message,
                 Toast.LENGTH_SHORT);
         toast.show();
-        mChronometerRoastTime.setBase(elapsedRealtime());
+        mSecondsElapsed = 0 + mRoastTimeInSecAddend;
+        int chronoAddend =  -(mRoastTimeInSecAddend * 1000);
+        mChronometerRoastTime.setBase(elapsedRealtime() + chronoAddend);
         mChronometerRoastTime.start();
-        mButtonStartEndRoast.setText(R.string.string_button_end_roast);
-        mSecondsElapsed = 0;
         mRoastIsRunning = true;
+        mButtonStartEndRoast.setText(R.string.string_button_end_roast);
     }
 
     public boolean firstCrackOccurred() {
@@ -345,11 +351,15 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case REQUEST_CODE_ROAST_DETAILS_ACTIVITY:
                 if(resultCode == RESULT_OK && data != null)
-                    storeRoastDetails(data.getParcelableExtra(RoastDetailsActivity.EXTRA_REPLY));
+                    storeRoastDetails(data);
                 break;
         }
     }
 
+    private void storeRoastDetails(Intent data) {
+            RoastDetails details = data.getParcelableExtra(RoastDetailsActivity.EXTRA_REPLY);
+            mRoastDetailsViewModel.insert(details);
+    }
 
 
     private void processRecognizerResults(Intent data, boolean isFirstCrack) {
@@ -482,8 +492,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateGraph(RoastReading reading) {
         try {
-            mGraphSeriesTemperature.appendData(new DataPoint(reading.getTimeStamp(), reading.getTemperature()), false, 99999);
-            mGraphSeriesPower.appendData(new DataPoint(reading.getTimeStamp(), reading.getPowerPercentage()), false, 99999);
+            mGraphSeriesTemperature.appendData(new DataPoint(
+                    reading.getTimeStamp(),
+                    reading.getTemperature()),
+                    false, 99999);
+            mGraphSeriesPower.appendData(new DataPoint(
+                    reading.getTimeStamp(),
+                    reading.getPowerPercentage()),
+                    false, 99999);
         } catch (IllegalArgumentException e) {
             Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             System.err.println("failed to update graph.");

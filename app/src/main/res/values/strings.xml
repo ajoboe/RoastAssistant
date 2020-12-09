@@ -37,4 +37,5 @@
     <string name="string_allowed_temp_change_setting_summary">Enter the maximum allowed temperature change between readings. This is useful for increasing voice recognition accuracy.</string>
     <string name="string_starting_temp_setting_summary">Enter the default starting temperature for your roast. This could be the ambient temperature or the pre-heat temperature. You will also be able to change this value right before you start the roast.</string>
     <string name="string_starting_power_setting_summary">Enter the default starting power for your roast. You will also be able to change this value right before you start the roast.</string>
+    <string name="string_roast_time_addend_summary">When you have a roaster that coasts after the roast ends, it can be helpful think ahead by some amount of time. Enter that amount here in seconds.</string>
 </resources>
