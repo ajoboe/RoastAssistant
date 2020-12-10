@@ -67,7 +67,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -110,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
     // controls
     Chronometer mChronometerRoastTime;
     Button mButtonStartEndRoast;
+    Button mButton1C;
+    Button mButtonRecordTemp;
     TextView mTextCurrentTemperature;
     GraphView mGraph;
     LineGraphSeries<DataPoint> mGraphSeriesTemperature;
@@ -153,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
         // controls
         mChronometerRoastTime = (Chronometer) findViewById(R.id.chrono_roast_time);
         mButtonStartEndRoast = (Button) findViewById(R.id.button_start_end_roast);
+        mButton1C = (Button) findViewById(R.id.button_first_crack);
+        mButtonRecordTemp = (Button) findViewById(R.id.button_record_temperature);
         mTextCurrentTemperature = (TextView) findViewById(R.id.text_current_temperature);
         setPowerRadioButton(mStartingPower);
 
@@ -311,6 +314,8 @@ public class MainActivity extends AppCompatActivity {
         mChronometerRoastTime.start();
         mRoastIsRunning = true;
         mButtonStartEndRoast.setText(R.string.string_button_end_roast);
+        mButton1C.setVisibility(View.VISIBLE);
+        mButtonRecordTemp.setVisibility(View.VISIBLE);
     }
 
     public boolean firstCrackOccurred() {
@@ -323,6 +328,8 @@ public class MainActivity extends AppCompatActivity {
         toast.show();
         mChronometerRoastTime.stop();
         mButtonStartEndRoast.setText(R.string.string_button_start_roast);
+        mButton1C.setVisibility(View.GONE);
+        mButtonRecordTemp.setVisibility(View.GONE);
         mRoastIsRunning = false;
 
         storeRoast();

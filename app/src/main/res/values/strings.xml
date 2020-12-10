@@ -3,7 +3,8 @@
     <string name="roast_start_time">0</string>
     <string name="string_button_start_roast">Start Roast</string>
     <string name="string_button_end_roast">End Roast</string>
-    <string name="button_first_crack">1C</string>
+    <string name="button_first_crack">1ST CRACK</string>
+    <string name="string_button_record_temp">Record Temp</string>
     <string name="zero_percent">0%</string>
     <string name="string_25_percent">25%</string>
     <string name="string_50_percent">50%</string>
@@ -39,5 +40,4 @@
     <string name="string_starting_power_setting_summary">Enter the default starting power for your roast. You will also be able to change this value right before you start the roast.</string>
     <string name="string_roast_time_addend_summary">When you have a roaster that coasts after the roast ends, it can be helpful think ahead by some amount of time. Enter that amount here in seconds.</string>
     <string name="string_graph_label_temperature">Temperature</string>
-    <string name="string_button_record_temp">Record Temp</string>
 </resources>

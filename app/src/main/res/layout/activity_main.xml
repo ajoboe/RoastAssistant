@@ -236,6 +236,7 @@
             android:layout_height="wrap_content"
             android:onClick="buttonFirstCrackClicked"
             android:text="@string/button_first_crack"
+            android:visibility="gone"
             style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
@@ -244,6 +245,7 @@
             android:layout_height="wrap_content"
             android:onClick="buttonRecordTemperatureClicked"
             android:text="@string/string_button_record_temp"
+            android:visibility="gone"
             style="?android:attr/buttonBarButtonStyle"/>
 
     </LinearLayout>
