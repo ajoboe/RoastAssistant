@@ -1,17 +1,19 @@
 package com.andrewkjacobson.android.roastassistant1;
 
-// todo save roast (locally AND to Goog Drive)
-// todo redesign the look based on material principals
+// todo export to Google Sheets
+// todo view previous roasts
+// todo refine layout
 
 // todo make sure roast is running before denying a temp check
+
 // todo refine roast details
 //      roast metadata:
 //          - need label roast level spinner
 //          - switch to autocomplete for:
 //              - bean type
 //              - roaster
-//              -
 //          - add date picker
+//              https://developer.android.com/codelabs/android-training-menus-and-pickers?index=..%2F..%2Fandroid-training#7
 //          - add postfixes for ambient temp, batch size and yield
 //          - ambient temp (autofilled...how? setting? prev value? other? outdoor temp?)
 
@@ -65,6 +67,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.Viewport;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -97,11 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     // settings
-    int mTemperatureCheckFrequency;
-    int mAllowedTempChange;
-    int mStartingTemperature;
-    int mStartingPower;
-    int mRoastTimeInSecAddend;
+    private int mTemperatureCheckFrequency;
+    private int mAllowedTempChange;
+    private int mStartingTemperature;
+    private int mStartingPower;
+    private int mRoastTimeInSecAddend;
+    private int mExpectedRoastLength = 60 * 12; // use
 
     // controls
     Chronometer mChronometerRoastTime;
@@ -143,8 +147,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        loadSettings();
+
         // controls
-//        setSupportActionBar(findViewById(R.id.toolbar));
         mChronometerRoastTime = (Chronometer) findViewById(R.id.chrono_roast_time);
         mButtonStartEndRoast = (Button) findViewById(R.id.button_start_end_roast);
         mTextCurrentTemperature = (TextView) findViewById(R.id.text_current_temperature);
@@ -154,17 +160,6 @@ public class MainActivity extends AppCompatActivity {
         mReadingsSparceArray = new SparseArray<>();
         mGraph = (GraphView) findViewById(R.id.graph);
         initGraph();
-
-        // settings and preferences
-        androidx.preference.PreferenceManager
-                .setDefaultValues(this, R.xml.root_preferences, false);
-        SharedPreferences sharedPreferences =
-                androidx.preference.PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
-        mTemperatureCheckFrequency = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_TEMP_CHECK_FREQ, "60"));
-        mAllowedTempChange = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ALLOWED_TEMP_CHANGE, "50"));
-        mStartingTemperature = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_TEMPERATURE, "68"));
-        mStartingPower = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_POWER, "100"));
-        mRoastTimeInSecAddend = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ROAST_TIME_ADDEND, "0"));
 
         recordReading(mStartingTemperature, mStartingPower);
 
@@ -205,6 +200,19 @@ public class MainActivity extends AppCompatActivity {
                 ((Button) findViewById(R.id.button_start_end_roast)).setText(R.string.string_button_start_roast);
             }
         }
+    }
+
+    private void loadSettings() {
+        // settings and preferences
+        androidx.preference.PreferenceManager
+                .setDefaultValues(this, R.xml.root_preferences, false);
+        SharedPreferences sharedPreferences =
+                androidx.preference.PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
+        mTemperatureCheckFrequency = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_TEMP_CHECK_FREQ, "60"));
+        mAllowedTempChange = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ALLOWED_TEMP_CHANGE, "50"));
+        mStartingTemperature = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_TEMPERATURE, "68"));
+        mStartingPower = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_POWER, "100"));
+        mRoastTimeInSecAddend = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ROAST_TIME_ADDEND, "0"));
     }
 
     @Override
@@ -471,6 +479,10 @@ public class MainActivity extends AppCompatActivity {
             mGraph.getViewport().setYAxisBoundsManual(true);
             mGraph.getViewport().setMinY(mStartingTemperature - 20);
             mGraph.getViewport().setMaxY(400);
+            mGraph.getViewport().setXAxisBoundsManual(true);
+            mGraph.getViewport().setMinX(0);
+            mGraph.getViewport().setMaxX(getExpectedRoastLength());
+//            mGraph.getViewport().setScalable(false); // if true, messes with the time
 
             // POWER SERIES
             mGraphSeriesPower = new LineGraphSeries<>();
@@ -498,11 +510,16 @@ public class MainActivity extends AppCompatActivity {
             mGraphSeriesPower.appendData(new DataPoint(
                     reading.getTimeStamp(),
                     reading.getPowerPercentage()),
-                    false, 99999);
+                    false, 99999); // if scrollToEnd is true, shows negatives in the beginning
+            if(mSecondsElapsed > getExpectedRoastLength()) mGraph.getViewport().scrollToEnd(); // todo should be expectedRoastLen
         } catch (IllegalArgumentException e) {
             Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             System.err.println("failed to update graph.");
         }
+    }
+
+    private int getExpectedRoastLength() {
+        return mExpectedRoastLength;
     }
 
     public void buttonRecordTemperatureClicked(View view) {
