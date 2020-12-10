@@ -1,5 +1,6 @@
 package com.andrewkjacobson.android.roastassistant1;
 
+
 // todo export to Google Sheets
 // todo view previous roasts
 // todo refine layout
@@ -17,8 +18,6 @@ package com.andrewkjacobson.android.roastassistant1;
 //          - add postfixes for ambient temp, batch size and yield
 //          - ambient temp (autofilled...how? setting? prev value? other? outdoor temp?)
 
-// todo add setting for adding "coast time" to roast
-// todo narrow the graph vertically
 // todo social aspect
 // todo add graph temp labels at beginning, end, and peak
 // todo set init temp before start roast
@@ -66,7 +65,9 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
     private int mStartingPower;
     private int mRoastTimeInSecAddend;
     private int mExpectedRoastLength = 60 * 12; // use
+    private final int mMaxGraphTemperature = 400;
 
     // controls
     Chronometer mChronometerRoastTime;
@@ -292,6 +294,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void newRoast() {
         if (Build.VERSION.SDK_INT >= 11) {
+            mChronometerRoastTime.setBase(elapsedRealtime());
             recreate();
         } else {
             Intent intent = getIntent();
@@ -305,9 +308,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startRoast(View view) {
-        Toast toast = Toast.makeText(this, R.string.string_roast_started_message,
-                Toast.LENGTH_SHORT);
-        toast.show();
+//        Toast toast = Toast.makeText(this, R.string.string_roast_started_message,
+//                Toast.LENGTH_SHORT);
+//        toast.show();
         mSecondsElapsed = 0 + mRoastTimeInSecAddend;
         int chronoAddend =  -(mRoastTimeInSecAddend * 1000);
         mChronometerRoastTime.setBase(elapsedRealtime() + chronoAddend);
@@ -323,9 +326,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void endRoast() {
-        Toast toast = Toast.makeText(this, R.string.string_roast_ended_message,
-                Toast.LENGTH_SHORT);
-        toast.show();
+//        Toast toast = Toast.makeText(this, R.string.string_roast_ended_message,
+//                Toast.LENGTH_SHORT);
+//        toast.show();
         mChronometerRoastTime.stop();
         mButtonStartEndRoast.setText(R.string.string_button_start_roast);
         mButton1C.setVisibility(View.GONE);
@@ -356,18 +359,28 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_CODE_1C:
-                if(resultCode == RESULT_OK && data != null) processRecognizerResults(data, true);
-                else Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
+                if(resultCode == RESULT_OK && data != null) {
+                    processRecognizerResults(data, true);
+                    after1cLogged();
+                }
                 break;
             case REQUEST_CODE_TEMPERATURE:
                 if(resultCode == RESULT_OK && data != null) processRecognizerResults(data, false);
-                else Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
                 break;
             case REQUEST_CODE_ROAST_DETAILS_ACTIVITY:
                 if(resultCode == RESULT_OK && data != null)
                     storeRoastDetails(data);
                 break;
         }
+    }
+
+    private void after1cLogged() {
+        // todo add time and temp labels
+        BarGraphSeries<DataPoint> series = new BarGraphSeries();
+        series.appendData(new DataPoint(m1cTimeInSeconds, mMaxGraphTemperature), false, 99);
+        series.setDataWidth(5);
+        series.setColor(Color.GREEN);
+        mGraph.addSeries(series);
     }
 
     private void storeRoastDetails(Intent data) {
@@ -382,9 +395,7 @@ public class MainActivity extends AppCompatActivity {
             recordTemperature(Integer.parseInt(stringCurrTemp));
             if(isFirstCrack) record1cInfo();
         } else {
-            Toast.makeText(getApplicationContext(),
-                    "These aren't the numbers we're looking for...try that again",
-                    Toast.LENGTH_LONG);
+//            Toast.makeText(getApplicationContext(), "These aren't the numbers we're looking for...try that again", Toast.LENGTH_LONG);
             if (isFirstCrack) {
                 queryTemperature(REQUEST_CODE_1C);
             } else {
@@ -471,11 +482,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initGraph() {
+        // SHOW TIME FOR X VALUES todo Doesn't work!!
+        mGraph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
+            @Override
+            public String formatLabel(double value, boolean isValueX) {
+                if (isValueX) {
+                    // show normal x values
+                    return String.format("%d:%02d",  (int)value/60, (int)value%60);
+                } else {
+                    // convert seconds to minutes:seconds
+//                    return super.formatLabel(value, isValueX) + " €";
+                    return super.formatLabel(value, isValueX);
+                }
+            }
+        });
         try {
+
             // GRAPH SETTINGS
             mGraph.setVisibility(View.VISIBLE);
             mGraph.getViewport().setScalable(false);
             mGraph.getViewport().setScrollable(false);
+//            mGraph.getGridLabelRenderer().setVerticalLabelsVisible(true);
+            mGraph.getGridLabelRenderer().setHorizontalLabelsVisible(true);
 
             // TEMPERATURE SERIES
             mGraphSeriesTemperature = new LineGraphSeries<>();
@@ -485,11 +513,12 @@ public class MainActivity extends AppCompatActivity {
             mGraph.addSeries(mGraphSeriesTemperature);
             mGraph.getViewport().setYAxisBoundsManual(true);
             mGraph.getViewport().setMinY(mStartingTemperature - 20);
-            mGraph.getViewport().setMaxY(400);
+            mGraph.getViewport().setMaxY(mMaxGraphTemperature);
             mGraph.getViewport().setXAxisBoundsManual(true);
             mGraph.getViewport().setMinX(0);
             mGraph.getViewport().setMaxX(getExpectedRoastLength());
 //            mGraph.getViewport().setScalable(false); // if true, messes with the time
+
 
             // POWER SERIES
             mGraphSeriesPower = new LineGraphSeries<>();
@@ -500,10 +529,12 @@ public class MainActivity extends AppCompatActivity {
             mGraph.getSecondScale().setMinY(0);
             mGraph.getSecondScale().setMaxY(100);
 
+
+
             // feed initial values to the graph
             updateGraph(new RoastReading(0, mStartingTemperature, mStartingPower));
         } catch (IllegalArgumentException e) {
-            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+//            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             System.err.println("graph failed to initialize.");
         }
     }
@@ -520,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
                     false, 99999); // if scrollToEnd is true, shows negatives in the beginning
             if(mSecondsElapsed > getExpectedRoastLength()) mGraph.getViewport().scrollToEnd(); // todo should be expectedRoastLen
         } catch (IllegalArgumentException e) {
-            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+//            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             System.err.println("failed to update graph.");
         }
     }
@@ -535,6 +566,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void buttonFirstCrackClicked(View view) {
         queryTemperature(REQUEST_CODE_1C); // updates 1c related TextViews
+    }
+
+    public RoastReading get1cReading() {
+        return mReadingsSparceArray.get(m1cTimeInSeconds);
     }
 
     private boolean isValidTemperature(String temperature) {
