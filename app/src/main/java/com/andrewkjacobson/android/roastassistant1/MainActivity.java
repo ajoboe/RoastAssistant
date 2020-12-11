@@ -1,11 +1,22 @@
 package com.andrewkjacobson.android.roastassistant1;
 
+// TODO RESTRUCTURE ARCHITECTURE
+//          https://developer.android.com/jetpack/guide
 
+// todo save RoastReadingsSparceArray in DB
+// todo PreviousRoastsActivity (cards)
+// todo ViewPreviousRoastActivity (combine with MainActivity?...fragments?)--shows current roast when finishes
 // todo export to Google Sheets
-// todo view previous roasts
-// todo refine layout
+// todo continue to refine layout
 
+// todo hide First Crack info until relevant
+// todo hide suggestions section until relevant
+// todo 1c time and temp on graph only
+// todo end temp on graph only
 // todo make sure roast is running before denying a temp check
+// todo dev time under suggestions section
+// todo something turns red when roast goes overtime (and yellow a few seconds before...)
+// todo desired development percentage range in settings (default 80-82% / 18-20%)
 
 // todo refine roast details
 //      roast metadata:
@@ -124,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     int m1cTimeInSeconds = -1;
     RoastReading mCurrentReading;
     boolean mRoastIsRunning = false;
-    SparseArray<RoastReading> mReadingsSparceArray;
+    SparseArray<RoastReading> mReadings;
 
 
     /**
@@ -162,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         setPowerRadioButton(mStartingPower);
 
         mCurrentReading = new RoastReading(0, mStartingTemperature, mStartingPower);
-        mReadingsSparceArray = new SparseArray<>();
+        mReadings = new SparseArray<>();
         mGraph = (GraphView) findViewById(R.id.graph);
         initGraph();
 
@@ -181,13 +192,13 @@ public class MainActivity extends AppCompatActivity {
         if(savedInstanceState != null) {
             mSecondsElapsed = savedInstanceState.getInt(SECONDS_ELAPSED_KEY);
 
-            mReadingsSparceArray = savedInstanceState.getSparseParcelableArray(READINGS_KEY);
+            mReadings = savedInstanceState.getSparseParcelableArray(READINGS_KEY);
 
             m1cTimeInSeconds = savedInstanceState.getInt(FIRST_CRACK_TIME_KEY);
-            if(m1cTimeInSeconds != -1 && mReadingsSparceArray.get(m1cTimeInSeconds) != null) {
+            if(m1cTimeInSeconds != -1 && mReadings.get(m1cTimeInSeconds) != null) {
                 ((TextView) findViewById(R.id.text_1c_time)).setText(Integer.toString(m1cTimeInSeconds));
                 ((TextView) findViewById(R.id.text_1c_temperature))
-                        .setText(Integer.toString(mReadingsSparceArray.get(m1cTimeInSeconds).getTemperature()));
+                        .setText(Integer.toString(mReadings.get(m1cTimeInSeconds).getTemperature()));
             }
 
             mCurrentReading = savedInstanceState.getParcelable(CURRENT_READING_KEY);
@@ -229,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
         // fields to save
         outState.putInt(SECONDS_ELAPSED_KEY, mSecondsElapsed);
         outState.putInt(FIRST_CRACK_TIME_KEY, m1cTimeInSeconds);
-        outState.putSparseParcelableArray(READINGS_KEY, mReadingsSparceArray);
+        outState.putSparseParcelableArray(READINGS_KEY, mReadings);
         outState.putBoolean(ROAST_RUNNING_KEY, mRoastIsRunning);
         outState.putLong(CHRONO_BASE_KEY, mChronometerRoastTime.getBase());
         outState.putParcelable(CURRENT_READING_KEY, mCurrentReading);
@@ -437,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void recordReading(int temperature, int power) {
         mCurrentReading = new RoastReading(mSecondsElapsed, temperature, power);
-        mReadingsSparceArray.put(mSecondsElapsed, mCurrentReading);
+        mReadings.put(mSecondsElapsed, mCurrentReading);
         mTextCurrentTemperature.setText(Integer.toString(temperature));
         setPowerRadioButton(power);
         Log.d(LOG_TAG, "New reading recorded..." + mCurrentReading);
@@ -569,7 +580,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public RoastReading get1cReading() {
-        return mReadingsSparceArray.get(m1cTimeInSeconds);
+        return mReadings.get(m1cTimeInSeconds);
     }
 
     private boolean isValidTemperature(String temperature) {
