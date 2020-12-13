@@ -11,8 +11,8 @@ import java.util.List;
 // sources, such as persistent models, web services, and caches.
 
 public class RoastRepository {
-    private RoastDetailsDao mRoastDao;
-    private LiveData<List<RoastDetails>> mAllRoasts;
+    private RoastDao mRoastDao;
+    private LiveData<List<Roast>> mAllRoasts;
 
     RoastRepository(Application application) {
         RoastRoomDatabase db = RoastRoomDatabase.getDatabase(application);
@@ -20,24 +20,24 @@ public class RoastRepository {
         mAllRoasts = mRoastDao.getAllRoasts();
     }
 
-    LiveData<List<RoastDetails>> getAllRoasts() {
+    LiveData<List<Roast>> getAllRoasts() {
         return mAllRoasts;
     }
 
-    public void insert(RoastDetails details) {
-        new insertAsyncTask(mRoastDao).execute(details);
+    public void insert(Roast roast) {
+        new insertAsyncTask(mRoastDao).execute(roast);
     }
 
-    private static class insertAsyncTask extends AsyncTask<RoastDetails, Void, Void> {
+    private static class insertAsyncTask extends AsyncTask<Roast, Void, Void> {
 
-        private RoastDetailsDao mAsyncTaskDao;
+        private RoastDao mAsyncTaskDao;
 
-        insertAsyncTask(RoastDetailsDao dao) {
+        insertAsyncTask(RoastDao dao) {
             mAsyncTaskDao = dao;
         }
 
         @Override
-        protected Void doInBackground(final RoastDetails... params) {
+        protected Void doInBackground(final Roast... params) {
             mAsyncTaskDao.insert((params[0]));
             return null;
         }

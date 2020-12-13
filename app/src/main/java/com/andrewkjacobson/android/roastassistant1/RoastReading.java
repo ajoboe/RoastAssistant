@@ -8,6 +8,12 @@ public class RoastReading implements Parcelable {
     private int temperature;
     private int powerPercentage;
 
+    /**
+     *
+     * @param timeStamp time of reading in seconds
+     * @param temperature the reading temperature
+     * @param powerPercentage the reading power percentage
+     */
     RoastReading(int timeStamp, int temperature, int powerPercentage) {
         setTimeStamp(timeStamp);
         setTemperature(temperature);

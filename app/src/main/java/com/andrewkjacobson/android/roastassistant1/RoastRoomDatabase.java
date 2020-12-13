@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase;
 @Database(entities = {RoastDetails.class}, version = 1, exportSchema = false)
 public abstract class RoastRoomDatabase extends RoomDatabase {
 
-    public abstract RoastDetailsDao roastDetailsDao();
+    public abstract RoastDao roastDetailsDao();
     private static RoastRoomDatabase INSTANCE;
 
     static RoastRoomDatabase getDatabase(final Context context) {

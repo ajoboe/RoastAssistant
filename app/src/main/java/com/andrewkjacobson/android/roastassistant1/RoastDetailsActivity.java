@@ -9,13 +9,10 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
@@ -27,7 +24,7 @@ public class RoastDetailsActivity extends AppCompatActivity {
     public static final String EXTRA_REPLY = "com.andrewkjacobson.android.roastassistant1.REPLY";
     private RoastDetails mDetails;
     private List<RoastDetails> mAllRoasts;
-    private RoastDetailsViewModel mRoastDetailsViewModel;
+    private RoastViewModel mRoastViewModel;
     private ArrayAdapter<CharSequence> mSpinnerAdapter;
 
     @Override
@@ -35,8 +32,8 @@ public class RoastDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_roast_details);
         mDetails = null;
-        mRoastDetailsViewModel = new ViewModelProvider(this).get(RoastDetailsViewModel.class);
-        mRoastDetailsViewModel.getAllRoasts().observe(this, new Observer<List<RoastDetails>>() {
+        mRoastViewModel = new ViewModelProvider(this).get(RoastViewModel.class);
+        mRoastViewModel.getAllRoasts().observe(this, new Observer<List<RoastDetails>>() {
             @Override
             public void onChanged(List<RoastDetails> roastDetails) {
                 mAllRoasts = roastDetails;

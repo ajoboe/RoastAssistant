@@ -1,8 +1,16 @@
 package com.andrewkjacobson.android.roastassistant1;
 
 // TODO RESTRUCTURE ARCHITECTURE
-//          https://developer.android.com/jetpack/guide
+//              https://developer.android.com/jetpack/guide
+//      put data structures in a Model (includes RoastDetails, RoastReadings, etc)...call it RoastModel
+//      put business logic to display in ViewModel
 
+// todo temp change time list on finsh page
+// todo pre-heat temp on finish page
+// todo set starting temp button
+// todo keep screen awake
+// todo overheating warning
+// todo automatic weight loss percentage
 // todo save RoastReadingsSparceArray in DB
 // todo PreviousRoastsActivity (cards)
 // todo ViewPreviousRoastActivity (combine with MainActivity?...fragments?)--shows current roast when finishes
@@ -129,13 +137,13 @@ public class MainActivity extends AppCompatActivity {
     LineGraphSeries<DataPoint> mGraphSeriesTemperature;
     LineGraphSeries<DataPoint> mGraphSeriesPower;
 
-    // fields
-    RoastDetailsViewModel mRoastDetailsViewModel;
-    int mSecondsElapsed;
-    int m1cTimeInSeconds = -1;
-    RoastReading mCurrentReading;
-    boolean mRoastIsRunning = false;
-    SparseArray<RoastReading> mReadings;
+    // roast-specific fields
+    RoastViewModel mRoastViewModel;
+    private int mSecondsElapsed;
+    private int m1cTimeInSeconds = -1;
+    private RoastReading mCurrentReading;
+    private boolean mRoastIsRunning = false;
+    private SparseArray<RoastReading> mReadings;
 
 
     /**
@@ -154,8 +162,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mRoastDetailsViewModel = new ViewModelProvider(this).get(RoastDetailsViewModel.class);
-        mRoastDetailsViewModel.getAllRoasts().observe(this, new Observer<List<RoastDetails>>() {
+        mRoastViewModel = new ViewModelProvider(this).get(RoastViewModel.class);
+        mRoastViewModel.getAllRoasts().observe(this, new Observer<List<RoastDetails>>() {
             @Override
             public void onChanged(List<RoastDetails> roastDetails) {
 
@@ -396,10 +404,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void storeRoastDetails(Intent data) {
             RoastDetails details = data.getParcelableExtra(RoastDetailsActivity.EXTRA_REPLY);
-            mRoastDetailsViewModel.insert(details);
+            mRoastViewModel.insert(details);
     }
 
-
+    // todo isValidTemperature will be in Roast class
+    //  or maybe recordReading returns a boolean
     private void processRecognizerResults(Intent data, boolean isFirstCrack) {
         String stringCurrTemp = stringTempFromResult(data);
         if (isValidTemperature(stringCurrTemp)) {
@@ -420,6 +429,7 @@ public class MainActivity extends AppCompatActivity {
                 .get(0).replaceAll("[^0-9]", "");
     }
 
+    // todo get this info from Roast (through the view model)
     private void record1cInfo() {
         ((TextView) findViewById(R.id.text_1c_temperature)).setText(getCurrentReading().getTemperature() + " degrees");
         ((TextView) findViewById(R.id.text_1c_time)).setText(mChronometerRoastTime.getText());
@@ -434,6 +444,7 @@ public class MainActivity extends AppCompatActivity {
     public void recordTemperature(int temperature) {
         recordReading(temperature, getCurrentReading().getPowerPercentage());
     }
+
 
     /** records power and updates graph **/
     public void recordPower(int power) {

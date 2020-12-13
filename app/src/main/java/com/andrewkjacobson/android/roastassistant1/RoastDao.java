@@ -7,7 +7,7 @@ import androidx.room.Query;
 import java.util.List;
 
 @Dao
-public interface RoastDetailsDao {
+public interface RoastDao {
 
     @Insert
     void insert(RoastDetails details);
@@ -16,5 +16,5 @@ public interface RoastDetailsDao {
     void deleteAll();
 
     @Query("SELECT * FROM roast_details_table") // add ORDER BY date DESC
-    LiveData<List<RoastDetails>> getAllRoasts();
+    LiveData<List<Roast>> getAllRoasts();
 }
