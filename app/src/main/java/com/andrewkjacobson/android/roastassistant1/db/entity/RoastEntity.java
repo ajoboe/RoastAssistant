@@ -2,7 +2,7 @@ package com.andrewkjacobson.android.roastassistant1.db.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.SparseArray;
+
 import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -11,7 +11,6 @@ import androidx.room.RoomWarnings;
 import com.andrewkjacobson.android.roastassistant1.model.Roast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a single roast
@@ -30,7 +29,7 @@ public class RoastEntity implements Roast, Parcelable {
     ArrayList<RoastReadingEntity> mReadings = new ArrayList<>();
     private int secondsElapsed;
     private int firstCrackTime = -1;
-    private boolean roastIsRunning = false;
+    private boolean isRunning = false;
     private int roastTimeAddend;
 
     // constructors
@@ -45,7 +44,7 @@ public class RoastEntity implements Roast, Parcelable {
         mReadings = in.createTypedArrayList(RoastReadingEntity.CREATOR);
         secondsElapsed = in.readInt();
         firstCrackTime = in.readInt();
-        roastIsRunning = in.readByte() != 0;
+        isRunning = in.readByte() != 0;
         roastTimeAddend = in.readInt();
     }
 
@@ -88,8 +87,8 @@ public class RoastEntity implements Roast, Parcelable {
 //        return roastIsRunning;
 //    }
 
-    public void setRoastIsRunning(boolean mRoastIsRunning) {
-        this.roastIsRunning = mRoastIsRunning;
+    public void setRunning(boolean mRoastIsRunning) {
+        this.isRunning = mRoastIsRunning;
     }
 
 //    public int getTimeOfCurrentReading() {
@@ -125,8 +124,7 @@ public class RoastEntity implements Roast, Parcelable {
     }
 
     public RoastReadingEntity getCurrentReading() {
-//        return mReadings.get(timeOfCurrentReading);
-        return mReadings.get(mReadings.size());
+        return mReadings.get(mReadings.size()-1);
     }
 
     public RoastReadingEntity get1cReading() {
@@ -160,11 +158,11 @@ public class RoastEntity implements Roast, Parcelable {
 
     public void startRoast() {
         secondsElapsed = 0 + getRoastTimeAddend();
-        roastIsRunning = true;
+        isRunning = true;
     }
 
     public void endRoast() {
-        roastIsRunning = false;
+        isRunning = false;
     }
 
     /**
@@ -173,7 +171,7 @@ public class RoastEntity implements Roast, Parcelable {
      * @return the new status
      */
     public boolean toggleRoast() {
-        return roastIsRunning = !roastIsRunning;
+        return isRunning = !isRunning;
     }
 
     /**
@@ -247,13 +245,13 @@ public class RoastEntity implements Roast, Parcelable {
         dest.writeTypedList(mReadings);
         dest.writeInt(secondsElapsed);
         dest.writeInt(firstCrackTime);
-        dest.writeByte((byte) (roastIsRunning ? 1 : 0));
+        dest.writeByte((byte) (isRunning ? 1 : 0));
 //        dest.writeInt(timeOfCurrentReading);
         dest.writeInt(roastTimeAddend);
     }
 
     @Override
-    public boolean roastIsRunning() {
-        return roastIsRunning;
+    public boolean isRunning() {
+        return isRunning;
     }
 }
