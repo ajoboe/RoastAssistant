@@ -1,4 +1,4 @@
-package com.andrewkjacobson.android.roastassistant1;
+package com.andrewkjacobson.android.roastassistant1.ui;
 
 import android.os.Bundle;
 
@@ -6,6 +6,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.andrewkjacobson.android.roastassistant1.R;
 
 public class SettingsActivity extends AppCompatActivity {
     public static final String KEY_PREF_TEMP_CHECK_FREQ = "temperature_check_frequency";

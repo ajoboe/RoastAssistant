@@ -1,0 +1,99 @@
+// TODO RESTRUCTURE ARCHITECTURE
+//todo              https://developer.android.com/jetpack/guide
+//todo      put data structures in a Model (includes RoastDetailsEntity, RoastReadings, etc)...call it RoastModel
+//todo      put business logic to display in ViewModel
+//todo      one DAO per Entity (RoastEntity, RoastDetailsEntity, RoastReadingEntity)---are you sure?
+//todo      one activity, fragments for the rest:
+//todo              roast screen, finished roast, graph, roast selection, roast details, settings
+
+// todo temp change time list on finsh page
+// todo pre-heat temp on finish page
+// todo set starting temp button
+// todo keep screen awake
+// todo overheating warning
+// todo automatic weight loss percentage
+// todo save RoastReadingsSparceArray in DB
+// todo PreviousRoastsActivity (cards)
+// todo ViewPreviousRoastActivity (combine with MainActivity?...fragments?)--shows current roast when finishes
+// todo export to Google Sheets
+// todo continue to refine layout
+
+// todo hide First Crack info until relevant
+// todo hide suggestions section until relevant
+// todo 1c time and temp on graph only
+// todo end temp on graph only
+// todo make sure roast is running before denying a temp check
+// todo dev time under suggestions section
+// todo something turns red when roast goes overtime (and yellow a few seconds before...)
+// todo desired development percentage range in settings (default 80-82% / 18-20%)
+
+// todo refine roast details
+//      roast metadata:
+//          - need label roast level spinner
+//          - switch to autocomplete for:
+//              - bean type
+//              - roaster
+//          - add date picker
+//              https://developer.android.com/codelabs/android-training-menus-and-pickers?index=..%2F..%2Fandroid-training#7
+//          - add postfixes for ambient temp, batch size and yield
+//          - ambient temp (autofilled...how? setting? prev value? other? outdoor temp?)
+
+// todo social aspect
+// todo add graph temp labels at beginning, end, and peak
+// todo set init temp before start roast
+// todo suggested end roast window (on graph?)
+// todo audio end roast que
+// todo batch size -> profile suggestions
+// todo export/share to Google Sheets
+// todo find another graph implementation
+// todo full screen on roast start
+// todo convert graph to actual time in min:seconds
+// todo add graph update interval to settings
+// todo if time=zero+addend, overwrite the roast reading list (temp and pow) for any reading before the clock starts
+// todo only allow 1c to happen once? or at least say "are you sure?"
+// todo clear everything on "Start RoastEntity"...just call newRoast()
+// todo add previous roast graph overlay! (from LJ and SM)
+// todo have an upload area for users to upload their roasts
+// todo add color customization to settings
+// todo add drum speed (enable in settings)
+// todo roast starting power setting should have limited options
+
+
+voice controlled
+  app polls use for temp at regular interval
+
+info to track
+  roast date
+  coffee type / name
+  ambient temp (defaults to current outside temp--or same as last roast)
+  raw weight, roasted weight, weight loss percentage (calculated)
+  charge temp and/or warm-up time
+  roaster-specific settings (e.g Bemohr: 1/2, P3, D)
+  1c begin (and auto-updated percentage through roast...or dev time)
+  1c end
+  power %
+  drum speed
+  roast color
+  tasting notes
+  "next time try this..."
+
+features
+  voice control for temp
+  start warming button
+  start and stop buttons
+  big button for 1c
+  big buttons for power % (customizable) or option to just enter a number
+
+implemnt first
+	counter
+	start, stop, 1c
+	curr power
+	curr temp
+
+
+Voice Recognition Extras
+
+EXTRA_PROMPT
+public static final String EXTRA_PROMPT
+Optional text prompt to show to the user when asking them to speak.
+Constant Value: "android.speech.extra.PROMPT"

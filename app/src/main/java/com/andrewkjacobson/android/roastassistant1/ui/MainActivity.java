@@ -1,61 +1,8 @@
-package com.andrewkjacobson.android.roastassistant1;
+package com.andrewkjacobson.android.roastassistant1.ui;
 
-// TODO RESTRUCTURE ARCHITECTURE
-//              https://developer.android.com/jetpack/guide
-//      put data structures in a Model (includes RoastDetails, RoastReadings, etc)...call it RoastModel
-//      put business logic to display in ViewModel
+// TODO NOTHING IN THIS ACTIVITY IS PERMANENT--SEND IT ALL TO THE ViewModel
 
-// todo temp change time list on finsh page
-// todo pre-heat temp on finish page
-// todo set starting temp button
-// todo keep screen awake
-// todo overheating warning
-// todo automatic weight loss percentage
-// todo save RoastReadingsSparceArray in DB
-// todo PreviousRoastsActivity (cards)
-// todo ViewPreviousRoastActivity (combine with MainActivity?...fragments?)--shows current roast when finishes
-// todo export to Google Sheets
-// todo continue to refine layout
 
-// todo hide First Crack info until relevant
-// todo hide suggestions section until relevant
-// todo 1c time and temp on graph only
-// todo end temp on graph only
-// todo make sure roast is running before denying a temp check
-// todo dev time under suggestions section
-// todo something turns red when roast goes overtime (and yellow a few seconds before...)
-// todo desired development percentage range in settings (default 80-82% / 18-20%)
-
-// todo refine roast details
-//      roast metadata:
-//          - need label roast level spinner
-//          - switch to autocomplete for:
-//              - bean type
-//              - roaster
-//          - add date picker
-//              https://developer.android.com/codelabs/android-training-menus-and-pickers?index=..%2F..%2Fandroid-training#7
-//          - add postfixes for ambient temp, batch size and yield
-//          - ambient temp (autofilled...how? setting? prev value? other? outdoor temp?)
-
-// todo social aspect
-// todo add graph temp labels at beginning, end, and peak
-// todo set init temp before start roast
-// todo suggested end roast window (on graph?)
-// todo audio end roast que
-// todo batch size -> profile suggestions
-// todo export/share to Google Sheets
-// todo find another graph implementation
-// todo full screen on roast start
-// todo convert graph to actual time in min:seconds
-// todo add graph update interval to settings
-// todo if time=zero+addend, overwrite the roast reading list (temp and pow) for any reading before the clock starts
-// todo only allow 1c to happen once? or at least say "are you sure?"
-// todo clear everything on "Start Roast"...just call newRoast()
-// todo add previous roast graph overlay! (from LJ and SM)
-// todo have an upload area for users to upload their roasts
-// todo add color customization to settings
-// todo add drum speed (enable in settings)
-// todo roast starting power setting should have limited options
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -84,13 +31,17 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andrewkjacobson.android.roastassistant1.R;
+import com.andrewkjacobson.android.roastassistant1.db.entity.RoastDetailsEntity;
+import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
+import com.andrewkjacobson.android.roastassistant1.db.entity.RoastReadingEntity;
+import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import java.util.List;
 import java.util.Locale;
 
 import static android.os.SystemClock.*;
@@ -104,7 +55,7 @@ import static android.os.SystemClock.*;
  * @since       1.0          (the version of the package this class was first added to)
  */
 public class MainActivity extends AppCompatActivity {
-    public static final int REQUEST_CODE_TEMPERATURE = 10;
+    public static final int REQUEST_CODE_TEMPERATURE = 10; // todo should these be private?
     public static final int REQUEST_CODE_1C = 20;
     public static final int REQUEST_CODE_ROAST_DETAILS_ACTIVITY = 30;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -116,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     private final String ROAST_RUNNING_KEY = "roast running";
     private final String CHRONO_BASE_KEY = "chronometer base";
     private final String CURRENT_READING_KEY = "current reading";
+    private static final String ROAST_ID_KEY = "roast id";
+    private static final String CURRENT_ROAST_KEY = "current roast";
 
 
     // settings
@@ -124,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
     private int mStartingTemperature;
     private int mStartingPower;
     private int mRoastTimeInSecAddend;
-    private int mExpectedRoastLength = 60 * 12; // use
-    private final int mMaxGraphTemperature = 400;
+    private int mExpectedRoastLength = 60 * 12; // todo should be a setting
+    private final int mMaxGraphTemperature = 400; // todo should be a setting
 
     // controls
     Chronometer mChronometerRoastTime;
@@ -137,13 +90,16 @@ public class MainActivity extends AppCompatActivity {
     LineGraphSeries<DataPoint> mGraphSeriesTemperature;
     LineGraphSeries<DataPoint> mGraphSeriesPower;
 
-    // roast-specific fields
-    RoastViewModel mRoastViewModel;
+    // roast-specific fields  todo should there even be anything here?? all go through ViewModel???
+    private RoastViewModel mRoastViewModel;
+    private RoastEntity mCurrRoast;
+
+    // todo the 5 lines below can go!
+    private RoastReadingEntity mCurrentReading;
+    private SparseArray<RoastReadingEntity> mReadings;
     private int mSecondsElapsed;
     private int m1cTimeInSeconds = -1;
-    private RoastReading mCurrentReading;
     private boolean mRoastIsRunning = false;
-    private SparseArray<RoastReading> mReadings;
 
 
     /**
@@ -163,29 +119,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mRoastViewModel = new ViewModelProvider(this).get(RoastViewModel.class);
-        mRoastViewModel.getAllRoasts().observe(this, new Observer<List<RoastDetails>>() {
-            @Override
-            public void onChanged(List<RoastDetails> roastDetails) {
-
-            }
-        });
+//        mRoastViewModel.getCurrentRoast().observe(this, new Observer<RoastEntity>() {
+//            @Override
+//            public void onChanged(RoastEntity roast) {
+//                mCurrRoast = roast;
+//            }
+//        });
+        mCurrRoast = new RoastEntity();
+        mReadings = new SparseArray<>();
 
         loadSettings();
-
-        // controls
-        mChronometerRoastTime = (Chronometer) findViewById(R.id.chrono_roast_time);
-        mButtonStartEndRoast = (Button) findViewById(R.id.button_start_end_roast);
-        mButton1C = (Button) findViewById(R.id.button_first_crack);
-        mButtonRecordTemp = (Button) findViewById(R.id.button_record_temperature);
-        mTextCurrentTemperature = (TextView) findViewById(R.id.text_current_temperature);
-        setPowerRadioButton(mStartingPower);
-
-        mCurrentReading = new RoastReading(0, mStartingTemperature, mStartingPower);
-        mReadings = new SparseArray<>();
-        mGraph = (GraphView) findViewById(R.id.graph);
+        initControls();
         initGraph();
-
-        recordReading(mStartingTemperature, mStartingPower);
+        updateGraph(mCurrentReading); // todo should the graph just listen for changes to currentReading
 
         // set tick listener
         mChronometerRoastTime.setOnChronometerTickListener(chronometer -> {
@@ -198,21 +144,25 @@ public class MainActivity extends AppCompatActivity {
 
         // Restore saved instance
         if(savedInstanceState != null) {
+//            int roastId = savedInstanceState.getInt(ROAST_ID_KEY);
+            mCurrRoast = savedInstanceState.getParcelable(CURRENT_ROAST_KEY);
+
+            // todo these can go!
             mSecondsElapsed = savedInstanceState.getInt(SECONDS_ELAPSED_KEY);
-
             mReadings = savedInstanceState.getSparseParcelableArray(READINGS_KEY);
-
             m1cTimeInSeconds = savedInstanceState.getInt(FIRST_CRACK_TIME_KEY);
+            mCurrentReading = savedInstanceState.getParcelable(CURRENT_READING_KEY);
+            mRoastIsRunning = savedInstanceState.getBoolean(ROAST_RUNNING_KEY);
+            //---
+
             if(m1cTimeInSeconds != -1 && mReadings.get(m1cTimeInSeconds) != null) {
                 ((TextView) findViewById(R.id.text_1c_time)).setText(Integer.toString(m1cTimeInSeconds));
                 ((TextView) findViewById(R.id.text_1c_temperature))
                         .setText(Integer.toString(mReadings.get(m1cTimeInSeconds).getTemperature()));
             }
 
-            mCurrentReading = savedInstanceState.getParcelable(CURRENT_READING_KEY);
             mTextCurrentTemperature.setText(Integer.toString(getCurrentReading().getTemperature()));
 
-            mRoastIsRunning = savedInstanceState.getBoolean(ROAST_RUNNING_KEY);
 
             if(mSecondsElapsed > 0) {
                 mChronometerRoastTime.setBase(savedInstanceState.getLong(CHRONO_BASE_KEY));
@@ -226,6 +176,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void initControls() {
+        mChronometerRoastTime = (Chronometer) findViewById(R.id.chrono_roast_time);
+        mButtonStartEndRoast = (Button) findViewById(R.id.button_start_end_roast);
+        mButton1C = (Button) findViewById(R.id.button_first_crack);
+        mButtonRecordTemp = (Button) findViewById(R.id.button_record_temperature);
+        mTextCurrentTemperature = (TextView) findViewById(R.id.text_current_temperature);
+        setPowerRadioButton(mStartingPower);
+        mGraph = (GraphView) findViewById(R.id.graph);
+    }
+
     private void loadSettings() {
         // settings and preferences
         androidx.preference.PreferenceManager
@@ -237,23 +197,24 @@ public class MainActivity extends AppCompatActivity {
         mStartingTemperature = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_TEMPERATURE, "68"));
         mStartingPower = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_POWER, "100"));
         mRoastTimeInSecAddend = Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ROAST_TIME_ADDEND, "0"));
+        recordReading(mStartingTemperature, mStartingPower);
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(LOG_TAG, "onSaveInstanceState");
-        // todo save graph state???
 
-        // fields to save
+        // this will help restore from the ViewModel
+        outState.putInt(ROAST_ID_KEY, mCurrRoast.getRoastId()); // todo do we really need this?
+        outState.putParcelable(CURRENT_ROAST_KEY, mCurrRoast);
+
+        // fields to save  todo the rest can go!
         outState.putInt(SECONDS_ELAPSED_KEY, mSecondsElapsed);
         outState.putInt(FIRST_CRACK_TIME_KEY, m1cTimeInSeconds);
         outState.putSparseParcelableArray(READINGS_KEY, mReadings);
         outState.putBoolean(ROAST_RUNNING_KEY, mRoastIsRunning);
         outState.putLong(CHRONO_BASE_KEY, mChronometerRoastTime.getBase());
         outState.putParcelable(CURRENT_READING_KEY, mCurrentReading);
-
-
     }
 
     @Override
@@ -327,14 +288,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startRoast(View view) {
-//        Toast toast = Toast.makeText(this, R.string.string_roast_started_message,
-//                Toast.LENGTH_SHORT);
-//        toast.show();
-        mSecondsElapsed = 0 + mRoastTimeInSecAddend;
+        mCurrRoast.startRoast();
+
         int chronoAddend =  -(mRoastTimeInSecAddend * 1000);
         mChronometerRoastTime.setBase(elapsedRealtime() + chronoAddend);
         mChronometerRoastTime.start();
-        mRoastIsRunning = true;
         mButtonStartEndRoast.setText(R.string.string_button_end_roast);
         mButton1C.setVisibility(View.VISIBLE);
         mButtonRecordTemp.setVisibility(View.VISIBLE);
@@ -403,11 +361,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void storeRoastDetails(Intent data) {
-            RoastDetails details = data.getParcelableExtra(RoastDetailsActivity.EXTRA_REPLY);
-            mRoastViewModel.insert(details);
+            RoastDetailsEntity details = data.getParcelableExtra(RoastDetailsActivity.EXTRA_REPLY);
+            mCurrRoast.setDetails(details);
+            mRoastViewModel.insert(mCurrRoast);
     }
 
-    // todo isValidTemperature will be in Roast class
+    // todo isValidTemperature will be in RoastEntity class
     //  or maybe recordReading returns a boolean
     private void processRecognizerResults(Intent data, boolean isFirstCrack) {
         String stringCurrTemp = stringTempFromResult(data);
@@ -429,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
                 .get(0).replaceAll("[^0-9]", "");
     }
 
-    // todo get this info from Roast (through the view model)
+    // todo get this info from RoastEntity (through the view model)
     private void record1cInfo() {
         ((TextView) findViewById(R.id.text_1c_temperature)).setText(getCurrentReading().getTemperature() + " degrees");
         ((TextView) findViewById(R.id.text_1c_time)).setText(mChronometerRoastTime.getText());
@@ -437,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
         update1cPercent();
     }
 
-    private RoastReading getCurrentReading() {
+    private RoastReadingEntity getCurrentReading() {
         return mCurrentReading;
     }
 
@@ -458,12 +417,11 @@ public class MainActivity extends AppCompatActivity {
      * @param power
      */
     public void recordReading(int temperature, int power) {
-        mCurrentReading = new RoastReading(mSecondsElapsed, temperature, power);
+        mCurrentReading = new RoastReadingEntity(mSecondsElapsed, temperature, power);
         mReadings.put(mSecondsElapsed, mCurrentReading);
-        mTextCurrentTemperature.setText(Integer.toString(temperature));
+        ((TextView)findViewById(R.id.text_current_temperature)).setText(Integer.toString(temperature));
         setPowerRadioButton(power);
         Log.d(LOG_TAG, "New reading recorded..." + mCurrentReading);
-        updateGraph(mCurrentReading);
     }
 
     private void setPowerRadioButton(int power) {
@@ -554,14 +512,15 @@ public class MainActivity extends AppCompatActivity {
 
 
             // feed initial values to the graph
-            updateGraph(new RoastReading(0, mStartingTemperature, mStartingPower));
+            // mCurrentReading was initialized by loadSettings()
+            updateGraph(mCurrentReading);
         } catch (IllegalArgumentException e) {
 //            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             System.err.println("graph failed to initialize.");
         }
     }
 
-    public void updateGraph(RoastReading reading) {
+    public void updateGraph(RoastReadingEntity reading) {
         try {
             mGraphSeriesTemperature.appendData(new DataPoint(
                     reading.getTimeStamp(),
@@ -571,7 +530,7 @@ public class MainActivity extends AppCompatActivity {
                     reading.getTimeStamp(),
                     reading.getPowerPercentage()),
                     false, 99999); // if scrollToEnd is true, shows negatives in the beginning
-            if(mSecondsElapsed > getExpectedRoastLength()) mGraph.getViewport().scrollToEnd(); // todo should be expectedRoastLen
+            if(mCurrRoast.getSecondsElapsed() > getExpectedRoastLength()) mGraph.getViewport().scrollToEnd(); // todo should be expectedRoastLen
         } catch (IllegalArgumentException e) {
 //            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             System.err.println("failed to update graph.");
@@ -590,7 +549,7 @@ public class MainActivity extends AppCompatActivity {
         queryTemperature(REQUEST_CODE_1C); // updates 1c related TextViews
     }
 
-    public RoastReading get1cReading() {
+    public RoastReadingEntity get1cReading() {
         return mReadings.get(m1cTimeInSeconds);
     }
 

@@ -3,6 +3,11 @@ package com.andrewkjacobson.android.roastassistant1;
 import android.app.Application;
 import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
+
+import com.andrewkjacobson.android.roastassistant1.db.RoastDao;
+import com.andrewkjacobson.android.roastassistant1.db.RoastRoomDatabase;
+import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
+
 import java.util.List;
 
 // Repository modules handle data operations. They provide a clean API so that the rest of the app
@@ -12,24 +17,30 @@ import java.util.List;
 
 public class RoastRepository {
     private RoastDao mRoastDao;
-    private LiveData<List<Roast>> mAllRoasts;
+    private LiveData<List<RoastEntity>> mAllRoasts;
+//    private LiveData<RoastEntity> mCurrentRoast;
 
-    RoastRepository(Application application) {
+    public RoastRepository(Application application) {
         RoastRoomDatabase db = RoastRoomDatabase.getDatabase(application);
-        mRoastDao = db.roastDetailsDao();
+        mRoastDao = db.roastDao();
         mAllRoasts = mRoastDao.getAllRoasts();
+//        mCurrentRoast = mRoastDao.getRoast();
     }
 
-    LiveData<List<Roast>> getAllRoasts() {
+    public LiveData<List<RoastEntity>> getAllRoasts() {
         return mAllRoasts;
     }
 
-    public void insert(Roast roast) {
+    public void insert(RoastEntity roast) {
         new insertAsyncTask(mRoastDao).execute(roast);
     }
 
-    private static class insertAsyncTask extends AsyncTask<Roast, Void, Void> {
+    public LiveData<RoastEntity> getRoast(int roastId) {
+        return mRoastDao.getRoast(roastId);
+    }
 
+
+    private static class insertAsyncTask extends AsyncTask<RoastEntity, Void, Void> {
         private RoastDao mAsyncTaskDao;
 
         insertAsyncTask(RoastDao dao) {
@@ -37,10 +48,9 @@ public class RoastRepository {
         }
 
         @Override
-        protected Void doInBackground(final Roast... params) {
+        protected Void doInBackground(final RoastEntity... params) {
             mAsyncTaskDao.insert((params[0]));
             return null;
         }
     }
-
 }

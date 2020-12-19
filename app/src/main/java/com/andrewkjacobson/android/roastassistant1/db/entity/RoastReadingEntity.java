@@ -1,9 +1,24 @@
-package com.andrewkjacobson.android.roastassistant1;
+package com.andrewkjacobson.android.roastassistant1.db.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class RoastReading implements Parcelable {
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "roast_reading_table")
+public class RoastReadingEntity implements Parcelable {
+    public int getReadingId() {
+        return readingId;
+    }
+
+    public void setReadingId(int readingId) {
+        this.readingId = readingId;
+    }
+
+    @PrimaryKey(autoGenerate = true)
+    private int readingId;
+
     private int timeStamp;
     private int temperature;
     private int powerPercentage;
@@ -14,27 +29,27 @@ public class RoastReading implements Parcelable {
      * @param temperature the reading temperature
      * @param powerPercentage the reading power percentage
      */
-    RoastReading(int timeStamp, int temperature, int powerPercentage) {
+    public RoastReadingEntity(int timeStamp, int temperature, int powerPercentage) {
         setTimeStamp(timeStamp);
         setTemperature(temperature);
         setPowerPercentage(powerPercentage);
     }
 
-    RoastReading(Parcel in) {
+    RoastReadingEntity(Parcel in) {
         setTimeStamp(in.readInt());
         setTemperature(in.readInt());
         setPowerPercentage(in.readInt());
     }
 
-    public static final Creator<RoastReading> CREATOR = new Creator<RoastReading>() {
+    public static final Creator<RoastReadingEntity> CREATOR = new Creator<RoastReadingEntity>() {
         @Override
-        public RoastReading createFromParcel(Parcel in) {
-            return new RoastReading(in);
+        public RoastReadingEntity createFromParcel(Parcel in) {
+            return new RoastReadingEntity(in);
         }
 
         @Override
-        public RoastReading[] newArray(int size) {
-            return new RoastReading[size];
+        public RoastReadingEntity[] newArray(int size) {
+            return new RoastReadingEntity[size];
         }
     };
 

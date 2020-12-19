@@ -1,17 +1,20 @@
-package com.andrewkjacobson.android.roastassistant1;
+package com.andrewkjacobson.android.roastassistant1.db.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.Entity;
 
 @Entity(tableName = "roast_details_table")
-public class RoastDetails implements Parcelable {
-//    private final String[] roastDegrees = {"Cinnamon", "City", "City+", "Full City", "Full City+", "Viennese", "French", "Italian"};
-//    public enum RoastDegree {CINNAMON, CITY, CITY_PLUS, FULL_CITY, FULL_CITY_PLUS, VIENNESE, FRENCH, ITALIAN}
+public class RoastDetailsEntity implements Parcelable {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -22,18 +25,16 @@ public class RoastDetails implements Parcelable {
     private float yield;
     private String roastDegree;
 
-    @NonNull
-    @ColumnInfo(name = "roast_notes")
     private String roastNotes;
     private String tastingNotes;
     private String roaster;
     private int ambientTemperature;
 
-    public RoastDetails() {
+    public RoastDetailsEntity() {
         // empty constructor
     }
 
-    protected RoastDetails(Parcel in) {
+    protected RoastDetailsEntity(Parcel in) {
         date = in.readString();
         beanType = in.readString();
         batchSize = in.readFloat();
@@ -45,25 +46,17 @@ public class RoastDetails implements Parcelable {
         ambientTemperature = in.readInt();
     }
 
-    public static final Creator<RoastDetails> CREATOR = new Creator<RoastDetails>() {
+    public static final Creator<RoastDetailsEntity> CREATOR = new Creator<RoastDetailsEntity>() {
         @Override
-        public RoastDetails createFromParcel(Parcel in) {
-            return new RoastDetails(in);
+        public RoastDetailsEntity createFromParcel(Parcel in) {
+            return new RoastDetailsEntity(in);
         }
 
         @Override
-        public RoastDetails[] newArray(int size) {
-            return new RoastDetails[size];
+        public RoastDetailsEntity[] newArray(int size) {
+            return new RoastDetailsEntity[size];
         }
     };
-
-    public int getId() {
-        return  id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getDate() {
         return date;

@@ -14,7 +14,7 @@
 
 
         <!--  Main Activity  -->
-        <activity android:name=".MainActivity"
+        <activity android:name=".ui.MainActivity"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,22 +24,22 @@
         </activity>
 
 
-        <!--  Roast Details Activity  -->
-        <activity android:name=".RoastDetailsActivity"
-            android:parentActivityName=".MainActivity"
+        <!--  RoastEntity Details Activity  -->
+        <activity android:name=".ui.RoastDetailsActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait">
         </activity>
 
 
         <!--  Settings Activity  -->
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.andrewkjacobson.android.roastassistant1.MainActivity" />
+                android:value="com.andrewkjacobson.android.roastassistant1.ui.MainActivity" />
         </activity>
 
 

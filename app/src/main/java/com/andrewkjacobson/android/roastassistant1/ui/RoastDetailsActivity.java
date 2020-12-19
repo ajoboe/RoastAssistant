@@ -1,4 +1,4 @@
-package com.andrewkjacobson.android.roastassistant1;
+package com.andrewkjacobson.android.roastassistant1.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -13,6 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.andrewkjacobson.android.roastassistant1.R;
+import com.andrewkjacobson.android.roastassistant1.db.entity.RoastDetailsEntity;
+import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
+import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
@@ -22,8 +26,8 @@ import java.util.List;
 public class RoastDetailsActivity extends AppCompatActivity {
     private final String DETAILS_KEY = "roast details";
     public static final String EXTRA_REPLY = "com.andrewkjacobson.android.roastassistant1.REPLY";
-    private RoastDetails mDetails;
-    private List<RoastDetails> mAllRoasts;
+    private RoastDetailsEntity mDetails;
+    private List<RoastEntity> mAllRoasts;
     private RoastViewModel mRoastViewModel;
     private ArrayAdapter<CharSequence> mSpinnerAdapter;
 
@@ -33,12 +37,18 @@ public class RoastDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_roast_details);
         mDetails = null;
         mRoastViewModel = new ViewModelProvider(this).get(RoastViewModel.class);
-        mRoastViewModel.getAllRoasts().observe(this, new Observer<List<RoastDetails>>() {
+        mRoastViewModel.getAllRoasts().observe(this, new Observer<List<RoastEntity>>() {
+            /**
+             * Called when the data is changed.
+             *
+             * @param roasts The new data
+             */
             @Override
-            public void onChanged(List<RoastDetails> roastDetails) {
-                mAllRoasts = roastDetails;
-                if(roastDetails.size() > 0) populateUI(roastDetails.get(roastDetails.size() - 1));
+            public void onChanged(List<RoastEntity> roasts) {
+                mAllRoasts = roasts;
+                if(roasts.size() > 0) populateUI((roasts.get(roasts.size() - 1)).getDetails());
             }
+
         });
 
         // todo only do this if all fields are empty
@@ -79,7 +89,7 @@ public class RoastDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void populateUI(RoastDetails details) {
+    private void populateUI(RoastDetailsEntity details) {
         // todo Eventually populate cards with all roasts from mAllRoasts
         ((TextInputEditText)findViewById(R.id.textDate)).setText(details.getDate());
         ((TextInputEditText)findViewById(R.id.autoTextBeanType)).setText(details.getBeanType());
@@ -104,8 +114,8 @@ public class RoastDetailsActivity extends AppCompatActivity {
         outState.putParcelable(DETAILS_KEY, mDetails);
     }
 
-    private RoastDetails fetchDetailsFromControls() {
-        RoastDetails details = new RoastDetails();
+    private RoastDetailsEntity fetchDetailsFromControls() {
+        RoastDetailsEntity details = new RoastDetailsEntity();
         details.setDate(((TextInputEditText)findViewById(R.id.textDate)).getText().toString());
         details.setBeanType(((TextInputEditText)findViewById(R.id.autoTextBeanType)).getText().toString());
 
