@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,23 +54,17 @@ import static android.os.SystemClock.*;
  * @since       1.0          (the version of the package this class was first added to)
  */
 public class MainActivity extends AppCompatActivity {
-    public static final int REQUEST_CODE_TEMPERATURE = 10; // todo should these be private?
-    public static final int REQUEST_CODE_1C = 20;
-    public static final int REQUEST_CODE_ROAST_DETAILS_ACTIVITY = 30;
+    private static final int REQUEST_CODE_TEMPERATURE = 10;
+    private static final int REQUEST_CODE_1C = 20;
+    private static final int REQUEST_CODE_ROAST_DETAILS_ACTIVITY = 30;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     // keys for saving instance state
-    private final String SECONDS_ELAPSED_KEY = "seconds elapsed";
-    private final String FIRST_CRACK_TIME_KEY = "first crack time";
-    private final String READINGS_KEY = "readings";
-    private final String ROAST_RUNNING_KEY = "roast running";
-    private final String CHRONO_BASE_KEY = "chronometer base";
-    private final String CURRENT_READING_KEY = "current reading";
-    private static final String ROAST_ID_KEY = "roast id";
+    private static final String CHRONO_BASE_KEY = "chronometer base";
+    public static final String ROAST_ID_KEY = "roast id";
     private static final String CURRENT_ROAST_KEY = "current roast";
 
-
-    // settings
+    // settings  todo perhaps this should all be in its own class
     private int mTemperatureCheckFrequency;
     private int mAllowedTempChange;
     private int mStartingTemperature;
@@ -88,17 +83,9 @@ public class MainActivity extends AppCompatActivity {
     LineGraphSeries<DataPoint> mGraphSeriesTemperature;
     LineGraphSeries<DataPoint> mGraphSeriesPower;
 
-    // roast-specific fields  todo should there even be anything here?? all go through ViewModel???
+    // roast-specific fields
     private RoastViewModel mRoastViewModel;
     private RoastEntity mCurrRoast;
-
-    // todo the 5 lines below can go!
-//    private RoastReadingEntity mCurrentReading;
-//    private SparseArray<RoastReadingEntity> mReadings;
-//    private int mSecondsElapsed;
-//    private int m1cTimeInSeconds = -1;
-//    private boolean mRoastIsRunning = false;
-
 
     /**
      * Short one line description.                           (1)
@@ -116,15 +103,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+                                                // scoped to MainActivity
         mRoastViewModel = new ViewModelProvider(this).get(RoastViewModel.class);
+        mCurrRoast = new RoastEntity();
+
 //        mRoastViewModel.getCurrentRoast().observe(this, new Observer<RoastEntity>() {
 //            @Override
 //            public void onChanged(RoastEntity roast) {
 //                mCurrRoast = roast;
 //            }
 //        });
-        mCurrRoast = new RoastEntity();
-//        mReadings = new SparseArray<>();
 
         loadSettings();
         initControls();
@@ -145,14 +133,6 @@ public class MainActivity extends AppCompatActivity {
 //            int roastId = savedInstanceState.getInt(ROAST_ID_KEY);
             mCurrRoast = savedInstanceState.getParcelable(CURRENT_ROAST_KEY);
 
-            // todo these can go!
-//            mSecondsElapsed = savedInstanceState.getInt(SECONDS_ELAPSED_KEY);
-//            mReadings = savedInstanceState.getSparseParcelableArray(READINGS_KEY);
-//            m1cTimeInSeconds = savedInstanceState.getInt(FIRST_CRACK_TIME_KEY);
-//            mCurrentReading = savedInstanceState.getParcelable(CURRENT_READING_KEY);
-//            mRoastIsRunning = savedInstanceState.getBoolean(ROAST_RUNNING_KEY);
-            //---
-
             if(mCurrRoast.firstCrackOccurred() && mCurrRoast.get1cReading() != null) {
                 ((TextView) findViewById(R.id.text_1c_time))
                         .setText(Integer.toString(mCurrRoast.get1cReading().getTimeStamp()));
@@ -168,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if(mCurrRoast.isRunning()) {
                 ((Button) findViewById(R.id.button_start_end_roast)).setText(R.string.string_button_end_roast);
+                mChronometerRoastTime.setBase(mCurrRoast.getStartTime());
                 mChronometerRoastTime.start();
             } else {
                 ((Button) findViewById(R.id.button_start_end_roast)).setText(R.string.string_button_start_roast);
@@ -181,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         mButton1C = (Button) findViewById(R.id.button_first_crack);
         mButtonRecordTemp = (Button) findViewById(R.id.button_record_temperature);
         mTextCurrentTemperature = (TextView) findViewById(R.id.text_current_temperature);
+        EditText et = new EditText(getApplicationContext());
         setPowerRadioButton(mStartingPower);
         mGraph = (GraphView) findViewById(R.id.graph);
     }
@@ -204,16 +186,10 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 
         // this will help restore from the ViewModel
-        outState.putInt(ROAST_ID_KEY, mCurrRoast.getRoastId()); // todo do we really need this?
+//        outState.putInt(ROAST_ID_KEY, mCurrRoast.getRoastId()); // todo do we really need this?
         outState.putParcelable(CURRENT_ROAST_KEY, mCurrRoast);
 
-        // fields to save  todo the rest can go!
-//        outState.putInt(SECONDS_ELAPSED_KEY, mSecondsElapsed);
-//        outState.putInt(FIRST_CRACK_TIME_KEY, m1cTimeInSeconds);
-//        outState.putSparseParcelableArray(READINGS_KEY, mReadings);
-//        outState.putBoolean(ROAST_RUNNING_KEY, mRoastIsRunning);
         outState.putLong(CHRONO_BASE_KEY, mChronometerRoastTime.getBase());
-//        outState.putParcelable(CURRENT_READING_KEY, mCurrentReading);
     }
 
     @Override
@@ -243,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showRoastDetails() {
         Intent roastDetailsIntent = new Intent(this, RoastDetailsActivity.class);
+        roastDetailsIntent.putExtra(ROAST_ID_KEY, mCurrRoast.getRoastId());
         startActivityForResult(roastDetailsIntent, REQUEST_CODE_ROAST_DETAILS_ACTIVITY);
     }
 
@@ -255,7 +232,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void showNewRoastDialog() {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainActivity.this);
-//        alertBuilder.setTitle("Clear current roast?");
         alertBuilder.setMessage("Clear the current roast and start a new one?");
         alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
@@ -271,7 +247,12 @@ public class MainActivity extends AppCompatActivity {
         });
         alertBuilder.show();
     }
+
     public void newRoast() {
+
+        // todo WHAT DO I NEED TO DO???
+        mCurrRoast = new RoastEntity(mStartingTemperature, mStartingPower);
+
         if (Build.VERSION.SDK_INT >= 11) {
             mChronometerRoastTime.setBase(elapsedRealtime());
             recreate();
@@ -290,21 +271,17 @@ public class MainActivity extends AppCompatActivity {
         mCurrRoast.startRoast();
 
         int chronoAddend =  -(mRoastTimeInSecAddend * 1000);
-        mChronometerRoastTime.setBase(elapsedRealtime() + chronoAddend);
+        long startTime = elapsedRealtime() + chronoAddend;
+        mChronometerRoastTime.setBase(startTime);
         mChronometerRoastTime.start();
         mButtonStartEndRoast.setText(R.string.string_button_end_roast);
         mButton1C.setVisibility(View.VISIBLE);
         mButtonRecordTemp.setVisibility(View.VISIBLE);
+
+        mCurrRoast.setStartTime(startTime);
     }
 
-//    public boolean firstCrackOccurred() {
-//        return m1cTimeInSeconds != -1;
-//    }
-
     public void endRoast() {
-//        Toast toast = Toast.makeText(this, R.string.string_roast_ended_message,
-//                Toast.LENGTH_SHORT);
-//        toast.show();
         mChronometerRoastTime.stop();
         mButtonStartEndRoast.setText(R.string.string_button_start_roast);
         mButton1C.setVisibility(View.GONE);
@@ -315,12 +292,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void storeRoast() {
-        // save time, temp, power info
-        // save 1c info
-        // save bitmap of graph
-        // HOW TO GET BITMAP OF THE GRAPH
-        Bitmap bitmap = mGraph.takeSnapshot();
-        //The runtime permission WRITE_EXTERNAL_STORAGE is needed!
+        mRoastViewModel.insert(mCurrRoast);
+        Bitmap bitmap = mGraph.takeSnapshot(); // todo save to disk and assoc. w/ roast id
     }
 
     public void queryTemperature(int requestCode) {
@@ -377,7 +350,6 @@ public class MainActivity extends AppCompatActivity {
             recordTemperature(Integer.parseInt(stringCurrTemp));
             if(isFirstCrack) record1cInfo();
         } else {
-//            Toast.makeText(getApplicationContext(), "These aren't the numbers we're looking for...try that again", Toast.LENGTH_LONG);
             if (isFirstCrack) {
                 queryTemperature(REQUEST_CODE_1C);
             } else {
@@ -518,6 +490,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // todo this should just get called by an observer
     public void updateGraph(RoastReadingEntity reading) {
         try {
             mGraphSeriesTemperature.appendData(new DataPoint(
@@ -546,10 +519,6 @@ public class MainActivity extends AppCompatActivity {
     public void buttonFirstCrackClicked(View view) {
         queryTemperature(REQUEST_CODE_1C); // updates 1c related TextViews
     }
-
-//    public RoastReadingEntity get1cReading() {
-//        return mReadings.get(m1cTimeInSeconds);
-//    }
 
     private boolean isValidTemperature(String temperature) {
         return temperature.length() > 0
@@ -583,5 +552,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "Power changed to " + Integer.toString(power));
         // save power change time / power
         recordPower(power);
+        updateGraph(mCurrRoast.getCurrentReading());
     }
 }

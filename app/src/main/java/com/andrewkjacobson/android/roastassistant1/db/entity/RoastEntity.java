@@ -31,10 +31,15 @@ public class RoastEntity implements Roast, Parcelable {
     private int firstCrackTime = -1;
     private boolean isRunning = false;
     private int roastTimeAddend;
+    private long startTime;
 
     // constructors
     public RoastEntity() {
         // empty
+    }
+
+    public RoastEntity(int startingTemperature, int startingPower) {
+        recordReading(startingTemperature,startingPower);
     }
 
     protected RoastEntity(Parcel in) {
@@ -253,5 +258,13 @@ public class RoastEntity implements Roast, Parcelable {
     @Override
     public boolean isRunning() {
         return isRunning;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getStartTime() {
+        return startTime;
     }
 }

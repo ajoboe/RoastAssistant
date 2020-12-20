@@ -27,8 +27,9 @@ public class RoastDetailsActivity extends AppCompatActivity {
     private final String DETAILS_KEY = "roast details";
     public static final String EXTRA_REPLY = "com.andrewkjacobson.android.roastassistant1.REPLY";
     private RoastDetailsEntity mDetails;
-    private List<RoastEntity> mAllRoasts;
+//    private List<RoastEntity> mAllRoasts;
     private RoastViewModel mRoastViewModel;
+    private  RoastEntity mCurrRoast;
     private ArrayAdapter<CharSequence> mSpinnerAdapter;
 
     @Override
@@ -37,16 +38,19 @@ public class RoastDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_roast_details);
         mDetails = null;
         mRoastViewModel = new ViewModelProvider(this).get(RoastViewModel.class);
-        mRoastViewModel.getAllRoasts().observe(this, new Observer<List<RoastEntity>>() {
+        int roastId = getIntent().getIntExtra(MainActivity.ROAST_ID_KEY, -1);
+        mRoastViewModel.getRoast(roastId).observe(this, new Observer<RoastEntity>() {
             /**
              * Called when the data is changed.
              *
-             * @param roasts The new data
+             * @param roast The new data
              */
             @Override
-            public void onChanged(List<RoastEntity> roasts) {
-                mAllRoasts = roasts;
-                if(roasts.size() > 0) populateUI((roasts.get(roasts.size() - 1)).getDetails());
+            public void onChanged(RoastEntity roast) {
+                if(roast != null) {
+                    mCurrRoast = roast;
+                    populateUI(roast.getDetails());
+                }
             }
 
         });
