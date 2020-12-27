@@ -41,7 +41,7 @@ public class RoastFragment extends Fragment
     private static final int REQUEST_CODE_QUERY_TEMPERATURE = 10;
     private static final int REQUEST_CODE_1C_CLICKED = 20;
     private static final String CHRONO_BASE_KEY = "chronometer base";
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = RoastActivity.class.getSimpleName();
 
     // controls
     private Chronometer mChronometerRoastTime;

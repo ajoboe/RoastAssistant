@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:context=".ui.MainActivity"
+        tools:context=".ui.RoastActivity"
         android:layout_weight="1">
 
         <TextView

@@ -27,6 +27,6 @@ public interface RoastDao {
     @Query("SELECT * FROM RoastEntity") // add ORDER BY date DESC
     LiveData<List<RoastEntity>> getAllRoasts();
 
-    @Query("SELECT * FROM RoastEntity WHERE id = :roastId")  // todo Need a where clause with the id
+    @Query("SELECT * FROM RoastEntity WHERE id=:roastId")
     MutableLiveData<RoastEntity> getRoast(int roastId);
 }

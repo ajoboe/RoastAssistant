@@ -38,8 +38,8 @@ public class RoastDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_roast_details);
         mDetails = null;
         mRoastViewModel = new ViewModelProvider(this).get(RoastViewModel.class);
-        int roastId = getIntent().getIntExtra(MainActivity.ROAST_ID_KEY, -1);
-        mRoastViewModel.getRoast(roastId).observe(this, new Observer<RoastEntity>() {
+        int roastId = getIntent().getIntExtra(RoastActivity.ROAST_ID_KEY, -1);
+        mRoastViewModel.loadRoast(roastId).observe(this, new Observer<RoastEntity>() {
             /**
              * Called when the data is changed.
              *

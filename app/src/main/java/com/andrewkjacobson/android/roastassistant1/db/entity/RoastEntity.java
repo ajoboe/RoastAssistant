@@ -16,17 +16,17 @@ import java.util.ArrayList;
  * Represents a single roast
  */
 @Entity(tableName = "RoastEntity")
-public class RoastEntity implements Roast, Parcelable {
+public class RoastEntity implements Roast {
 
     // fields
-    @PrimaryKey(autoGenerate = true)  // not needed when merging into RoastEntity
+    @PrimaryKey(autoGenerate = true)
     private int roastId;
 
     @SuppressWarnings(RoomWarnings.PRIMARY_KEY_FROM_EMBEDDED_IS_DROPPED)
     @Embedded
     private RoastDetailsEntity details;
     @Embedded
-    ArrayList<RoastReadingEntity> mReadings = new ArrayList<>();
+    ArrayList<RoastReadingEntity> readings = new ArrayList<>();
     private int secondsElapsed;
     private int firstCrackTime = -1;
     private boolean isRunning = false;
@@ -46,7 +46,7 @@ public class RoastEntity implements Roast, Parcelable {
         roastId = in.readInt();
         details = in.readParcelable(RoastDetailsEntity.class.getClassLoader());
 //        mReadings = in.readSparseArray(RoastReadingEntity.class.getClassLoader());
-        mReadings = in.createTypedArrayList(RoastReadingEntity.CREATOR);
+        readings = in.createTypedArrayList(RoastReadingEntity.CREATOR);
         secondsElapsed = in.readInt();
         firstCrackTime = in.readInt();
         isRunning = in.readByte() != 0;
@@ -64,17 +64,21 @@ public class RoastEntity implements Roast, Parcelable {
         return details;
     }
 
-    public RoastEntity setDetails(RoastDetailsEntity details) {
+    public void setDetails(RoastDetailsEntity details) {
+        this.details = details;
+    }
+
+    public RoastEntity setRoastDetails(RoastDetailsEntity details) {
         this.details = details;
         return this;
     }
 
     public ArrayList<RoastReadingEntity> getReadings() {
-        return mReadings;
+        return readings;
     }
 
     public void setReadings(ArrayList<RoastReadingEntity> mReadings) {
-        this.mReadings = mReadings;
+        this.readings = mReadings;
     }
 
     public void setSecondsElapsed(int mSecondsElapsed) {
@@ -104,18 +108,18 @@ public class RoastEntity implements Roast, Parcelable {
 //    public void setTimeOfCurrentReading(int mTimeOfCurrentReading) {
 //        this.timeOfCurrentReading = mTimeOfCurrentReading;
 //    }
-
-    public static final Creator<RoastEntity> CREATOR = new Creator<RoastEntity>() {
-        @Override
-        public RoastEntity createFromParcel(Parcel in) {
-            return new RoastEntity(in);
-        }
-
-        @Override
-        public RoastEntity[] newArray(int size) {
-            return new RoastEntity[size];
-        }
-    };
+//
+//    public static final Creator<RoastEntity> CREATOR = new Creator<RoastEntity>() {
+//        @Override
+//        public RoastEntity createFromParcel(Parcel in) {
+//            return new RoastEntity(in);
+//        }
+//
+//        @Override
+//        public RoastEntity[] newArray(int size) {
+//            return new RoastEntity[size];
+//        }
+//    };
 
     public int getRoastId() {
         return roastId;
@@ -131,11 +135,11 @@ public class RoastEntity implements Roast, Parcelable {
     }
 
     public RoastReadingEntity getCurrentReading() {
-        return mReadings.get(mReadings.size()-1);
+        return readings.get(readings.size()-1);
     }
 
     public RoastReadingEntity get1cReading() {
-        return mReadings.get(firstCrackTime);
+        return readings.get(firstCrackTime);
     }
 
     public int getRoastTimeAddend() {
@@ -225,51 +229,53 @@ public class RoastEntity implements Roast, Parcelable {
      */
     private RoastEntity insertReading(RoastReadingEntity reading) {
 //        mReadings.put(reading.getTimeStamp(), reading);
-        mReadings.add(reading);
+        readings.add(reading);
         return this;
     }
 
     /**
      * Describe the kinds of special objects contained in this Parcelable
      * instance's marshaled representation. For example, if the object will
-     * include a file descriptor in the output of {@link #writeToParcel(Parcel, int)},
      * the return value of this method must include the
-     * {@link #CONTENTS_FILE_DESCRIPTOR} bit.
      *
      * @return a bitmask indicating the set of special object types marshaled
      * by this Parcelable object instance.
      */
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    /**
-     * Flatten this object in to a Parcel.
-     *
-     * @param dest  The Parcel in which the object should be written.
-     * @param flags Additional flags about how the object should be written.
-     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
-     */
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(roastId);
-        dest.writeParcelable(details, flags);
-//        dest.writeSparseArray(mReadings);
-        dest.writeTypedList(mReadings);
-        dest.writeInt(secondsElapsed);
-        dest.writeInt(firstCrackTime);
-        dest.writeByte((byte) (isRunning ? 1 : 0));
-//        dest.writeInt(timeOfCurrentReading);
-        dest.writeInt(roastTimeAddend);
-    }
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    /**
+//     * Flatten this object in to a Parcel.
+//     *
+//     * @param dest  The Parcel in which the object should be written.
+//     * @param flags Additional flags about how the object should be written.
+//     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+//     */
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeInt(roastId);
+//        dest.writeParcelable(details, flags);
+////        dest.writeSparseArray(mReadings);
+//        dest.writeTypedList(readings);
+//        dest.writeInt(secondsElapsed);
+//        dest.writeInt(firstCrackTime);
+//        dest.writeByte((byte) (isRunning ? 1 : 0));
+////        dest.writeInt(timeOfCurrentReading);
+//        dest.writeInt(roastTimeAddend);
+//    }
 
     @Override
     public boolean isRunning() {
         return isRunning;
     }
 
-    public RoastEntity setStartTime(long startTime) {
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public RoastEntity setChronoStartTime(long startTime) {
         this.startTime = startTime;
         return this;
     }

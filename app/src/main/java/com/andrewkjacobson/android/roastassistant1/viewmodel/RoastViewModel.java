@@ -1,7 +1,6 @@
 package com.andrewkjacobson.android.roastassistant1.viewmodel;
 
 import android.app.Application;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -135,7 +134,7 @@ public class RoastViewModel extends AndroidViewModel {
      * @param details the details to add
      */
     public void setDetails(RoastDetailsEntity details) {
-        roast.setValue(roast.getValue().setDetails(details));
+        roast.setValue(roast.getValue().setRoastDetails(details));
         insert(roast.getValue());
     }
 
@@ -165,7 +164,7 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public void setStartTime(long startTime) {
-        roast.setValue(roast.getValue().setStartTime(startTime));
+        roast.setValue(roast.getValue().setChronoStartTime(startTime));
     }
 
     public double getFirstCrackTime() {
