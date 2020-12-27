@@ -64,8 +64,9 @@ public class RoastEntity implements Roast, Parcelable {
         return details;
     }
 
-    public void setDetails(RoastDetailsEntity details) {
+    public RoastEntity setDetails(RoastDetailsEntity details) {
         this.details = details;
+        return this;
     }
 
     public ArrayList<RoastReadingEntity> getReadings() {
@@ -124,8 +125,9 @@ public class RoastEntity implements Roast, Parcelable {
         return secondsElapsed;
     }
 
-    public void incrementSeconds() {
+    public RoastEntity incrementSeconds() {
         secondsElapsed++;
+        return this;
     }
 
     public RoastReadingEntity getCurrentReading() {
@@ -161,13 +163,19 @@ public class RoastEntity implements Roast, Parcelable {
         return firstCrackTime != -1;
     }
 
-    public void startRoast() {
-        secondsElapsed = 0 + getRoastTimeAddend();
-        isRunning = true;
+    public float getFirstCrackPercent() {
+            return (float) getFirstCrackTime() / ((float) getSecondsElapsed()) * 100;
     }
 
-    public void endRoast() {
+    public RoastEntity startRoast() {
+        secondsElapsed = 0 + getRoastTimeAddend();
+        isRunning = true;
+        return this;
+    }
+
+    public RoastEntity endRoast() {
         isRunning = false;
+        return this;
     }
 
     /**
@@ -183,16 +191,16 @@ public class RoastEntity implements Roast, Parcelable {
      *
      * @param temperature
      */
-    public void recordTemperature(int temperature) {
-        recordReading(temperature, getCurrentReading().getPowerPercentage());
+    public RoastEntity recordTemperature(int temperature) {
+        return recordReading(temperature, getCurrentReading().getPowerPercentage());
     }
 
     /**
      *
      * @param power
      */
-    public void recordPower(int power) {
-        recordReading(getCurrentReading().getTemperature(), power);
+    public RoastEntity recordPower(int power) {
+        return recordReading(getCurrentReading().getTemperature(), power);
     }
 
     /**
@@ -201,9 +209,9 @@ public class RoastEntity implements Roast, Parcelable {
      * @param temperature
      * @param power
      */
-    public void recordReading(int temperature, int power) {
+    public RoastEntity recordReading(int temperature, int power) {
 //        timeOfCurrentReading = secondsElapsed;
-        insertReading(new RoastReadingEntity(getSecondsElapsed(), temperature, power));
+        return insertReading(new RoastReadingEntity(getSecondsElapsed(), temperature, power));
     }
 
     public void recordReading(RoastReadingEntity reading) {
@@ -215,9 +223,10 @@ public class RoastEntity implements Roast, Parcelable {
      * Adds reading to the list but doesn't mark as the current reading
      * @param reading
      */
-    private void insertReading(RoastReadingEntity reading) {
+    private RoastEntity insertReading(RoastReadingEntity reading) {
 //        mReadings.put(reading.getTimeStamp(), reading);
         mReadings.add(reading);
+        return this;
     }
 
     /**
@@ -260,8 +269,9 @@ public class RoastEntity implements Roast, Parcelable {
         return isRunning;
     }
 
-    public void setStartTime(long startTime) {
+    public RoastEntity setStartTime(long startTime) {
         this.startTime = startTime;
+        return this;
     }
 
     public long getStartTime() {

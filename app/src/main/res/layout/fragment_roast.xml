@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    tools:context=".MainActivity">-->
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.RoastFragment"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <Chronometer
+        android:id="@+id/chrono_roast_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/string_chronometer"
+        android:textSize="25sp"
+        android:layout_margin="16dp"
+        />
+
+    <!-- BIG TABLE OF STATS -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="16dp"
+        >
+
+        <!-- FIRST CRACK SECTION -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_gravity=""
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/label_first_crack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="First Crack" />
+
+
+            <TextView
+                android:id="@+id/text_1c_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0:00"/>
+
+            <TextView
+                android:id="@+id/text_1c_temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="0°"/>
+
+            <TextView
+                android:id="@+id/text_1c_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="0%"/>
+        </LinearLayout>
+
+        <!-- CURRENT STATS SECTION -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/label_curr_stats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Current Stats" />
+
+            <!--            <com.google.android.material.textfield.TextInputLayout-->
+            <!--                android:id="@+id/input_layout_current_temperature"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:hint="@string/label_current_temperature">-->
+
+            <TextView
+                android:id="@+id/text_current_temperature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/string_start_temperature" />
+            <!--            </com.google.android.material.textfield.TextInputLayout>-->
+        </LinearLayout>
+
+        <!-- RECOMMENDATIONS SECTION -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/label_recommendations"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Suggestions" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <RadioGroup
+        android:id="@+id/radio_group_powers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/label_curr_power"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_label_power" />
+
+        <RadioButton
+            android:id="@+id/radio_button_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onRadioButtonPowerClicked"
+            android:text="@string/zero_percent"
+            tools:layout_editor_absoluteX="18dp"
+            tools:layout_editor_absoluteY="506dp" />
+
+        <RadioButton
+            android:id="@+id/radio_button_25"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onRadioButtonPowerClicked"
+            android:text="@string/string_25_percent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="473dp" />
+
+        <RadioButton
+            android:id="@+id/radio_button_50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onRadioButtonPowerClicked"
+            android:text="@string/string_50_percent"
+            tools:layout_editor_absoluteX="155dp"
+            tools:layout_editor_absoluteY="519dp" />
+
+        <RadioButton
+            android:id="@+id/radio_button_75"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onRadioButtonPowerClicked"
+            android:text="@string/string_75_percent"
+            tools:layout_editor_absoluteX="148dp"
+            tools:layout_editor_absoluteY="575dp" />
+
+        <RadioButton
+            android:id="@+id/radio_button_100"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onRadioButtonPowerClicked"
+            android:text="@string/string_100_percent"
+            tools:layout_editor_absoluteX="149dp"
+            tools:layout_editor_absoluteY="615dp" />
+    </RadioGroup>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="?android:attr/buttonBarStyle"
+        android:layout_margin="16dp"
+        >
+
+        <Button
+            android:id="@+id/button_start_end_roast"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="toggleRoast"
+            android:text="@string/string_button_start_roast" />
+
+        <Button
+            android:id="@+id/button_first_crack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="buttonFirstCrackClicked"
+            android:text="@string/button_first_crack"
+            android:visibility="gone"
+            style="?android:attr/buttonBarButtonStyle"/>
+
+        <Button
+            android:id="@+id/button_record_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="buttonRecordTemperatureClicked"
+            android:text="@string/string_button_record_temp"
+            android:visibility="gone"
+            style="?android:attr/buttonBarButtonStyle"/>
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Group
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

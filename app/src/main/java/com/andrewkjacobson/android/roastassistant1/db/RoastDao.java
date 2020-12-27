@@ -1,6 +1,7 @@
 package com.andrewkjacobson.android.roastassistant1.db;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -27,5 +28,5 @@ public interface RoastDao {
     LiveData<List<RoastEntity>> getAllRoasts();
 
     @Query("SELECT * FROM RoastEntity WHERE id = :roastId")  // todo Need a where clause with the id
-    LiveData<RoastEntity> getRoast(int roastId);
+    MutableLiveData<RoastEntity> getRoast(int roastId);
 }

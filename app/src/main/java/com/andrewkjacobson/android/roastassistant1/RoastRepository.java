@@ -3,6 +3,7 @@ package com.andrewkjacobson.android.roastassistant1;
 import android.app.Application;
 import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.andrewkjacobson.android.roastassistant1.db.RoastDao;
 import com.andrewkjacobson.android.roastassistant1.db.RoastRoomDatabase;
@@ -35,7 +36,13 @@ public class RoastRepository {
         new insertAsyncTask(mRoastDao).execute(roast);
     }
 
-    public LiveData<RoastEntity> getRoast(int roastId) {
+    /**
+     * Get a roast by id
+     *
+     * @param roastId id of the desired roast
+     * @return the desired roast
+     */
+    public MutableLiveData<RoastEntity> loadRoast(int roastId) {
         return mRoastDao.getRoast(roastId);
     }
 

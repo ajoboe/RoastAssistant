@@ -1,14 +1,9 @@
 package com.andrewkjacobson.android.roastassistant1.ui;
 
-// TODO NOTHING IN THIS ACTIVITY IS PERMANENT--SEND IT ALL TO THE ViewModel
-
-
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -79,13 +74,14 @@ public class MainActivity extends AppCompatActivity {
     Button mButton1C;
     Button mButtonRecordTemp;
     TextView mTextCurrentTemperature;
+
+    // graph
     GraphView mGraph;
     LineGraphSeries<DataPoint> mGraphSeriesTemperature;
     LineGraphSeries<DataPoint> mGraphSeriesPower;
 
     // roast-specific fields
     private RoastViewModel mRoastViewModel;
-    private RoastEntity mCurrRoast;
 
     /**
      * Short one line description.                           (1)
@@ -105,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
                                                 // scoped to MainActivity
         mRoastViewModel = new ViewModelProvider(this).get(RoastViewModel.class);
-        mCurrRoast = new RoastEntity();
+//        mCurrRoast = new RoastEntity();
 
 //        mRoastViewModel.getCurrentRoast().observe(this, new Observer<RoastEntity>() {
 //            @Override
@@ -114,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        loadSettings();
+        loadSettings(); // this will be done in the activity that hosts the fragments (currently RoastActivity)
         initControls();
         initGraph();
         updateGraph(mCurrRoast.getCurrentReading()); // todo should the graph just listen for changes to currentReading
@@ -153,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 ((Button) findViewById(R.id.button_start_end_roast)).setText(R.string.string_button_start_roast);
             }
-        }
+        } // END (savedInstanceState != null)
     }
 
     private void initControls() {
@@ -187,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
         // this will help restore from the ViewModel
 //        outState.putInt(ROAST_ID_KEY, mCurrRoast.getRoastId()); // todo do we really need this?
-        outState.putParcelable(CURRENT_ROAST_KEY, mCurrRoast);
+//        outState.putParcelable(CURRENT_ROAST_KEY, mCurrRoast);
 
         outState.putLong(CHRONO_BASE_KEY, mChronometerRoastTime.getBase());
     }
@@ -204,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), R.string.string_coming_soon, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_new_roast:
-                showNewRoastDialog();
+            showNewRoastDialog();
                 return true;
             case R.id.action_roast_details:
                 showRoastDetails();
@@ -554,4 +550,8 @@ public class MainActivity extends AppCompatActivity {
         recordPower(power);
         updateGraph(mCurrRoast.getCurrentReading());
     }
+
+    // todo LEFT OFF HERE
+    // todo LEFT OFF HERE
+    // todo LEFT OFF HERE
 }
