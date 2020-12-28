@@ -31,8 +31,20 @@ public class RoastDetailsEntity implements Parcelable {
     private int ambientTemperature;
 
     public RoastDetailsEntity() {
-        // empty constructor
+        this.date = "";
+        this.beanType = "";
+        this.batchSize = 0;
+        this.yield = 0;
+        this.roastDegree = "";
+        this.roastNotes = "";
+        this.tastingNotes = "";
+        this.roaster = "";
+        this.ambientTemperature = 0;
     }
+
+//    public RoastDetailsEntity() {
+//        // empty constructor
+//    }
 
     protected RoastDetailsEntity(Parcel in) {
         date = in.readString();

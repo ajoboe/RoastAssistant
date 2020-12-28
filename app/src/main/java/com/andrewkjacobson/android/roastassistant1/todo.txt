@@ -2,7 +2,8 @@
 //todo  MAKE THE VIEW PASSIVE......ALL logic goes in the ViewModel
 //todo      https://android.jlelse.eu/effective-livedata-and-viewmodel-testing-17f25069fcd4
 //              ^ ^ ^ ^ !!! !!!
-
+//todo separate out RoastDetailsEntity from RoastEntity for faster DB queries
+//          see 5. on this page: https://medium.com/androiddevelopers/7-pro-tips-for-room-fbadea4bfbd1
 //todo              https://developer.android.com/jetpack/guide
 //todo      put data structures in a Model (includes RoastDetailsEntity, RoastReadings, etc)...call it RoastModel
 //todo      put business logic to display in ViewModel

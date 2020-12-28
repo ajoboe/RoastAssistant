@@ -19,13 +19,20 @@ import java.util.List;
 public class RoastRepository {
     private RoastDao mRoastDao;
     private LiveData<List<RoastEntity>> mAllRoasts;
-//    private LiveData<RoastEntity> mCurrentRoast;
+    private int lastInsertedId = -1;
 
     public RoastRepository(Application application) {
         RoastRoomDatabase db = RoastRoomDatabase.getDatabase(application);
         mRoastDao = db.roastDao();
         mAllRoasts = mRoastDao.getAllRoasts();
 //        mCurrentRoast = mRoastDao.getRoast();
+    }
+
+    public int getLastInsertedId() {
+//        insert(new RoastEntity(0,0));
+//        mRoastDao.getAllRoasts();
+//        return mAllRoasts.getValue().get(mAllRoasts.getValue().size()-1).getRoastId();
+        return lastInsertedId;
     }
 
     public LiveData<List<RoastEntity>> getAllRoasts() {
@@ -42,12 +49,12 @@ public class RoastRepository {
      * @param roastId id of the desired roast
      * @return the desired roast
      */
-    public MutableLiveData<RoastEntity> loadRoast(int roastId) {
+    public LiveData<RoastEntity> loadRoast(int roastId) {
         return mRoastDao.getRoast(roastId);
     }
 
 
-    private static class insertAsyncTask extends AsyncTask<RoastEntity, Void, Void> {
+    private class insertAsyncTask extends AsyncTask<RoastEntity, Void, Void> {
         private RoastDao mAsyncTaskDao;
 
         insertAsyncTask(RoastDao dao) {

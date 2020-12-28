@@ -1,8 +1,8 @@
 package com.andrewkjacobson.android.roastassistant1.db.entity;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -10,6 +10,7 @@ import androidx.room.RoomWarnings;
 
 import com.andrewkjacobson.android.roastassistant1.model.Roast;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 /**
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 public class RoastEntity implements Roast {
 
     // fields
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     private int roastId;
 
     @SuppressWarnings(RoomWarnings.PRIMARY_KEY_FROM_EMBEDDED_IS_DROPPED)
@@ -27,31 +28,37 @@ public class RoastEntity implements Roast {
     private RoastDetailsEntity details;
     @Embedded
     ArrayList<RoastReadingEntity> readings = new ArrayList<>();
-    private int secondsElapsed;
+    private int secondsElapsed = 0;
     private int firstCrackTime = -1;
     private boolean isRunning = false;
     private int roastTimeAddend;
     private long startTime;
 
     // constructors
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public RoastEntity() {
-        // empty
+//        this.roastId = Long.valueOf(Instant.now().getEpochSecond()).intValue();
+//        recordReading(0, 100);
+        this(0,100);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public RoastEntity(int startingTemperature, int startingPower) {
         recordReading(startingTemperature,startingPower);
+        details = new RoastDetailsEntity();
+        this.roastId = Long.valueOf(Instant.now().getEpochSecond()).intValue();
     }
 
-    protected RoastEntity(Parcel in) {
-        roastId = in.readInt();
-        details = in.readParcelable(RoastDetailsEntity.class.getClassLoader());
-//        mReadings = in.readSparseArray(RoastReadingEntity.class.getClassLoader());
-        readings = in.createTypedArrayList(RoastReadingEntity.CREATOR);
-        secondsElapsed = in.readInt();
-        firstCrackTime = in.readInt();
-        isRunning = in.readByte() != 0;
-        roastTimeAddend = in.readInt();
-    }
+//    protected RoastEntity(Parcel in) {
+//        roastId = in.readInt();
+//        details = in.readParcelable(RoastDetailsEntity.class.getClassLoader());
+////        mReadings = in.readSparseArray(RoastReadingEntity.class.getClassLoader());
+//        readings = in.createTypedArrayList(RoastReadingEntity.CREATOR);
+//        secondsElapsed = in.readInt();
+//        firstCrackTime = in.readInt();
+//        isRunning = in.readByte() != 0;
+//        roastTimeAddend = in.readInt();
+//    }
 
 
     // public methods
@@ -66,11 +73,6 @@ public class RoastEntity implements Roast {
 
     public void setDetails(RoastDetailsEntity details) {
         this.details = details;
-    }
-
-    public RoastEntity setRoastDetails(RoastDetailsEntity details) {
-        this.details = details;
-        return this;
     }
 
     public ArrayList<RoastReadingEntity> getReadings() {
@@ -92,10 +94,6 @@ public class RoastEntity implements Roast {
     public void setFirstCrackTime(int firstCrackTime) {
         this.firstCrackTime = firstCrackTime;
     }
-
-//    public boolean isRoastIsRunning() {
-//        return roastIsRunning;
-//    }
 
     public void setRunning(boolean mRoastIsRunning) {
         this.isRunning = mRoastIsRunning;
@@ -129,9 +127,8 @@ public class RoastEntity implements Roast {
         return secondsElapsed;
     }
 
-    public RoastEntity incrementSeconds() {
+    public void incrementSeconds() {
         secondsElapsed++;
-        return this;
     }
 
     public RoastReadingEntity getCurrentReading() {
@@ -160,7 +157,7 @@ public class RoastEntity implements Roast {
 
     public void set1c(RoastReadingEntity reading) {
         set1c(reading.getTimeStamp());
-        insertReading(reading);
+        addReading(reading);
     }
 
     public boolean firstCrackOccurred() {
@@ -171,15 +168,13 @@ public class RoastEntity implements Roast {
             return (float) getFirstCrackTime() / ((float) getSecondsElapsed()) * 100;
     }
 
-    public RoastEntity startRoast() {
+    public void startRoast() {
         secondsElapsed = 0 + getRoastTimeAddend();
         isRunning = true;
-        return this;
     }
 
-    public RoastEntity endRoast() {
+    public void endRoast() {
         isRunning = false;
-        return this;
     }
 
     /**
@@ -195,16 +190,16 @@ public class RoastEntity implements Roast {
      *
      * @param temperature
      */
-    public RoastEntity recordTemperature(int temperature) {
-        return recordReading(temperature, getCurrentReading().getPowerPercentage());
+    public void recordTemperature(int temperature) {
+        recordReading(temperature, getCurrentReading().getPowerPercentage());
     }
 
     /**
      *
      * @param power
      */
-    public RoastEntity recordPower(int power) {
-        return recordReading(getCurrentReading().getTemperature(), power);
+    public void recordPower(int power) {
+        recordReading(getCurrentReading().getTemperature(), power);
     }
 
     /**
@@ -213,24 +208,20 @@ public class RoastEntity implements Roast {
      * @param temperature
      * @param power
      */
-    public RoastEntity recordReading(int temperature, int power) {
-//        timeOfCurrentReading = secondsElapsed;
-        return insertReading(new RoastReadingEntity(getSecondsElapsed(), temperature, power));
+    public void recordReading(int temperature, int power) {
+        addReading(new RoastReadingEntity(getSecondsElapsed(), temperature, power));
     }
 
     public void recordReading(RoastReadingEntity reading) {
-//        timeOfCurrentReading = reading.getTimeStamp();
-        insertReading(reading);
+        addReading(reading);
     }
 
     /**
      * Adds reading to the list but doesn't mark as the current reading
      * @param reading
      */
-    private RoastEntity insertReading(RoastReadingEntity reading) {
-//        mReadings.put(reading.getTimeStamp(), reading);
+    private void addReading(RoastReadingEntity reading) {
         readings.add(reading);
-        return this;
     }
 
     /**
@@ -273,11 +264,6 @@ public class RoastEntity implements Roast {
 
     public void setStartTime(long startTime) {
         this.startTime = startTime;
-    }
-
-    public RoastEntity setChronoStartTime(long startTime) {
-        this.startTime = startTime;
-        return this;
     }
 
     public long getStartTime() {

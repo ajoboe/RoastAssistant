@@ -44,6 +44,9 @@ public class GraphFragment extends Fragment {
         @Override
         public void onChanged(@Nullable final RoastEntity roast) {
             // todo update the graph
+            if(roast != null) {
+                updateGraph(roast.getCurrentReading());
+            }
 
             // check if it's first crack
             if(viewModel.isFirstCrack()) {
@@ -110,7 +113,7 @@ public class GraphFragment extends Fragment {
         //  see https://developer.android.com/topic/libraries/architecture/viewmodel-savedstate
         viewModel = new ViewModelProvider(requireActivity()).get(RoastViewModel.class); // this is all we need to do it
         initGraph();
-        updateGraph(viewModel.getRoast().getValue().getCurrentReading()); // todo this should be taken care of by an observer
+//        updateGraph(viewModel.getRoast().getValue().getCurrentReading()); // todo this should be taken care of by an observer
 
 
     }
@@ -125,7 +128,7 @@ public class GraphFragment extends Fragment {
     // ****************
 
     public void initGraph() {
-        // SHOW TIME FOR X VALUES todo Doesn't work!!
+        mGraph = getView().findViewById(R.id.graph);
         mGraph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
             @Override
             public String formatLabel(double value, boolean isValueX) {

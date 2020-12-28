@@ -48,10 +48,6 @@ public class RoastActivity extends AppCompatActivity {
 
         loadSettings();
 
-
-//        Bundle bundle = new Bundle();
-//        bundle.putInt(ROAST_ID_KEY, roastViewModel.getRoastId()); // todo probably don't need this
-
         getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)

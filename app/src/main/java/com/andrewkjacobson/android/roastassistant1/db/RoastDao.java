@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
@@ -18,7 +19,7 @@ public interface RoastDao {
      * @param roast
      * @return the row id
      */
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(RoastEntity roast);
 
     @Query("DELETE FROM RoastEntity")
@@ -27,6 +28,6 @@ public interface RoastDao {
     @Query("SELECT * FROM RoastEntity") // add ORDER BY date DESC
     LiveData<List<RoastEntity>> getAllRoasts();
 
-    @Query("SELECT * FROM RoastEntity WHERE id=:roastId")
-    MutableLiveData<RoastEntity> getRoast(int roastId);
+    @Query("SELECT * FROM RoastEntity WHERE roastId=:roastId")
+    LiveData<RoastEntity> getRoast(int roastId);
 }

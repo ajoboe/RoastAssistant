@@ -53,9 +53,10 @@ public class RoastFragment extends Fragment
     final Observer<RoastEntity> roastObserver = new Observer<RoastEntity>() {
         @Override
         public void onChanged(@Nullable final RoastEntity roast) {
+            Log.d(LOG_TAG, "In roastObserver");
             // set current stats
             mTextCurrentTemperature.setText(
-                    String.format("%d%c2109", roast.getCurrentReading().getTemperature()));
+                    String.format("%d°", roast.getCurrentReading().getTemperature()));
             setPowerRadioButton(roast.getCurrentReading().getPowerPercentage(), getView());
 
             // set first crack info
@@ -65,7 +66,7 @@ public class RoastFragment extends Fragment
                                 roast.getFirstCrackTime() / 60, // minutes
                                 roast.getFirstCrackTime() % 60)); // seconds
                 ((TextView) getView().findViewById(R.id.text_1c_temperature)).setText(
-                        String.format("%d%c2109", roast.get1cReading().getTemperature()));
+                        String.format("%d°", roast.get1cReading().getTemperature()));
                 ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
                         String.format("%.2f", roast.getFirstCrackPercent()) + "%");
 
@@ -234,11 +235,24 @@ public class RoastFragment extends Fragment
     // ****************
     private void initControls(View view) {
         mChronometerRoastTime = (Chronometer) view.findViewById(R.id.chrono_roast_time);
+
         mButtonStartEndRoast = (Button) view.findViewById(R.id.button_start_end_roast);
         mButtonStartEndRoast.setOnClickListener(this);
+
         mButton1C = (Button) view.findViewById(R.id.button_first_crack);
+        mButton1C.setOnClickListener(this);
+
         mButtonRecordTemp = (Button) view.findViewById(R.id.button_record_temperature);
+        mButtonRecordTemp.setOnClickListener(this);
+
         mTextCurrentTemperature = (TextView) view.findViewById(R.id.text_current_temperature);
+
+        ((RadioButton)view.findViewById(R.id.radio_button_0)).setOnClickListener(this);
+        ((RadioButton)view.findViewById(R.id.radio_button_25)).setOnClickListener(this);
+        ((RadioButton)view.findViewById(R.id.radio_button_50)).setOnClickListener(this);
+        ((RadioButton)view.findViewById(R.id.radio_button_75)).setOnClickListener(this);
+        ((RadioButton)view.findViewById(R.id.radio_button_100)).setOnClickListener(this);
+
 //        setPowerRadioButton(viewModel.getSettings().getStartingPower(), view); // todo need to get this from settings in the model
 
         // set tick listener
