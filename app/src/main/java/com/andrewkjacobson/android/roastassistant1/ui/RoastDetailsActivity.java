@@ -14,19 +14,18 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import com.andrewkjacobson.android.roastassistant1.R;
-import com.andrewkjacobson.android.roastassistant1.db.entity.RoastDetailsEntity;
+import com.andrewkjacobson.android.roastassistant1.db.entity.DetailsEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 
 public class RoastDetailsActivity extends AppCompatActivity {
     private final String DETAILS_KEY = "roast details";
     public static final String EXTRA_REPLY = "com.andrewkjacobson.android.roastassistant1.REPLY";
-    private RoastDetailsEntity mDetails;
+    private DetailsEntity mDetails;
 //    private List<RoastEntity> mAllRoasts;
     private RoastViewModel mRoastViewModel;
     private  RoastEntity mCurrRoast;
@@ -93,7 +92,7 @@ public class RoastDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void populateUI(RoastDetailsEntity details) {
+    private void populateUI(DetailsEntity details) {
         // todo Eventually populate cards with all roasts from mAllRoasts
         ((TextInputEditText)findViewById(R.id.textDate)).setText(details.getDate());
         ((TextInputEditText)findViewById(R.id.autoTextBeanType)).setText(details.getBeanType());
@@ -118,8 +117,8 @@ public class RoastDetailsActivity extends AppCompatActivity {
         outState.putParcelable(DETAILS_KEY, mDetails);
     }
 
-    private RoastDetailsEntity fetchDetailsFromControls() {
-        RoastDetailsEntity details = new RoastDetailsEntity();
+    private DetailsEntity fetchDetailsFromControls() {
+        DetailsEntity details = new DetailsEntity();
         details.setDate(((TextInputEditText)findViewById(R.id.textDate)).getText().toString());
         details.setBeanType(((TextInputEditText)findViewById(R.id.autoTextBeanType)).getText().toString());
 

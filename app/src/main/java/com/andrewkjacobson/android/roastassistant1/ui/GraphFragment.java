@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.andrewkjacobson.android.roastassistant1.R;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
-import com.andrewkjacobson.android.roastassistant1.db.entity.RoastReadingEntity;
+import com.andrewkjacobson.android.roastassistant1.model.Reading;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
@@ -182,17 +182,17 @@ public class GraphFragment extends Fragment {
 
 
     // todo this should just get called by an observer
-    public void updateGraph(RoastReadingEntity reading) {
-        int elapsed = viewModel.getRoast().getValue().getSecondsElapsed();
+    public void updateGraph(Reading reading) {
+        int elapsed = viewModel.getRoast().getValue().getElapsed();
         int roastLength = viewModel.getSettings().getExpectedRoastLength();
         try {
             mGraphSeriesTemperature.appendData(new DataPoint(
-                            reading.getTimeStamp(),
+                            reading.getSeconds(),
                             reading.getTemperature()),
                     false, 99999);
             mGraphSeriesPower.appendData(new DataPoint(
-                            reading.getTimeStamp(),
-                            reading.getPowerPercentage()),
+                            reading.getSeconds(),
+                            reading.getPower()),
                     false, 99999); // if scrollToEnd is true, shows negatives in the beginning
             if(elapsed > roastLength) mGraph.getViewport().scrollToEnd();
         } catch (IllegalArgumentException e) {

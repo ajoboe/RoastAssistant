@@ -3,11 +3,18 @@ package com.andrewkjacobson.android.roastassistant1;
 import android.app.Application;
 import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.andrewkjacobson.android.roastassistant1.db.RoastDao;
+import com.andrewkjacobson.android.roastassistant1.db.dao.BaseDao;
+import com.andrewkjacobson.android.roastassistant1.db.dao.CrackReadingDao;
+import com.andrewkjacobson.android.roastassistant1.db.dao.DetailsDao;
+import com.andrewkjacobson.android.roastassistant1.db.dao.ReadingDao;
+import com.andrewkjacobson.android.roastassistant1.db.dao.RoastDao;
 import com.andrewkjacobson.android.roastassistant1.db.RoastRoomDatabase;
-import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
+import com.andrewkjacobson.android.roastassistant1.db.entity.RoastComponent;
+import com.andrewkjacobson.android.roastassistant1.model.Crack;
+import com.andrewkjacobson.android.roastassistant1.model.Details;
+import com.andrewkjacobson.android.roastassistant1.model.Reading;
+import com.andrewkjacobson.android.roastassistant1.model.Roast;
 
 import java.util.List;
 
@@ -18,51 +25,65 @@ import java.util.List;
 
 public class RoastRepository {
     private RoastDao mRoastDao;
-    private LiveData<List<RoastEntity>> mAllRoasts;
-    private int lastInsertedId = -1;
+    private DetailsDao mDetailsDao;
+    private ReadingDao mReadingDao;
+    private CrackReadingDao mCrackReadingDao;
+
+    private LiveData<Roast> mRoast;
+    private LiveData<Details> mDetails;
+    private LiveData<List<Reading>> mReadings;
+    private LiveData<List<Crack>> mCracks;
 
     public RoastRepository(Application application) {
         RoastRoomDatabase db = RoastRoomDatabase.getDatabase(application);
         mRoastDao = db.roastDao();
-        mAllRoasts = mRoastDao.getAllRoasts();
-//        mCurrentRoast = mRoastDao.getRoast();
+        mDetailsDao = db.detailsDao();
+        mReadingDao = db.readingDao();
+        mCrackReadingDao = db.crackReadingDao();
     }
 
-    public int getLastInsertedId() {
-//        insert(new RoastEntity(0,0));
-//        mRoastDao.getAllRoasts();
-//        return mAllRoasts.getValue().get(mAllRoasts.getValue().size()-1).getRoastId();
-        return lastInsertedId;
+    public LiveData<Roast> getRoast(int roastId) {
+        if(mRoast == null || mRoast.getValue().getId() != roastId) {
+            mRoast = mRoastDao.get(roastId);
+        }
+        return mRoast;
     }
 
-    public LiveData<List<RoastEntity>> getAllRoasts() {
-        return mAllRoasts;
+    public LiveData<Details> getDetails(int roastId) {
+        if(mDetails == null || mDetails.getValue().getRoastId() != roastId) {
+            mDetails = mDetailsDao.get(roastId);
+        }
+        return mDetails;
     }
 
-    public void insert(RoastEntity roast) {
-        new insertAsyncTask(mRoastDao).execute(roast);
+    public LiveData<List<Reading>> getReadings(int roastId) {
+        if(mReadings == null || mReadings.getValue().get(0).getRoastId() != roastId) {
+            mReadings = mReadingDao.getAll();
+        }
+        return mReadings;
     }
 
-    /**
-     * Get a roast by id
-     *
-     * @param roastId id of the desired roast
-     * @return the desired roast
-     */
-    public LiveData<RoastEntity> loadRoast(int roastId) {
-        return mRoastDao.getRoast(roastId);
+    public LiveData<List<Crack>> getCracks(int roastId) {
+        if(mCracks == null || mCracks.getValue().get(0).getRoastId() != roastId) {
+            mCracks = mCrackReadingDao.getAll();
+        }
+        return mCracks;
     }
 
 
-    private class insertAsyncTask extends AsyncTask<RoastEntity, Void, Void> {
-        private RoastDao mAsyncTaskDao;
+    public void insert(RoastComponent...item) {
+        new insertAsyncTask(mRoastDao).execute(item);
+    }
 
-        insertAsyncTask(RoastDao dao) {
+    private class insertAsyncTask extends AsyncTask<RoastComponent, Void, Void> {
+        private BaseDao mAsyncTaskDao;
+
+        insertAsyncTask(BaseDao dao) {
             mAsyncTaskDao = dao;
         }
 
         @Override
-        protected Void doInBackground(final RoastEntity... params) {
+        protected Void doInBackground(final RoastComponent... params) {
             mAsyncTaskDao.insert((params[0]));
             return null;
         }

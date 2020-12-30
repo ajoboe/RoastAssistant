@@ -3,32 +3,22 @@ package com.andrewkjacobson.android.roastassistant1.ui;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andrewkjacobson.android.roastassistant1.R;
-import com.andrewkjacobson.android.roastassistant1.db.entity.RoastDetailsEntity;
-import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
 import com.andrewkjacobson.android.roastassistant1.Settings;
-import com.jjoe64.graphview.series.BarGraphSeries;
-import com.jjoe64.graphview.series.DataPoint;
-
-import static android.os.SystemClock.elapsedRealtime;
 
 public class RoastActivity extends AppCompatActivity {
     public static final String ROAST_ID_KEY = "roast id";

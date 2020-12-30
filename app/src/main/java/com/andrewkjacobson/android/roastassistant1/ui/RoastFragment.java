@@ -57,7 +57,7 @@ public class RoastFragment extends Fragment
             // set current stats
             mTextCurrentTemperature.setText(
                     String.format("%d°", roast.getCurrentReading().getTemperature()));
-            setPowerRadioButton(roast.getCurrentReading().getPowerPercentage(), getView());
+            setPowerRadioButton(roast.getCurrentReading().getPower(), getView());
 
             // set first crack info
             if(viewModel.firstCrackOccurred()) {
@@ -168,7 +168,7 @@ public class RoastFragment extends Fragment
         viewModel.getRoast().observe(getViewLifecycleOwner(), roastObserver);
 
         if(savedInstanceState != null) {
-            if (viewModel.getSecondsElapsed() > 0) {
+            if (viewModel.getElapsed() > 0) {
                 mChronometerRoastTime.setBase(savedInstanceState.getLong(CHRONO_BASE_KEY));
             }
             if (viewModel.isRunning()) {
@@ -258,7 +258,7 @@ public class RoastFragment extends Fragment
         // set tick listener
         mChronometerRoastTime.setOnChronometerTickListener(chronometer -> {
             // fire five seconds before each time increment
-            if((viewModel.getSecondsElapsed() + 5) % viewModel.getSettings().getTemperatureCheckFrequency() == 0) {
+            if((viewModel.getElapsed() + 5) % viewModel.getSettings().getTemperatureCheckFrequency() == 0) {
                 queryTemperature(REQUEST_CODE_QUERY_TEMPERATURE);
             }
             viewModel.incrementSeconds();
