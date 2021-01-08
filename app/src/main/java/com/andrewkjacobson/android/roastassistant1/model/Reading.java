@@ -1,6 +1,6 @@
 package com.andrewkjacobson.android.roastassistant1.model;
 
-public interface Reading {
+public interface Reading{
     int getSeconds();
 
     void setSeconds(int seconds);
@@ -16,4 +16,8 @@ public interface Reading {
     int getRoastId();
 
     void setRoastId(int roastId);
+
+    int getId();
+
+    void setId(int id);
 }

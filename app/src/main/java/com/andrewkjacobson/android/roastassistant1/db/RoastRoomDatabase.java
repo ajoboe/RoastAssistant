@@ -10,13 +10,14 @@ import com.andrewkjacobson.android.roastassistant1.db.dao.CrackReadingDao;
 import com.andrewkjacobson.android.roastassistant1.db.dao.DetailsDao;
 import com.andrewkjacobson.android.roastassistant1.db.dao.ReadingDao;
 import com.andrewkjacobson.android.roastassistant1.db.dao.RoastDao;
+import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.DetailsEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 
 
-@Database(entities = {RoastEntity.class, DetailsEntity.class, ReadingEntity.class},
-        version = 4, exportSchema = false)
+@Database(entities = {RoastEntity.class, DetailsEntity.class, ReadingEntity.class, CrackReadingEntity.class},
+        version = 7, exportSchema = false)
 public abstract class RoastRoomDatabase extends RoomDatabase {
 
     public abstract RoastDao roastDao();

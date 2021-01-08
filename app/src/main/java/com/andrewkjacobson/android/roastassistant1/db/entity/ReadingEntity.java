@@ -2,18 +2,20 @@ package com.andrewkjacobson.android.roastassistant1.db.entity;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
 
 import com.andrewkjacobson.android.roastassistant1.model.Reading;
-import com.andrewkjacobson.android.roastassistant1.model.ReadingDeleteMe;
 
 import org.jetbrains.annotations.NotNull;
 
-@Entity(tableName = "reading_entity", primaryKeys = {"roastId", "seconds"})
-public class ReadingEntity implements Reading {
+@Entity(tableName = "reading_entity") //, primaryKeys = {"roastId", "seconds"})
+public class ReadingEntity extends RoastComponent implements Reading {
     @ForeignKey(entity = RoastEntity.class, parentColumns = "id", childColumns = "roastId",
             onDelete = ForeignKey.CASCADE)
     private int roastId;
 
+    @PrimaryKey(autoGenerate = true)
+    private int id;
     private int seconds;
     private int temperature;
     private int power;
@@ -75,5 +77,15 @@ public class ReadingEntity implements Reading {
         return "Timestamp: " + getSeconds()
                 + " seconds. Temperature: " + getTemperature()
                 + "° Power: " + getPower() + "%";
+    }
+
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(int id) {
+        this.id = id;
     }
 }

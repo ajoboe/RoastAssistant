@@ -1,10 +1,12 @@
 package com.andrewkjacobson.android.roastassistant1.ui;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -20,9 +22,12 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.andrewkjacobson.android.roastassistant1.R;
+import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
+import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
 
+import java.util.List;
 import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
@@ -50,26 +55,68 @@ public class RoastFragment extends Fragment
     private Button mButtonRecordTemp;
     private TextView mTextCurrentTemperature;
 
-    final Observer<RoastEntity> roastObserver = new Observer<RoastEntity>() {
+    final Observer<List<ReadingEntity>> readingsObserver = new Observer<List<ReadingEntity>>() {
         @Override
-        public void onChanged(@Nullable final RoastEntity roast) {
-            Log.d(LOG_TAG, "In roastObserver");
-            // set current stats
-            mTextCurrentTemperature.setText(
-                    String.format("%d°", roast.getCurrentReading().getTemperature()));
-            setPowerRadioButton(roast.getCurrentReading().getPower(), getView());
-
+        public void onChanged(@Nullable final List<ReadingEntity> readings) {
+            if(readings != null && !readings.isEmpty()) {
+                ReadingEntity curr = readings.get(readings.size() - 1);
+                mTextCurrentTemperature.setText(String.format("%d°", curr.getTemperature()));
+                setPowerRadioButton(curr.getPower(), getView());
+            }
             // set first crack info
-            if(viewModel.firstCrackOccurred()) {
+//            if(viewModel.firstCrackOccurred()) {
+//                ((TextView) getView().findViewById(R.id.text_1c_time)).setText(
+//                        String.format("%d:%d",
+//                                viewModel.getFirstCrackTime() / 60, // minutes
+//                                viewModel.getFirstCrackTime() % 60)); // seconds
+//                ((TextView) getView().findViewById(R.id.text_1c_temperature)).setText(
+//                        String.format("%d°", viewModel.get1cReading().getTemperature()));
+//                ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
+//                        String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
+//            }
+        }
+    };
+
+    final Observer<List<CrackReadingEntity>> crackObserver = new Observer<List<CrackReadingEntity>>() {
+
+        /**
+         * Called when the data is changed.
+         *
+         * @param crackReadingEntities The new data
+         */
+        @Override
+        public void onChanged(List<CrackReadingEntity> crackReadingEntities) {
+            // set first crack info
+            CrackReadingEntity firstCrack = null;
+            for(CrackReadingEntity c : crackReadingEntities) { // find the last 1C
+                if(c.getCrackNumber() == 1) firstCrack = c;
+            }
+            if(firstCrack != null && firstCrack.hasOccurred()) {
                 ((TextView) getView().findViewById(R.id.text_1c_time)).setText(
                         String.format("%d:%d",
-                                roast.getFirstCrackTime() / 60, // minutes
-                                roast.getFirstCrackTime() % 60)); // seconds
+                                firstCrack.getSeconds() / 60, // minutes
+                                firstCrack.getSeconds() % 60)); // seconds
                 ((TextView) getView().findViewById(R.id.text_1c_temperature)).setText(
-                        String.format("%d°", roast.get1cReading().getTemperature()));
-                ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
-                        String.format("%.2f", roast.getFirstCrackPercent()) + "%");
+                        String.format("%d°", firstCrack.getTemperature()));
+                    float percent = (float) firstCrack.getSeconds() / ((float) viewModel.getElapsed()) * 100;
+                    ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
+                        String.format("%.2f", percent) + "%");
+            }
+        }
+    };
 
+    final Observer<RoastEntity> roastObserver = new Observer<RoastEntity>() {
+
+        /**
+         * Called when the data is changed.
+         *
+         * @param roastEntity The new data
+         */
+        @Override
+        public void onChanged(RoastEntity roastEntity) {
+            if(viewModel.firstCrackOccurred()) {
+                ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
+                        String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
             }
         }
     };
@@ -154,6 +201,7 @@ public class RoastFragment extends Fragment
      * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -163,8 +211,9 @@ public class RoastFragment extends Fragment
 
         initControls(view);
 
-        // Create the observer which updates the UI.
-
+        // Create the observers that updates the UI.
+        viewModel.getReadings().observe(getViewLifecycleOwner(), readingsObserver);
+        viewModel.getCracks().observe(getViewLifecycleOwner(), crackObserver);
         viewModel.getRoast().observe(getViewLifecycleOwner(), roastObserver);
 
         if(savedInstanceState != null) {
@@ -182,6 +231,7 @@ public class RoastFragment extends Fragment
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -323,6 +373,7 @@ public class RoastFragment extends Fragment
         startActivityForResult(intent, requestCode); // callback is onActivityResult()
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void processRecognizerResults(Intent data, boolean isFirstCrack) {
         String stringCurrTemp = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
                 .get(0).replaceAll("[^0-9]", "");
@@ -335,7 +386,7 @@ public class RoastFragment extends Fragment
             }
         }
 
-        if(isFirstCrack) viewModel.getRoast().getValue().set1c();
+        if(isFirstCrack) viewModel.set1c();
     }
 
     private void toggleRoast(View view) {

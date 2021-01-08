@@ -3,55 +3,53 @@ package com.andrewkjacobson.android.roastassistant1.db.entity;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
-import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.RoomWarnings;
 
-import com.andrewkjacobson.android.roastassistant1.model.Reading;
 import com.andrewkjacobson.android.roastassistant1.model.Roast;
 
 import java.time.Instant;
-import java.util.ArrayList;
 
 /**
  * Represents a single roast
  */
 @Entity(tableName = "roast_entity")
-public class RoastEntity extends RoastComponent
-        implements Roast {
+public class RoastEntity extends RoastComponent implements Roast {
 
     // fields
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey
     private int id;
 
-    private int secondsElapsed = 0;
-    private int firstCrackTime = -1;
+    private int elapsed = 0;
     private boolean isRunning = false;
     private boolean isFinished = false;
-    private int roastTimeAddend;
-    private long startTime;
+    private long startTime = -1;
 
 
-    @SuppressWarnings(RoomWarnings.PRIMARY_KEY_FROM_EMBEDDED_IS_DROPPED)
-    @Embedded
-    private DetailsEntity details;
-    @Embedded
-    ArrayList<Reading> readings = new ArrayList<>();
+//    @SuppressWarnings(RoomWarnings.PRIMARY_KEY_FROM_EMBEDDED_IS_DROPPED)
+//    @Embedded
+//    private DetailsEntity details;
+//    @Embedded
+//    ArrayList<Reading> readings = new ArrayList<>();
 
 
     // constructors
     @RequiresApi(api = Build.VERSION_CODES.O)
     public RoastEntity() {
-        this(0,100);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public RoastEntity(int startingTemperature, int startingPower) {
-        recordReading(startingTemperature,startingPower);
-        details = new DetailsEntity();
         this.id = Long.valueOf(Instant.now().getEpochSecond()).intValue();
     }
+
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    public RoastEntity() {
+//        this(0,100);
+//    }
+//
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    public RoastEntity(int startingTemperature, int startingPower) {
+//        recordReading(startingTemperature,startingPower);
+//        details = new DetailsEntity();
+//        this.id = Long.valueOf(Instant.now().getEpochSecond()).intValue();
+//    }
 
 //    protected RoastEntity(Parcel in) {
 //        roastId = in.readInt();
@@ -66,43 +64,97 @@ public class RoastEntity extends RoastComponent
 
 
     // public methods
-    
+    @Override
     public void setId(int roastId) {
         this.id = roastId;
     }
 
-    public DetailsEntity getDetails() {
-        return details;
+    @Override
+    public void setElapsed(int seconds) {
+        this.elapsed = seconds;
     }
 
-    public void setDetails(DetailsEntity details) {
-        this.details = details;
+    @Override
+    public void setRunning(boolean isRunning) {
+        this.isRunning = isRunning;
     }
 
-    public ArrayList<Reading> getReadings() {
-        return readings;
+    @Override
+    public int getId() {
+        return id;
     }
 
-    public void setReadings(ArrayList<Reading> mReadings) {
-        this.readings = mReadings;
+    @Override
+    public int getElapsed() {
+        return elapsed;
     }
 
-    public void setSecondsElapsed(int mSecondsElapsed) {
-        this.secondsElapsed = mSecondsElapsed;
+    @Override
+    public void incrementElapsed() {
+        elapsed++;
     }
 
-    public int getFirstCrackTime() {
-        return firstCrackTime;
+    @Override
+    public void startRoast() {
+        isRunning = true;
     }
 
-    public void setFirstCrackTime(int firstCrackTime) {
-        this.firstCrackTime = firstCrackTime;
+    @Override
+    public void endRoast() {
+        isRunning = false;
+        isFinished = true;
     }
 
-    public void setRunning(boolean mRoastIsRunning) {
-        this.isRunning = mRoastIsRunning;
+    @Override
+    public boolean isRunning() {
+        return isRunning;
     }
 
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    @Override
+    public void setFinished(boolean isFinished) {
+        this.isFinished = isFinished;
+    }
+
+    @Override
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    @Override
+    public long getStartTime() {
+        return startTime;
+    }
+
+//
+//    public DetailsEntity getDetails() {
+//        return details;
+//    }
+
+//    public void setDetails(DetailsEntity details) {
+//        this.details = details;
+//    }
+
+//    public ArrayList<Reading> getReadings() {
+//        return readings;
+//    }
+
+//    public void setReadings(ArrayList<Reading> mReadings) {
+//        this.readings = mReadings;
+//    }
+//
+//    public int getFirstCrackTime() {
+//        return firstCrackTime;
+//    }
+//
+//    public void setFirstCrackTime(int firstCrackTime) {
+//        this.firstCrackTime = firstCrackTime;
+//    }
+//
 //    public int getTimeOfCurrentReading() {
 //        return timeOfCurrentReading;
 //    }
@@ -122,121 +174,77 @@ public class RoastEntity extends RoastComponent
 //            return new RoastEntity[size];
 //        }
 //    };
-
-    public int getId() {
-        return id;
-    }
-
-    public int getElapsed() {
-        return secondsElapsed;
-    }
-
-    public void incrementElapsed() {
-        secondsElapsed++;
-    }
-
-    public Reading getCurrentReading() {
-        return readings.get(readings.size()-1);
-    }
-
-    public Reading get1cReading() {
-        return readings.get(firstCrackTime);
-    }
-
-    public int getAddend() {
-        return roastTimeAddend;
-    }
-
-    public void setRoastTimeAddend(int addendInSeconds) {
-        roastTimeAddend = addendInSeconds;
-    }
-
-    public void set1c() {
-        firstCrackTime = secondsElapsed;
-    }
-
-    public void set1c(int time) {
-        firstCrackTime = time;
-    }
-
-    public void set1c(Reading reading) {
-        set1c(reading.getSeconds());
-        addReading(reading);
-    }
-
-    public boolean firstCrackOccurred() {
-        return firstCrackTime != -1;
-    }
-
-    public float getFirstCrackPercent() {
-            return (float) getFirstCrackTime() / ((float) getElapsed()) * 100;
-    }
-
-    public void startRoast() {
-        secondsElapsed = 0 + getAddend();
-        isRunning = true;
-    }
-
-    public void endRoast() {
-        isRunning = false;
-        isFinished = true;
-    }
-
-    /**
-     * If it's running, stop it. If it's stopped, start it.
-     *
-     * @return the new status
-     */
-    public boolean toggleRoast() {
-        return isRunning = !isRunning;
-    }
-
-    /**
-     *
-     * @param temperature
-     */
-    public void recordTemperature(int temperature) {
-        recordReading(temperature, getCurrentReading().getPower());
-    }
-
-    /**
-     *
-     * @param power
-     */
-    public void recordPower(int power) {
-        recordReading(getCurrentReading().getTemperature(), power);
-    }
-
-    /**
-     * Records the current time, temperature and power. Sets as current reading.
-     *
-     * @param temperature
-     * @param power
-     */
-    public void recordReading(int temperature, int power) {
-        addReading(new ReadingEntity(getElapsed(), temperature, power));
-    }
-
-    public void recordReading(Reading reading) {
-        addReading(reading);
-    }
-
-    /**
-     * Adds reading to the list but doesn't mark as the current reading
-     * @param reading
-     */
-    private void addReading(Reading reading) {
-        readings.add(reading);
-    }
-
-    /**
-     * Describe the kinds of special objects contained in this Parcelable
-     * instance's marshaled representation. For example, if the object will
-     * the return value of this method must include the
-     *
-     * @return a bitmask indicating the set of special object types marshaled
-     * by this Parcelable object instance.
-     */
+//    public Reading getCurrentReading() {
+//        return readings.get(readings.size()-1);
+//    }
+//
+//    public Reading get1cReading() {
+//        return readings.get(firstCrackTime);
+//    }
+//
+//
+//    public void set1c() {
+//        firstCrackTime = secondsElapsed;
+//    }
+//
+//    public void set1c(int time) {
+//        firstCrackTime = time;
+//    }
+//
+//    public void set1c(Reading reading) {
+//        set1c(reading.getSeconds());
+//        addReading(reading);
+//    }
+//
+//    public boolean firstCrackOccurred() {
+//        return firstCrackTime != -1;
+//    }
+//
+//    public float getFirstCrackPercent() {
+//            return (float) getFirstCrackTime() / ((float) getElapsed()) * 100;
+//    }
+//
+//    /**
+//     * If it's running, stop it. If it's stopped, start it.
+//     *
+//     * @return the new status
+//     */
+//    public boolean toggleRoast() {
+//        return isRunning = !isRunning;
+//    }
+//
+//    }
+//
+//    /**
+//     * Records the current time, temperature and power. Sets as current reading.
+//     *
+//     * @param temperature
+//     * @param power
+//     */
+//    public void recordReading(int temperature, int power) {
+//        addReading(new ReadingEntity(getElapsed(), temperature, power));
+//    }
+//
+//    public void recordReading(Reading reading) {
+//        addReading(reading);
+//    }
+//
+//    /**
+//     * Adds reading to the list but doesn't mark as the current reading
+//     * @param reading
+//     */
+//    private void addReading(Reading reading) {
+//        readings.add(reading);
+//    }
+//
+//    /**
+//     * Describe the kinds of special objects contained in this Parcelable
+//     * instance's marshaled representation. For example, if the object will
+//     * the return value of this method must include the
+//     *
+//     * @return a bitmask indicating the set of special object types marshaled
+//     * by this Parcelable object instance.
+//     */
 //    @Override
 //    public int describeContents() {
 //        return 0;
@@ -261,22 +269,4 @@ public class RoastEntity extends RoastComponent
 ////        dest.writeInt(timeOfCurrentReading);
 //        dest.writeInt(roastTimeAddend);
 //    }
-
-    @Override
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    @Override
-    public boolean isFinished() {
-        return isFinished;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
 }

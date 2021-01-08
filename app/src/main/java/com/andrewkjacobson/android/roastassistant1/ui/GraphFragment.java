@@ -1,10 +1,12 @@
 package com.andrewkjacobson.android.roastassistant1.ui;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -12,8 +14,11 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.andrewkjacobson.android.roastassistant1.R;
+import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
+import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 import com.andrewkjacobson.android.roastassistant1.model.Reading;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
@@ -22,6 +27,8 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,22 +47,43 @@ public class GraphFragment extends Fragment {
     private int mExpectedRoastLength = 60 * 12; // todo should be a setting
     private final int mMaxGraphTemperature = 400; // todo should be a setting
 
-    final Observer<RoastEntity> roastObserver = new Observer<RoastEntity>() {
+    final Observer<List<ReadingEntity>> readingObserver = new Observer<List<ReadingEntity>>() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
-        public void onChanged(@Nullable final RoastEntity roast) {
+        public void onChanged(@Nullable final List<ReadingEntity> readings) {
             // todo update the graph
-            if(roast != null) {
-                updateGraph(roast.getCurrentReading());
+            if(readings != null && !readings.isEmpty()) {
+                updateGraph(readings.get(readings.size()-1));
             }
-
-            // check if it's first crack
-            if(viewModel.isFirstCrack()) {
-                graphFirstCrack();
-            }
-
-
+//            // check if it's first crack // todo should be done in crack observer, not here
+//            if(viewModel.isFirstCrack()) {
+//                graphFirstCrack();
+//            }
         }
     };
+
+    final Observer<List<CrackReadingEntity>> crackObserver = new Observer<List<CrackReadingEntity>>() {
+        @Override
+        public void onChanged(List<CrackReadingEntity> crackReadingEntities) {
+            graphFirstCrack(crackReadingEntities);
+        }
+    };
+//    final Observer<RoastEntity> roastObserver = new Observer<RoastEntity>() {
+//        @Override
+//        public void onChanged(@Nullable final RoastEntity roast) {
+//            // todo update the graph
+//            if(roast != null) {
+//                updateGraph(roast.getCurrentReading());
+//            }
+//
+//            // check if it's first crack
+//            if(viewModel.isFirstCrack()) {
+//                graphFirstCrack();
+//            }
+//
+//
+//        }
+//    };
 
     public GraphFragment() {
         // Required empty public constructor
@@ -114,7 +142,7 @@ public class GraphFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(RoastViewModel.class); // this is all we need to do it
         initGraph();
 //        updateGraph(viewModel.getRoast().getValue().getCurrentReading()); // todo this should be taken care of by an observer
-
+        viewModel.getReadings().observe(getViewLifecycleOwner(), readingObserver);
 
     }
 
@@ -182,9 +210,17 @@ public class GraphFragment extends Fragment {
 
 
     // todo this should just get called by an observer
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void updateGraph(Reading reading) {
-        int elapsed = viewModel.getRoast().getValue().getElapsed();
-        int roastLength = viewModel.getSettings().getExpectedRoastLength();
+        int elapsed;
+        int expectedRoastLength;
+        if(viewModel.getRoast().getValue() != null) {
+            elapsed = viewModel.getRoast().getValue().getElapsed();
+            expectedRoastLength = viewModel.getSettings().getExpectedRoastLength();
+        } else {
+            elapsed = 0;
+            expectedRoastLength = 0;
+        }
         try {
             mGraphSeriesTemperature.appendData(new DataPoint(
                             reading.getSeconds(),
@@ -194,19 +230,25 @@ public class GraphFragment extends Fragment {
                             reading.getSeconds(),
                             reading.getPower()),
                     false, 99999); // if scrollToEnd is true, shows negatives in the beginning
-            if(elapsed > roastLength) mGraph.getViewport().scrollToEnd();
+            if(elapsed > expectedRoastLength) mGraph.getViewport().scrollToEnd();
         } catch (IllegalArgumentException e) {
             System.err.println("failed to update graph.");
         }
     }
 
-    private void graphFirstCrack() {
-        // todo add time and temp labels
-        BarGraphSeries<DataPoint> series = new BarGraphSeries();
-        series.appendData(new DataPoint(
-                viewModel.getFirstCrackTime(), mMaxGraphTemperature), false, 99);
-        series.setDataWidth(5);
-        series.setColor(Color.GREEN);
-        mGraph.addSeries(series);
+    private void graphFirstCrack(List<CrackReadingEntity> crackReadingEntities) {
+        CrackReadingEntity firstCrack = null;
+        for(CrackReadingEntity c : crackReadingEntities) { // find the last 1C
+            if(c.getCrackNumber() == 1) firstCrack = c;
+        }
+        if(firstCrack != null && firstCrack.hasOccurred()) {
+            // todo add time and temp labels
+            BarGraphSeries<DataPoint> series = new BarGraphSeries();
+            series.appendData(new DataPoint(
+                    firstCrack.getSeconds(), mMaxGraphTemperature), false, 99);
+            series.setDataWidth(5);
+            series.setColor(Color.GREEN);
+            mGraph.addSeries(series);
+        }
     }
 }

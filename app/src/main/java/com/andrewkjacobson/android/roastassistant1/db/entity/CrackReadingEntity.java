@@ -7,7 +7,7 @@ import com.andrewkjacobson.android.roastassistant1.model.Reading;
 
 import org.jetbrains.annotations.NotNull;
 
-@Entity(tableName = "crack_reading_entity", primaryKeys = {"roastId", "seconds"})
+@Entity(tableName = "crack_reading_entity")
 public class CrackReadingEntity extends ReadingEntity implements Crack {
     private boolean hasOccurred = false;
     private int crackNumber = 1;
@@ -17,8 +17,10 @@ public class CrackReadingEntity extends ReadingEntity implements Crack {
      * @param temperature the reading temperature
      * @param power       the reading power percentage
      */
-    public CrackReadingEntity(int seconds, int temperature, int power, int crackNumber) {
+    public CrackReadingEntity(int seconds, int temperature, int power, int crackNumber, boolean hasOccurred) {
         super(seconds, temperature, power);
+        this.crackNumber = crackNumber;
+        this.hasOccurred = hasOccurred;
     }
 
     @Override

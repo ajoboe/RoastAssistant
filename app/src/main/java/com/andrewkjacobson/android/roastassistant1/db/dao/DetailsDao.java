@@ -1,10 +1,12 @@
 package com.andrewkjacobson.android.roastassistant1.db.dao;
 
 import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
 import androidx.room.Query;
-import com.andrewkjacobson.android.roastassistant1.model.Details;
+import com.andrewkjacobson.android.roastassistant1.db.entity.DetailsEntity;
 
-public abstract class DetailsDao extends BaseDao<Details> {
+@Dao
+public abstract class DetailsDao extends BaseDao<DetailsEntity> {
     @Query("SELECT * FROM details_entity WHERE roastId=:roastId")
-    public abstract LiveData<Details> get(int roastId);
+    public abstract LiveData<DetailsEntity> get(int roastId);
 }
