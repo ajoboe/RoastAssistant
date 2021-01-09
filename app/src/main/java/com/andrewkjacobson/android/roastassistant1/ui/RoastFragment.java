@@ -114,10 +114,11 @@ public class RoastFragment extends Fragment
          */
         @Override
         public void onChanged(RoastEntity roastEntity) {
-            if(viewModel.firstCrackOccurred()) {
-                ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
-                        String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
-            }
+            // todo doing this in Tick now...remove
+//            if(viewModel.firstCrackOccurred()) {
+//                ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
+//                        String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
+//            }
         }
     };
 
@@ -312,6 +313,12 @@ public class RoastFragment extends Fragment
                 queryTemperature(REQUEST_CODE_QUERY_TEMPERATURE);
             }
             viewModel.incrementSeconds();
+
+            // update first crack percentage
+            if(viewModel.firstCrackOccurred()) {
+                ((TextView) view.findViewById(R.id.text_1c_percent)).setText(
+                        String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
+            }
         });
 
     }

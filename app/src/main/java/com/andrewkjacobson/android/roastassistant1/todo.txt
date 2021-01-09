@@ -1,4 +1,5 @@
-// TODO RESTRUCTURE ARCHITECTURE
+// todo update 1c percentage in either tickListener or in roastEntityObserver
+
 //todo  MAKE THE VIEW PASSIVE......ALL logic goes in the ViewModel
 //todo      https://android.jlelse.eu/effective-livedata-and-viewmodel-testing-17f25069fcd4
 //              ^ ^ ^ ^ !!! !!!

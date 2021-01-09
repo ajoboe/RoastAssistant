@@ -1,7 +1,6 @@
 package com.andrewkjacobson.android.roastassistant1;
 
 import android.app.Application;
-import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 import com.andrewkjacobson.android.roastassistant1.db.dao.BaseDao;
@@ -15,7 +14,6 @@ import com.andrewkjacobson.android.roastassistant1.db.entity.DetailsEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastComponent;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
-import com.andrewkjacobson.android.roastassistant1.model.Crack;
 
 import java.util.List;
 
@@ -66,7 +64,7 @@ public class RoastRepository {
 
     public LiveData<List<CrackReadingEntity>> getCracks(int roastId) {
         if(mCracks == null || mCracks.getValue().get(0).getRoastId() != roastId) {
-            mCracks = mCrackReadingDao.getAll();
+            mCracks = mCrackReadingDao.getAll(roastId);
         }
         return mCracks;
     }

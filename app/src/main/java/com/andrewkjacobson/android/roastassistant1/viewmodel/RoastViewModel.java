@@ -9,8 +9,6 @@ import androidx.annotation.RequiresApi;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.SavedStateHandle;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.andrewkjacobson.android.roastassistant1.R;
 import com.andrewkjacobson.android.roastassistant1.Settings;
@@ -20,14 +18,10 @@ import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 import com.andrewkjacobson.android.roastassistant1.RoastRepository;
 import com.andrewkjacobson.android.roastassistant1.model.Crack;
-import com.andrewkjacobson.android.roastassistant1.model.Details;
 import com.andrewkjacobson.android.roastassistant1.model.Reading;
 import com.andrewkjacobson.android.roastassistant1.model.Roast;
-import com.andrewkjacobson.android.roastassistant1.ui.RoastDetailsActivity;
 import com.andrewkjacobson.android.roastassistant1.ui.SettingsActivity;
 
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -184,6 +178,7 @@ public class RoastViewModel extends AndroidViewModel {
         this.settings = settings;
     }
 
+    // todo this should probably not happen here---getValue() is not great
     public boolean firstCrackOccurred() {
         if(mCracks == null || mCracks.getValue() == null || mCracks.getValue().isEmpty()) {
             return false;
@@ -191,7 +186,7 @@ public class RoastViewModel extends AndroidViewModel {
 
         List<CrackReadingEntity> cracks = mCracks.getValue();
         for(Crack c : cracks) {
-            if(c.getCrackNumber() == 1 || c.hasOccurred()) {
+            if(c.getCrackNumber() == 1 && c.hasOccurred()) {
                 return true;
             }
         }
@@ -310,9 +305,9 @@ public class RoastViewModel extends AndroidViewModel {
         return mCracks.getValue().get(0).getSeconds();
     }
 
-    public boolean isFirstCrack() {
-        return firstCrackOccurred() && getFirstCrackTime() == getElapsed();
-    }
+//    public boolean isFirstCrack() {
+//        return firstCrackOccurred() && getFirstCrackTime() == getElapsed();
+//    }
 
     private CrackReadingEntity get1cReading() {
         return mCracks.getValue().get(0);
