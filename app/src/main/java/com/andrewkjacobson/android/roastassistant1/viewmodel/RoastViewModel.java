@@ -223,7 +223,7 @@ public class RoastViewModel extends AndroidViewModel {
     public void recordPower(int power) {
         ReadingEntity reading = new ReadingEntity(
                 getElapsed(),
-                getCurrentReading().getTemperature(),
+                getCurrentTemperature(),
                 power);
         repository.insert(reading);
     }
@@ -239,6 +239,9 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     private Reading getCurrentReading() {
+        if(mReadings == null || mReadings.getValue() == null || mReadings.getValue().isEmpty()) {
+            return new ReadingEntity(0, settings.getStartingTemperature(), settings.getStartingPower());
+        }
         return mReadings.getValue().get(mReadings.getValue().size() - 1);
     }
 

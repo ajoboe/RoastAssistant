@@ -10,7 +10,7 @@
     <string name="string_50_percent">50%</string>
     <string name="string_75_percent">75%</string>
     <string name="string_100_percent">100%</string>
-    <string name="string_start_temperature">68</string>
+    <string name="string_start_temperature">68°</string>
     <string name="label_current_temperature">Current Temperature</string>
     <string name="string_label_power">Power</string>
     <string name="string_chronometer">0</string>

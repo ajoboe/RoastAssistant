@@ -57,7 +57,7 @@ public class RoastRepository {
 
     public LiveData<List<ReadingEntity>> getReadings(int roastId) {
         if(mReadings == null || mReadings.getValue().get(0).getRoastId() != roastId) {
-            mReadings = mReadingDao.getAll();
+            mReadings = mReadingDao.getAll(roastId);
         }
         return mReadings;
     }

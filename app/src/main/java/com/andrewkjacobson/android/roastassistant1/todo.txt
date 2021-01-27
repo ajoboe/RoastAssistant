@@ -12,6 +12,8 @@
 //todo      one activity, fragments for the rest:
 //todo              roast screen, finished roast, graph, roast selection, roast details, settings
 // todo separate class for settings and graph
+// todo seek bar discrete for power
+
 
 // todo hitting back from details kills a running roast (save works ok)
 // todo temp change time list on finsh page

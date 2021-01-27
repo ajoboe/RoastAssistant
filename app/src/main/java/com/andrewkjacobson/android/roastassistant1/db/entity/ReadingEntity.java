@@ -74,7 +74,7 @@ public class ReadingEntity extends RoastComponent implements Reading {
 
     @NotNull
     public String toString() {
-        return "Timestamp: " + getSeconds()
+        return "Time: " + getSeconds()
                 + " seconds. Temperature: " + getTemperature()
                 + "° Power: " + getPower() + "%";
     }
