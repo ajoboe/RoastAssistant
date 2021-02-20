@@ -2,13 +2,17 @@ package com.andrewkjacobson.android.roastassistant1;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.Toast;
+
 import androidx.lifecycle.LiveData;
+
+import com.andrewkjacobson.android.roastassistant1.db.RoastRoomDatabase;
 import com.andrewkjacobson.android.roastassistant1.db.dao.BaseDao;
 import com.andrewkjacobson.android.roastassistant1.db.dao.CrackReadingDao;
 import com.andrewkjacobson.android.roastassistant1.db.dao.DetailsDao;
 import com.andrewkjacobson.android.roastassistant1.db.dao.ReadingDao;
 import com.andrewkjacobson.android.roastassistant1.db.dao.RoastDao;
-import com.andrewkjacobson.android.roastassistant1.db.RoastRoomDatabase;
 import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.DetailsEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
@@ -23,6 +27,8 @@ import java.util.List;
 // sources, such as persistent models, web services, and caches.
 
 public class RoastRepository {
+    private Application application;
+
     private RoastDao mRoastDao;
     private DetailsDao mDetailsDao;
     private ReadingDao mReadingDao;
@@ -34,6 +40,7 @@ public class RoastRepository {
     private LiveData<List<CrackReadingEntity>> mCracks;
 
     public RoastRepository(Application application) {
+        this.application = application;
         RoastRoomDatabase db = RoastRoomDatabase.getDatabase(application);
         mRoastDao = db.roastDao();
         mDetailsDao = db.detailsDao();
@@ -121,7 +128,7 @@ public class RoastRepository {
         }
     }
 
-    private class insertAsyncTask extends AsyncTask<RoastComponent, Void, Void> {
+    private class insertAsyncTask extends AsyncTask<RoastComponent, Void, Long> {
         private BaseDao mAsyncTaskDao;
 
         insertAsyncTask(BaseDao dao) {
@@ -129,11 +136,51 @@ public class RoastRepository {
         }
 
         @Override
-        protected Void doInBackground(final RoastComponent... params) {
-                mAsyncTaskDao.insert(params[0]);
-//            mAsyncTaskDao.insert(params);
-            return null;
+        protected Long doInBackground(final RoastComponent... params) {
+            return mAsyncTaskDao.insert(params[0]);
         }
+
+        /**
+         * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
+         * {@link #doInBackground(Object[])} has finished.</p>
+         *
+         * <p>The default implementation simply invokes {@link #onCancelled()} and
+         * ignores the result. If you write your own implementation, do not call
+         * <code>super.onCancelled(result)</code>.</p>
+         *
+         * @param result The result, if any, computed in
+         *              {@link #doInBackground(Object[])}, can be null
+         * @see #cancel(boolean)
+         * @see #isCancelled()
+         */
+        @Override
+        protected void onCancelled(Long result) {
+            if(result == null) {
+                Log.w(getClass().toString(), "Insert canceled. No new rowId.");
+            } else {
+                Log.w(getClass().toString(), "Insert canceled. rowId: " + result);
+            }
+        }
+
+        /**
+         * <p>Runs on the UI thread after {@link #doInBackground}. The
+         * specified result is the value returned by {@link #doInBackground}.
+         * To better support testing frameworks, it is recommended that this be
+         * written to tolerate direct execution as part of the execute() call.
+         * The default version does nothing.</p>
+         *
+         * <p>This method won't be invoked if the task was cancelled.</p>
+         *
+         * @param result The result of the operation computed by {@link #doInBackground}.
+         * @see #onPreExecute
+         * @see #doInBackground
+         */
+        @Override
+        protected void onPostExecute(Long result) {
+            super.onPostExecute(result);
+            Toast.makeText(application.getApplicationContext(), "New rowId: " + result, Toast.LENGTH_LONG).show();
+        }
+
     }
 
     private class updateAsyncTask extends AsyncTask<RoastComponent, Void, Void> {

@@ -31,7 +31,7 @@ public abstract class RoastRoomDatabase extends RoomDatabase {
         if(INSTANCE == null) {
             synchronized (RoastRoomDatabase.class) {
                 if(INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
+                    INSTANCE = Room.databaseBuilder(context,
                             RoastRoomDatabase.class, "roast_database")
                             // Wipes and rebuilds instead of migrating
                             // if no Migration object. Eventually need to define a migration strategy.

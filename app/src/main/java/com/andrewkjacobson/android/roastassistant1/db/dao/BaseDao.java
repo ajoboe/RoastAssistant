@@ -9,10 +9,10 @@ import androidx.room.Update;
 
 @Dao
 public abstract class BaseDao<T> {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert
     public abstract long insert(T item);
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
+    @Update
     public abstract void update(T item);
 
     @Transaction

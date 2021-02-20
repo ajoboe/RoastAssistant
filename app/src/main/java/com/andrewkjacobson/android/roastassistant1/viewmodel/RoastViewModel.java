@@ -11,12 +11,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.SavedStateHandle;
 
 import com.andrewkjacobson.android.roastassistant1.R;
+import com.andrewkjacobson.android.roastassistant1.RoastRepository;
 import com.andrewkjacobson.android.roastassistant1.Settings;
 import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.DetailsEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
-import com.andrewkjacobson.android.roastassistant1.RoastRepository;
 import com.andrewkjacobson.android.roastassistant1.model.Crack;
 import com.andrewkjacobson.android.roastassistant1.model.Reading;
 import com.andrewkjacobson.android.roastassistant1.model.Roast;
@@ -49,7 +49,6 @@ public class RoastViewModel extends AndroidViewModel {
 
 
 
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     public RoastViewModel(@NonNull Application application, SavedStateHandle savedStateHandle) {
         super(application);
@@ -58,7 +57,7 @@ public class RoastViewModel extends AndroidViewModel {
         this.savedStateHandle = savedStateHandle;
         loadSettings();
 
-        if(savedStateHandle.contains(KEY_ROAST_ID)) {
+        if(savedStateHandle != null && savedStateHandle.contains(KEY_ROAST_ID)) {
             mRoastId = savedStateHandle.get(KEY_ROAST_ID);
         } else {
             RoastEntity roast = new RoastEntity(); // empty roast w/ id
@@ -67,7 +66,8 @@ public class RoastViewModel extends AndroidViewModel {
             repository.insert(new DetailsEntity(mRoastId));
             repository.insert(new ReadingEntity(0,
                     settings.getStartingTemperature(),
-                    settings.getStartingPower()));
+                    settings.getStartingPower(),
+                    roast.getId()));
         }
 
         mRoast = repository.getRoast(mRoastId);
@@ -213,18 +213,21 @@ public class RoastViewModel extends AndroidViewModel {
             ReadingEntity newReading = new ReadingEntity(
                     getElapsed(),
                     Integer.valueOf(temperature),
-                    getCurrentReading().getPower()); // power from prev reading
+                    getCurrentReading().getPower(),
+                    getRoastId()); // power from prev reading
             repository.insert(newReading);
             return true;
         }
         return false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void recordPower(int power) {
         ReadingEntity reading = new ReadingEntity(
                 getElapsed(),
                 getCurrentTemperature(),
-                power);
+                power,
+                getRoastId());
         repository.insert(reading);
     }
 
@@ -240,7 +243,10 @@ public class RoastViewModel extends AndroidViewModel {
 
     private Reading getCurrentReading() {
         if(mReadings == null || mReadings.getValue() == null || mReadings.getValue().isEmpty()) {
-            return new ReadingEntity(0, settings.getStartingTemperature(), settings.getStartingPower());
+            return new ReadingEntity(0,
+                    settings.getStartingTemperature(),
+                    settings.getStartingPower(),
+                    getRoastId());
         }
         return mReadings.getValue().get(mReadings.getValue().size() - 1);
     }
@@ -288,13 +294,15 @@ public class RoastViewModel extends AndroidViewModel {
         repository.update(r);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void set1c() {
         repository.insert(new CrackReadingEntity(
                 getElapsed(),
                 getCurrentTemperature(),
                 getCurrentPower(),
                 1,
-                true));
+                true,
+                getRoastId()));
     }
 
 //    private void addCrack(CrackReadingEntity crack) {
@@ -320,20 +328,29 @@ public class RoastViewModel extends AndroidViewModel {
         return (float) getFirstCrackTime() / ((float) getElapsed()) * 100;
     }
 
+    // todo remove hardcoded defaults
     private void loadSettings() {
-        // moved to model...still need to init tho todo
-        androidx.preference.PreferenceManager
-                .setDefaultValues(application, R.xml.root_preferences, false);
-        SharedPreferences sharedPreferences =
-                androidx.preference.PreferenceManager.getDefaultSharedPreferences(application);
+        try {
+            androidx.preference.PreferenceManager
+                    .setDefaultValues(application, R.xml.root_preferences, false);
+            SharedPreferences sharedPreferences =
+                    androidx.preference.PreferenceManager.getDefaultSharedPreferences(application);
 
-        this.setSettings(new Settings(
-                Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_TEMP_CHECK_FREQ, "60")),
-                Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ALLOWED_TEMP_CHANGE, "50")),
-                Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_TEMPERATURE, "68")),
-                Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_POWER, "100")),
-                Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ROAST_TIME_ADDEND, "0"))
-        ));
+            this.setSettings(new Settings(
+                    Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_TEMP_CHECK_FREQ, "60")),
+                    Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ALLOWED_TEMP_CHANGE, "50")),
+                    Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_TEMPERATURE, "68")),
+                    Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_POWER, "100")),
+                    Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ROAST_TIME_ADDEND, "0"))
+            ));
+        } catch (NullPointerException e) {
+            this.setSettings(new Settings(
+                    Integer.parseInt("60"),
+                    Integer.parseInt("50"),
+                    Integer.parseInt("68"),
+                    Integer.parseInt("100"),
+                    Integer.parseInt("0")));
+        }
     }
 //
 //    /**

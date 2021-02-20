@@ -25,11 +25,13 @@ public class ReadingEntity extends RoastComponent implements Reading {
      * @param seconds time of reading in seconds
      * @param temperature the reading temperature
      * @param power the reading power percentage
+     * @param roastId the id of the roast to which this reading belongs
      */
-    public ReadingEntity(int seconds, int temperature, int power) {
+    public ReadingEntity(int seconds, int temperature, int power, int roastId) {
         setSeconds(seconds);
         setTemperature(temperature);
         setPower(power);
+        setRoastId(roastId);
     }
 
     @Override
