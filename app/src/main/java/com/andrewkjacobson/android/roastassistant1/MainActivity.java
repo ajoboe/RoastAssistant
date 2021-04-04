@@ -49,12 +49,6 @@ package com.andrewkjacobson.android.roastassistant1;
 // todo add drum speed (enable in settings)
 // todo roast starting power setting should have limited options
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -76,6 +70,12 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.BarGraphSeries;
@@ -85,7 +85,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import java.util.List;
 import java.util.Locale;
 
-import static android.os.SystemClock.*;
+import static android.os.SystemClock.elapsedRealtime;
 
 
 
@@ -421,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void record1cInfo() {
-        ((TextView) findViewById(R.id.text_1c_temperature)).setText(getCurrentReading().getTemperature() + " degrees");
+        ((TextView) findViewById(R.id.text_1c_temperature)).setText(getCurrentReading().getTemperature() + "°");
         ((TextView) findViewById(R.id.text_1c_time)).setText(mChronometerRoastTime.getText());
         m1cTimeInSeconds = mSecondsElapsed;
         update1cPercent();
@@ -449,7 +449,7 @@ public class MainActivity extends AppCompatActivity {
     public void recordReading(int temperature, int power) {
         mCurrentReading = new RoastReading(mSecondsElapsed, temperature, power);
         mReadings.put(mSecondsElapsed, mCurrentReading);
-        mTextCurrentTemperature.setText(Integer.toString(temperature));
+        mTextCurrentTemperature.setText(Integer.toString(temperature) + "°");
         setPowerRadioButton(power);
         Log.d(LOG_TAG, "New reading recorded..." + mCurrentReading);
         updateGraph(mCurrentReading);
