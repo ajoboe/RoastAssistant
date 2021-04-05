@@ -3,6 +3,9 @@ package com.andrewkjacobson.android.roastassistant1.ui;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,15 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
 import com.andrewkjacobson.android.roastassistant1.R;
 import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
-import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 import com.andrewkjacobson.android.roastassistant1.model.Reading;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
 import com.jjoe64.graphview.DefaultLabelFormatter;
@@ -143,7 +140,7 @@ public class GraphFragment extends Fragment {
         initGraph();
 //        updateGraph(viewModel.getRoast().getValue().getCurrentReading()); // todo this should be taken care of by an observer
         viewModel.getReadings().observe(getViewLifecycleOwner(), readingObserver);
-
+        viewModel.getCracks().observe(getViewLifecycleOwner(), crackObserver);
     }
 
 
@@ -181,8 +178,8 @@ public class GraphFragment extends Fragment {
 
             // TEMPERATURE SERIES
             mGraphSeriesTemperature = new LineGraphSeries<>();
-            mGraphSeriesTemperature.setColor(Color.BLUE);
-            mGraph.getGridLabelRenderer().setVerticalLabelsColor(Color.BLUE);
+            mGraphSeriesTemperature.setColor(Color.rgb(173, 216, 230)); // light blue
+            mGraph.getGridLabelRenderer().setVerticalLabelsColor(Color.rgb(173, 216, 230)); // light blue
             mGraph.getGridLabelRenderer().setLabelVerticalWidth(50);
             mGraph.addSeries(mGraphSeriesTemperature);
             mGraph.getViewport().setYAxisBoundsManual(true);
@@ -249,6 +246,10 @@ public class GraphFragment extends Fragment {
             series.setDataWidth(5);
             series.setColor(Color.GREEN);
             mGraph.addSeries(series);
+//            double firstCrackLineLeftX = mGraph.getSeries().get(mGraph.getSeries().indexOf(series)).getLowestValueX();
+//
+//            Canvas canvas = new Canvas();
+//            mGraph.getViewport().draw(canvas);
         }
     }
 }

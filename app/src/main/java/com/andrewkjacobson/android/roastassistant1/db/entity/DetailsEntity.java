@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.Entity;
 
@@ -30,6 +31,7 @@ public class DetailsEntity extends RoastComponent implements Details, Parcelable
     private String roaster;
     private int ambientTemperature;
 
+    @Ignore
     public DetailsEntity(int roastId) {
         this();
         this.roastId = roastId;
@@ -47,6 +49,7 @@ public class DetailsEntity extends RoastComponent implements Details, Parcelable
         this.ambientTemperature = 0;
     }
 
+    @Ignore
     protected DetailsEntity(Parcel in) {
         date = in.readString();
         beanType = in.readString();

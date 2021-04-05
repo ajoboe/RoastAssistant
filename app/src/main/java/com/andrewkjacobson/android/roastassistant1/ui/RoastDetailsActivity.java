@@ -135,7 +135,7 @@ public class RoastDetailsActivity extends AppCompatActivity {
         details.setRoaster(((TextInputEditText)findViewById(R.id.autoTextRoaster)).getText().toString());
 
         String ambient = ((TextInputEditText)findViewById(R.id.autoTextAmbientTemp)).getText().toString();
-        if(ambient.length() >0 ) details.setAmbientTemperature(Integer.valueOf(ambient));
+        if(ambient.length() >0 ) details.setAmbientTemperature(Integer.parseInt(ambient));
 
         return details;
     }

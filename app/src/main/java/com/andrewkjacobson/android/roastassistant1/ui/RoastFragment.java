@@ -3,14 +3,6 @@ package com.andrewkjacobson.android.roastassistant1.ui;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +12,13 @@ import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.RadioButton;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.andrewkjacobson.android.roastassistant1.R;
 import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
@@ -318,9 +317,12 @@ public class RoastFragment extends Fragment
             if(viewModel.firstCrackOccurred()) {
                 ((TextView) view.findViewById(R.id.text_1c_percent)).setText(
                         String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
+                ((TextView) getActivity().findViewById(R.id.text_1c_percent_floating))
+                        .setVisibility(View.VISIBLE);
+                ((TextView) getActivity().findViewById(R.id.text_1c_percent_floating))
+                        .setText(String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
             }
         });
-
     }
 
     private void setPowerRadioButton(int power, View view) {
@@ -385,7 +387,7 @@ public class RoastFragment extends Fragment
         String stringCurrTemp = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
                 .get(0).replaceAll("[^0-9]", "");
 
-        while(!viewModel.recordTemperature(stringCurrTemp)) {
+        if(!viewModel.recordTemperature(stringCurrTemp)) {
             if(isFirstCrack) {
                 queryTemperature(REQUEST_CODE_1C_CLICKED);
             } else {

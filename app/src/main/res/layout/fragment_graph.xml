@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.GraphFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:context=".ui.RoastActivity"
-        android:layout_weight="1">
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.GraphFragment">
+<!--    tools:context=".ui.RoastActivity"-->
+
 
         <TextView
             android:id="@+id/label_graph_temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/string_graph_label_temperature"
-            android:textColor="#0000FF"
+            android:textColor="@color/TemperatureColorDark"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,15 +24,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/string_label_power"
-            android:textColor="#FF0000"
+            android:textColor="@color/PowerColorDark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graph"
-            android:layout_width="match_parent"
-            android:layout_height="300dip"
-            app:layout_constraintTop_toBottomOf="@+id/label_graph_temperature" />
+    <com.jjoe64.graphview.GraphView
+        android:id="@+id/graph"
+        android:layout_width="match_parent"
+        android:layout_height="300dip"
+        app:layout_constraintTop_toBottomOf="@+id/label_graph_temperature" />
+
+
+    <TextView
+        android:id="@+id/text_1c_percent_floating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:text="0%"
+        android:textColor="@color/purple_500"
+        android:textSize="36sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/graph"
+        app:layout_constraintStart_toStartOf="@+id/graph"
+        app:layout_constraintTop_toTopOf="@+id/graph"
+        app:layout_constraintVertical_bias="0.26" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</FrameLayout>
