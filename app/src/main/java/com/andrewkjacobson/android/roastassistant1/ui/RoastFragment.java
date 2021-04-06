@@ -50,6 +50,7 @@ public class RoastFragment extends Fragment
     // controls
     private Chronometer mChronometerRoastTime;
     private Button mButtonStartEndRoast;
+    private Button mButtonChargeTemperature;
     private Button mButton1C;
     private Button mButtonRecordTemp;
     private TextView mTextCurrentTemperature;
@@ -97,9 +98,9 @@ public class RoastFragment extends Fragment
                                 firstCrack.getSeconds() % 60)); // seconds
                 ((TextView) getView().findViewById(R.id.text_1c_temperature)).setText(
                         String.format("%d°", firstCrack.getTemperature()));
-                    float percent = (float) firstCrack.getSeconds() / ((float) viewModel.getElapsed()) * 100;
-                    ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
-                        String.format("%.2f", percent) + "%");
+//                    float percent = (float) firstCrack.getSeconds() / ((float) viewModel.getElapsed()) * 100;
+//                    ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
+//                        String.format("%.2f", percent) + "%");
             }
         }
     };
@@ -269,6 +270,7 @@ public class RoastFragment extends Fragment
                 queryTemperature(REQUEST_CODE_1C_CLICKED);
                 break;
             case R.id.button_record_temperature:
+            case R.id.button_charge_temperature:
                 queryTemperature(REQUEST_CODE_QUERY_TEMPERATURE);
                 break;
         }
@@ -288,6 +290,9 @@ public class RoastFragment extends Fragment
 
         mButtonStartEndRoast = (Button) view.findViewById(R.id.button_start_end_roast);
         mButtonStartEndRoast.setOnClickListener(this);
+
+        mButtonChargeTemperature = (Button) view.findViewById(R.id.button_charge_temperature);
+        mButtonChargeTemperature.setOnClickListener(this);
 
         mButton1C = (Button) view.findViewById(R.id.button_first_crack);
         mButton1C.setOnClickListener(this);
@@ -315,8 +320,8 @@ public class RoastFragment extends Fragment
 
             // update first crack percentage
             if(viewModel.firstCrackOccurred()) {
-                ((TextView) view.findViewById(R.id.text_1c_percent)).setText(
-                        String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
+//                ((TextView) view.findViewById(R.id.text_1c_percent)).setText(
+//                        String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
                 ((TextView) getActivity().findViewById(R.id.text_1c_percent_floating))
                         .setVisibility(View.VISIBLE);
                 ((TextView) getActivity().findViewById(R.id.text_1c_percent_floating))
@@ -419,6 +424,7 @@ public class RoastFragment extends Fragment
         mChronometerRoastTime.setBase(viewModel.getStartTime());
         mChronometerRoastTime.start();
         mButtonStartEndRoast.setText(R.string.string_button_end_roast);
+        mButtonChargeTemperature.setVisibility(View.GONE);
         mButton1C.setVisibility(View.VISIBLE);
         mButtonRecordTemp.setVisibility(View.VISIBLE);
     }

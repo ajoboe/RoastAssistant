@@ -212,13 +212,14 @@ public class GraphFragment extends Fragment {
         int elapsed;
         int expectedRoastLength;
         if(viewModel.getRoast().getValue() != null) {
-            elapsed = viewModel.getRoast().getValue().getElapsed();
+            elapsed = viewModel.getRoast().getValue().getElapsed(); // todo stop storing elapsed
             expectedRoastLength = viewModel.getSettings().getExpectedRoastLength();
         } else {
             elapsed = 0;
             expectedRoastLength = 0;
         }
         try {
+//            mGraphSeriesTemperature.
             mGraphSeriesTemperature.appendData(new DataPoint(
                             reading.getSeconds(),
                             reading.getTemperature()),

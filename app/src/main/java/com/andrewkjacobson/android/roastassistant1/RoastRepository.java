@@ -3,7 +3,6 @@ package com.andrewkjacobson.android.roastassistant1;
 import android.app.Application;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
 
@@ -27,12 +26,10 @@ import java.util.List;
 // sources, such as persistent models, web services, and caches.
 
 public class RoastRepository {
-    private Application application;
-
-    private RoastDao mRoastDao;
-    private DetailsDao mDetailsDao;
-    private ReadingDao mReadingDao;
-    private CrackReadingDao mCrackReadingDao;
+    private final RoastDao mRoastDao;
+    private final DetailsDao mDetailsDao;
+    private final ReadingDao mReadingDao;
+    private final CrackReadingDao mCrackReadingDao;
 
     private LiveData<RoastEntity> mRoast;
     private LiveData<DetailsEntity> mDetails;
@@ -40,7 +37,6 @@ public class RoastRepository {
     private LiveData<List<CrackReadingEntity>> mCracks;
 
     public RoastRepository(Application application) {
-        this.application = application;
         RoastRoomDatabase db = RoastRoomDatabase.getDatabase(application);
         mRoastDao = db.roastDao();
         mDetailsDao = db.detailsDao();
@@ -143,14 +139,14 @@ public class RoastRepository {
 
         /**
          * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
-         * {@link #doInBackground(Object[])} has finished.</p>
+         * {@link #doInBackground(RoastComponent[])} has finished.</p>
          *
          * <p>The default implementation simply invokes {@link #onCancelled()} and
          * ignores the result. If you write your own implementation, do not call
          * <code>super.onCancelled(result)</code>.</p>
          *
          * @param result The result, if any, computed in
-         *              {@link #doInBackground(Object[])}, can be null
+         *              {@link #doInBackground(RoastComponent[])}, can be null
          * @see #cancel(boolean)
          * @see #isCancelled()
          */
@@ -179,7 +175,7 @@ public class RoastRepository {
         @Override
         protected void onPostExecute(Long result) {
             super.onPostExecute(result);
-            Toast.makeText(application.getApplicationContext(), "New rowId: " + result, Toast.LENGTH_LONG).show();
+            Log.w(getClass().toString(),"New rowId: " + result);
         }
 
     }

@@ -1,3 +1,15 @@
+// todo CHECK FOR NULL!! number one cause of Android App crashes
+//      from https://developer.android.com/topic/performance/vitals/crash
+//      you need to make sure that the object references you're working with are non-null before
+//      calling methods on them or trying to access their members. If the object reference is null,
+//      handle this case well (for example, exit from a method before performing any operations on
+//      the object reference and write information to a debug log).
+//      Because you don't want to have null checks for every parameter of every method called, you
+//      can rely on the IDE or on the type of the object to signify nullability.
+
+// todo don't tick the ViewModel! Don't store seconds in the DB. Just save the start time.
+
+
 // todo update 1c percentage in either tickListener or in roastEntityObserver
 
 //todo  MAKE THE VIEW PASSIVE......ALL logic goes in the ViewModel
@@ -13,10 +25,10 @@
 //todo              roast screen, finished roast, graph, roast selection, roast details, settings
 // todo separate class for settings and graph
 // todo seek bar discrete for power
-
+// todo after END ROAST is clicked, remove END ROAST button and replace with NEW ROAST
 
 // todo hitting back from details kills a running roast (save works ok)
-// todo temp change time list on finsh page
+// todo temp change time list on finish page
 // todo pre-heat temp on finish page
 // todo set starting temp button
 // todo keep screen awake
@@ -26,7 +38,13 @@
 // todo PreviousRoastsActivity (cards)
 // todo ViewPreviousRoastActivity (combine with MainActivity?...fragments?)--shows current roast when finishes
 // todo export to Google Sheets
+// todo export to Google Keep
+// todo Social element--but distributed. I DON'T WANT A SERVER
 // todo continue to refine layout
+// todo     1c temp on the line *****
+                intersection of the 1c line and the roast curve--or is it just the particular dot??
+                or can we just tell that dot to have a label?
+// todo update graph asynchronously see: https://github.com/jjoe64/GraphView/wiki/Realtime-chart
 
 // todo hide First Crack info until relevant
 // todo hide suggestions section until relevant

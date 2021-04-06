@@ -266,7 +266,7 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public boolean isRunning() {
-        return mRoast.getValue().isRunning();
+        return mRoast != null && mRoast.getValue() != null && mRoast.getValue().isRunning();
     }
 
     public long getStartTime() {
