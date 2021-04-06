@@ -19,7 +19,11 @@ import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.model.Reading;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
-import com.jjoe64.graphview.DefaultLabelFormatter;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.LineData;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
@@ -35,6 +39,8 @@ import java.util.List;
 public class GraphFragment extends Fragment {
 
     private RoastViewModel viewModel;
+
+    private LineChart chart;
 
     GraphView mGraph;
     LineGraphSeries<DataPoint> mGraphSeriesTemperature;
@@ -52,10 +58,6 @@ public class GraphFragment extends Fragment {
             if(readings != null && !readings.isEmpty()) {
                 updateGraph(readings.get(readings.size()-1));
             }
-//            // check if it's first crack // todo should be done in crack observer, not here
-//            if(viewModel.isFirstCrack()) {
-//                graphFirstCrack();
-//            }
         }
     };
 
@@ -65,22 +67,6 @@ public class GraphFragment extends Fragment {
             graphFirstCrack(crackReadingEntities);
         }
     };
-//    final Observer<RoastEntity> roastObserver = new Observer<RoastEntity>() {
-//        @Override
-//        public void onChanged(@Nullable final RoastEntity roast) {
-//            // todo update the graph
-//            if(roast != null) {
-//                updateGraph(roast.getCurrentReading());
-//            }
-//
-//            // check if it's first crack
-//            if(viewModel.isFirstCrack()) {
-//                graphFirstCrack();
-//            }
-//
-//
-//        }
-//    };
 
     public GraphFragment() {
         // Required empty public constructor
@@ -98,19 +84,12 @@ public class GraphFragment extends Fragment {
     public static GraphFragment newInstance(String param1, String param2) {
         GraphFragment fragment = new GraphFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
     }
 
     @Override
@@ -153,56 +132,108 @@ public class GraphFragment extends Fragment {
     // ****************
 
     public void initGraph() {
-        mGraph = getView().findViewById(R.id.graph);
-        mGraph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
-            @Override
-            public String formatLabel(double value, boolean isValueX) {
-                if (isValueX) {
-                    // show normal x values
-                    return String.format("%d:%02d",  (int)value/60, (int)value%60);
-                } else {
-                    // convert seconds to minutes:seconds
-//                    return super.formatLabel(value, isValueX) + " €";
-                    return super.formatLabel(value, isValueX);
-                }
-            }
-        });
-        try {
+        chart = getView().findViewById(R.id.chart);
 
-            // GRAPH SETTINGS
-            mGraph.setVisibility(View.VISIBLE);
-            mGraph.getViewport().setScalable(false);
-            mGraph.getViewport().setScrollable(false);
-//            mGraph.getGridLabelRenderer().setVerticalLabelsVisible(true);
-            mGraph.getGridLabelRenderer().setHorizontalLabelsVisible(true);
+        // enable description text
+        chart.getDescription().setEnabled(true);
 
-            // TEMPERATURE SERIES
-            mGraphSeriesTemperature = new LineGraphSeries<>();
-            mGraphSeriesTemperature.setColor(Color.rgb(173, 216, 230)); // light blue
-            mGraph.getGridLabelRenderer().setVerticalLabelsColor(Color.rgb(173, 216, 230)); // light blue
-            mGraph.getGridLabelRenderer().setLabelVerticalWidth(50);
-            mGraph.addSeries(mGraphSeriesTemperature);
-            mGraph.getViewport().setYAxisBoundsManual(true);
-            mGraph.getViewport().setMinY(viewModel.getSettings().getStartingTemperature() - 20);
-            mGraph.getViewport().setMaxY(mMaxGraphTemperature);
-            mGraph.getViewport().setXAxisBoundsManual(true);
-            mGraph.getViewport().setMinX(0);
-            mGraph.getViewport().setMaxX(viewModel.getSettings().getExpectedRoastLength());
-//            mGraph.getViewport().setScalable(false); // if true, messes with the time
+        // enable touch gestures
+        chart.setTouchEnabled(true);
+
+        // enable scaling and dragging
+        chart.setDragEnabled(true);
+        chart.setScaleEnabled(true);
+        chart.setDrawGridBackground(false);
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        chart.setPinchZoom(true);
+
+        // set an alternative background color
+        chart.setBackgroundColor(Color.LTGRAY);
+
+        LineData data = new LineData();
+        data.setValueTextColor(Color.WHITE);
+
+        // add empty data
+        chart.setData(data);
+
+        // get the legend (only possible after setting data)
+        Legend l = chart.getLegend();
+
+        // modify the legend ...
+        l.setForm(Legend.LegendForm.LINE);
+//        l.setTypeface(tfLight);
+        l.setTextColor(Color.WHITE);
+
+        XAxis xl = chart.getXAxis();
+//        xl.setTypeface(tfLight);
+        xl.setTextColor(Color.WHITE);
+        xl.setDrawGridLines(false);
+        xl.setAvoidFirstLastClipping(true);
+        xl.setEnabled(true);
+
+        YAxis leftAxis = chart.getAxisLeft();
+//        leftAxis.setTypeface(tfLight);
+        leftAxis.setTextColor(Color.WHITE);
+        leftAxis.setAxisMaximum(100f);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setDrawGridLines(true);
+
+        YAxis rightAxis = chart.getAxisRight();
+        rightAxis.setEnabled(false);
 
 
-            // POWER SERIES
-            mGraphSeriesPower = new LineGraphSeries<>();
-            mGraphSeriesPower.setColor(Color.RED);
-            mGraph.getGridLabelRenderer().setVerticalLabelsSecondScaleColor(Color.RED);
-            mGraph.getGridLabelRenderer().setSecondScaleLabelVerticalWidth(50); // todo doesn't do anything
-            mGraph.getSecondScale().addSeries(mGraphSeriesPower);
-            mGraph.getSecondScale().setMinY(0);
-            mGraph.getSecondScale().setMaxY(100);
-        } catch (IllegalArgumentException e) {
-//            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-            System.err.println("graph failed to initialize.");
-        }
+
+
+//        mGraph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
+//            @Override
+//            public String formatLabel(double value, boolean isValueX) {
+//                if (isValueX) {
+//                    // show normal x values
+//                    return String.format("%d:%02d",  (int)value/60, (int)value%60);
+//                } else {
+//                    // convert seconds to minutes:seconds
+////                    return super.formatLabel(value, isValueX) + " €";
+//                    return super.formatLabel(value, isValueX);
+//                }
+//            }
+//        });
+//        try {
+//
+//            // GRAPH SETTINGS
+//            mGraph.setVisibility(View.VISIBLE);
+//            mGraph.getViewport().setScalable(false);
+//            mGraph.getViewport().setScrollable(false);
+////            mGraph.getGridLabelRenderer().setVerticalLabelsVisible(true);
+//            mGraph.getGridLabelRenderer().setHorizontalLabelsVisible(true);
+//
+//            // TEMPERATURE SERIES
+//            mGraphSeriesTemperature = new LineGraphSeries<>();
+//            mGraphSeriesTemperature.setColor(Color.rgb(173, 216, 230)); // light blue
+//            mGraph.getGridLabelRenderer().setVerticalLabelsColor(Color.rgb(173, 216, 230)); // light blue
+//            mGraph.getGridLabelRenderer().setLabelVerticalWidth(50);
+//            mGraph.addSeries(mGraphSeriesTemperature);
+//            mGraph.getViewport().setYAxisBoundsManual(true);
+//            mGraph.getViewport().setMinY(viewModel.getSettings().getStartingTemperature() - 20);
+//            mGraph.getViewport().setMaxY(mMaxGraphTemperature);
+//            mGraph.getViewport().setXAxisBoundsManual(true);
+//            mGraph.getViewport().setMinX(0);
+//            mGraph.getViewport().setMaxX(viewModel.getSettings().getExpectedRoastLength());
+////            mGraph.getViewport().setScalable(false); // if true, messes with the time
+//
+//
+//            // POWER SERIES
+//            mGraphSeriesPower = new LineGraphSeries<>();
+//            mGraphSeriesPower.setColor(Color.RED);
+//            mGraph.getGridLabelRenderer().setVerticalLabelsSecondScaleColor(Color.RED);
+//            mGraph.getGridLabelRenderer().setSecondScaleLabelVerticalWidth(50); // todo doesn't do anything
+//            mGraph.getSecondScale().addSeries(mGraphSeriesPower);
+//            mGraph.getSecondScale().setMinY(0);
+//            mGraph.getSecondScale().setMaxY(100);
+//        } catch (IllegalArgumentException e) {
+////            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+//            System.err.println("graph failed to initialize.");
+//        }
     }
 
 
