@@ -17,7 +17,7 @@ import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 
 
 @Database(entities = {RoastEntity.class, DetailsEntity.class, ReadingEntity.class, CrackReadingEntity.class},
-        version = 7, exportSchema = false)
+        version = 8, exportSchema = false)
 public abstract class RoastRoomDatabase extends RoomDatabase {
 
     public abstract RoastDao roastDao();

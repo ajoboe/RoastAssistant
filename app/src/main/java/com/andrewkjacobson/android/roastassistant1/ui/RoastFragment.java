@@ -316,7 +316,7 @@ public class RoastFragment extends Fragment
             if((viewModel.getElapsed() + 5) % viewModel.getSettings().getTemperatureCheckFrequency() == 0) {
                 queryTemperature(REQUEST_CODE_QUERY_TEMPERATURE);
             }
-            viewModel.incrementSeconds();
+//            viewModel.incrementSeconds();
 
             // update first crack percentage
             if(viewModel.firstCrackOccurred()) {
@@ -414,7 +414,7 @@ public class RoastFragment extends Fragment
     public void startRoast(View view) {
         int chronoAddend =  -(viewModel.getSettings().getRoastTimeInSecAddend() * 1000);
         long startTime = elapsedRealtime() + chronoAddend;
-        viewModel.setStartTime(startTime);
+        viewModel.setStartTime(startTime); // todo should this just happen in startRoast?
         viewModel.startRoast(); // triggers observer
 
 

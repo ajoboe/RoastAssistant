@@ -212,7 +212,7 @@ public class GraphFragment extends Fragment {
         int elapsed;
         int expectedRoastLength;
         if(viewModel.getRoast().getValue() != null) {
-            elapsed = viewModel.getRoast().getValue().getElapsed(); // todo stop storing elapsed
+            elapsed = viewModel.getElapsed();
             expectedRoastLength = viewModel.getSettings().getExpectedRoastLength();
         } else {
             elapsed = 0;

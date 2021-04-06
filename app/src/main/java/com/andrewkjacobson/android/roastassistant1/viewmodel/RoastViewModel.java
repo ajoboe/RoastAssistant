@@ -19,10 +19,11 @@ import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 import com.andrewkjacobson.android.roastassistant1.model.Crack;
 import com.andrewkjacobson.android.roastassistant1.model.Reading;
-import com.andrewkjacobson.android.roastassistant1.model.Roast;
 import com.andrewkjacobson.android.roastassistant1.ui.SettingsActivity;
 
 import java.util.List;
+
+import static android.os.SystemClock.elapsedRealtime;
 
 
 // A ViewModel object provides the data for a specific UI component, such as a fragment or activity,
@@ -38,7 +39,7 @@ public class RoastViewModel extends AndroidViewModel {
     public static final String KEY_ROAST_ID = "roast id";
     private final Application application;
     private final RoastRepository repository;
-    private SavedStateHandle savedStateHandle;
+    private final SavedStateHandle savedStateHandle;
 
     private int mRoastId = -1;
     private final LiveData<RoastEntity> mRoast;
@@ -46,7 +47,7 @@ public class RoastViewModel extends AndroidViewModel {
     private final LiveData<List<ReadingEntity>> mReadings;
     private final LiveData<List<CrackReadingEntity>> mCracks;
     private Settings settings;
-
+    private boolean mFirstCrackOccurred = false;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -179,6 +180,7 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     // todo this should probably not happen here---getValue() is not great
+    //          better to observe mCracks and set mFirstCrackOccurred = true
     public boolean firstCrackOccurred() {
         if(mCracks == null || mCracks.getValue() == null || mCracks.getValue().isEmpty()) {
             return false;
@@ -194,18 +196,22 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public int getElapsed() {
-        if(mRoast == null || mRoast.getValue() == null) {
-            return 0;
-        }
-        return mRoast.getValue().getElapsed();
+        long startTime = mRoast.getValue().getStartTime();
+        if(startTime <= 0) return 0;
+        return  Math.toIntExact(elapsedRealtime() - startTime) / 1000;
+
+//        if(mRoast == null || mRoast.getValue() == null) {
+//            return 0;
+//        }
+//        return mRoast.getValue().getElapsed();
     }
 
     // todo do we really need to update the db every second???
-    public void incrementSeconds() {
-        Roast r = mRoast.getValue();
-        r.incrementElapsed();
-        repository.update((RoastEntity) r);
-    }
+//    public void incrementSeconds() {
+//        Roast r = mRoast.getValue();
+//        r.incrementElapsed();
+//        repository.update((RoastEntity) r);
+//    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean recordTemperature(String temperature) {
@@ -288,6 +294,7 @@ public class RoastViewModel extends AndroidViewModel {
         repository.update(r);
     }
 
+    // todo is this the right way to update live data??
     public void setStartTime(long startTime) {
         RoastEntity r = mRoast.getValue();
         r.setStartTime(startTime);

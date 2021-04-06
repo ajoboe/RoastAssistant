@@ -20,7 +20,7 @@ public class RoastEntity extends RoastComponent implements Roast {
     @PrimaryKey
     private int id;
 
-    private int elapsed = 0;
+//    private int elapsed = 0;
     private boolean isRunning = false;
     private boolean isFinished = false;
     private long startTime = -1;
@@ -69,10 +69,10 @@ public class RoastEntity extends RoastComponent implements Roast {
         this.id = roastId;
     }
 
-    @Override
-    public void setElapsed(int seconds) {
-        this.elapsed = seconds;
-    }
+//    @Override
+//    public void setElapsed(int seconds) {
+//        this.elapsed = seconds;
+//    }
 
     @Override
     public void setRunning(boolean isRunning) {
@@ -84,15 +84,15 @@ public class RoastEntity extends RoastComponent implements Roast {
         return id;
     }
 
-    @Override
-    public int getElapsed() {
-        return elapsed;
-    }
+//    @Override
+//    public int getElapsed() {
+//        return elapsed;
+//    }
 
-    @Override
-    public void incrementElapsed() {
-        elapsed++;
-    }
+//    @Override
+//    public void incrementElapsed() {
+//        elapsed++;
+//    }
 
     @Override
     public void startRoast() {
