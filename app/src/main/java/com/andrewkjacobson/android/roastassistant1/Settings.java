@@ -8,6 +8,7 @@ public class Settings {
     private int roastTimeInSecAddend;
     private final int expectedRoastLength = 60 * 12; // todo should be a setting
     private final int maxGraphTemperature = 400; // todo should be a setting
+    private final int minGraphTemperature = 50; // todo should be a setting
 
     public Settings(int temperatureCheckFrequency, int allowedTempChange, int startingTemperature, int startingPower, int roastTimeInSecAddend) {
         this.temperatureCheckFrequency = temperatureCheckFrequency;
@@ -43,5 +44,9 @@ public class Settings {
 
     public int getMaxGraphTemperature() {
         return maxGraphTemperature;
+    }
+
+    public int getMinGraphTemperature() {
+        return minGraphTemperature;
     }
 }
