@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="PowerColorDark">#FF0000</color>
+    <!--    holo blue dark-->
+    <color name="TemperatureColor">#ff0099cc</color>
+
+    <color name="PowerColor">#FF0000</color>
+    <color name="FirstCrackColor">#00FF00</color>
 </resources>

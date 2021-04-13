@@ -125,6 +125,10 @@ public class RoastRepository {
         }
     }
 
+    public void deleteAllReadings() {
+        new deleteAllAsyncTask(mReadingDao).execute();
+    }
+
     private class insertAsyncTask extends AsyncTask<RoastComponent, Void, Long> {
         private BaseDao mAsyncTaskDao;
 
@@ -218,6 +222,20 @@ public class RoastRepository {
         @Override
         protected Void doInBackground(final RoastComponent... params) {
             mAsyncTaskDao.delete((params[0]));
+            return null;
+        }
+    }
+
+    private class deleteAllAsyncTask extends AsyncTask<Void, Void, Void> {
+        private ReadingDao mAsyncTaskDao;
+
+        deleteAllAsyncTask(ReadingDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mAsyncTaskDao.deleteAll();
             return null;
         }
     }

@@ -28,7 +28,6 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.List;
 
@@ -36,17 +35,18 @@ public class GraphFragment extends Fragment {
 
     private RoastViewModel viewModel;
     private LineChart chart;
+    private CrackReadingEntity firstCrack = null;
     private static final int TEMPERATURE_SET_INDEX = 0;
     private static final int POWER_SET_INDEX = 1;
     private static final int FIRST_CRACK_SET_INDEX = 2;
 
     final Observer<List<ReadingEntity>> readingObserver = readings -> {
         if(readings != null && !readings.isEmpty()) {
-            updateGraph(readings.get(readings.size()-1));
+            plotNew(readings.get(readings.size()-1));
         }
     };
 
-    final Observer<List<CrackReadingEntity>> crackObserver = this::graphFirstCrack;
+    final Observer<List<CrackReadingEntity>> crackObserver = this::plotFirstCrack;
 
     public GraphFragment() {
         // Required empty public constructor
@@ -81,6 +81,7 @@ public class GraphFragment extends Fragment {
 
     public void initGraph() {
         chart = getView().findViewById(R.id.chart);
+
 //        chart.setDrawOrder(new CombinedChart.DrawOrder[]{
 //                CombinedChart.DrawOrder.LINE, CombinedChart.DrawOrder.BAR,
 //        });
@@ -121,6 +122,8 @@ public class GraphFragment extends Fragment {
         xAxis.setTextColor(Color.WHITE);
         xAxis.setDrawGridLines(false);
         xAxis.setAvoidFirstLastClipping(true);
+        xAxis.setGranularity(1);
+        xAxis.setGranularityEnabled(true);
         xAxis.setValueFormatter(new ValueFormatter() {
 //            @Override
 //            public String getFormattedValue(float value, AxisBase axis) {
@@ -128,7 +131,7 @@ public class GraphFragment extends Fragment {
 //            }
             @Override
             public String getAxisLabel(float value, AxisBase axis) {
-                return String.format("%d:%02d", (int)value / 60, (int)value % 60);
+                return secondsToMinSec(value);
             }
         });
         xAxis.setEnabled(true);
@@ -138,21 +141,24 @@ public class GraphFragment extends Fragment {
 //        leftAxis.setTypeface(tfLight);
         leftAxis.setTextColor(Color.WHITE);
         leftAxis.setAxisMaximum(viewModel.getSettings().getMaxGraphTemperature());
-        leftAxis.setAxisMinimum(0f);
+        leftAxis.setAxisMinimum(viewModel.getSettings().getMinGraphTemperature());
         leftAxis.setDrawGridLines(true);
 
         // axis of power (right)
         YAxis rightAxis = chart.getAxisRight();
         rightAxis.setTextColor(Color.WHITE);
         rightAxis.setAxisMaximum(100f);
-        rightAxis.setAxisMinimum(0f);
+        rightAxis.setAxisMinimum(0); // 0% power
         rightAxis.setGranularity(25f);
         rightAxis.setDrawGridLines(false);
         rightAxis.setEnabled(true);
     }
 
-    public void updateGraph(Reading reading) {
+    public void plotNew(Reading reading) {
         LineData lineData = chart.getData();
+
+        // todo maybe I should have an observer for isRunning in the VM
+        if(viewModel.isRunning()) chart.getXAxis().setGranularityEnabled(false);
 
         if(lineData != null) {
             ILineDataSet temperatureSet = lineData.getDataSetByIndex(TEMPERATURE_SET_INDEX);
@@ -202,9 +208,8 @@ public class GraphFragment extends Fragment {
         }
     }
 
-    private void graphFirstCrack(List<CrackReadingEntity> crackReadingEntities) {
+    private void plotFirstCrack(List<CrackReadingEntity> crackReadingEntities) {
         // find first crack (the last one logged)
-        CrackReadingEntity firstCrack = null;
         for(CrackReadingEntity c : crackReadingEntities) {
             if(c.getCrackNumber() == 1) firstCrack = c;
         }
@@ -220,75 +225,22 @@ public class GraphFragment extends Fragment {
                     lineData.addDataSet(firstCrackSet);
                 }
 
-                // todo add time and temp labels
                 // add bottom point
                 lineData.addEntry(new Entry(
                         firstCrack.getSeconds(),
-                        0), //viewModel.getSettings().getMinGraphTemperature()),
+                        viewModel.getSettings().getMinGraphTemperature()),
                         FIRST_CRACK_SET_INDEX);
                 // add top point
                 lineData.addEntry(new Entry(
-                        firstCrack.getSeconds() + 0.00001f, // trying to make a vertical line
-                        firstCrack.getTemperature()),
+                        firstCrack.getSeconds() + 0.00001f, // make a vertical line representing 1C
+                        viewModel.getSettings().getMaxGraphTemperature()),
                         FIRST_CRACK_SET_INDEX);
+
                 lineData.notifyDataChanged();
                 chart.notifyDataSetChanged();
                 chart.moveViewToX(lineData.getEntryCount());
             }
         }
-
-
-//
-//
-//        BarData chartData = chart.getData().getBarData();
-//
-//        if(chartData != null) {
-//            IBarDataSet firstCrackSet = chartData.getDataSetByIndex(FIRST_CRACK_SET_INDEX);
-//            firstCrackSet.setDrawValues(true);
-//            // temperatureSet.addEntry(...); // can be called as well
-//
-//            // initialize data sets as needed
-//            if(firstCrackSet == null) {
-//                firstCrackSet = createFirstCrackSet();
-//                chartData.addDataSet(firstCrackSet);
-//            }
-//
-//            // add first crack entry
-//            CrackReadingEntity firstCrack = null;
-//            for(CrackReadingEntity c : crackReadingEntities) { // find the last 1C
-//                if(c.getCrackNumber() == 1) firstCrack = c;
-//            }
-//            if(firstCrack != null && firstCrack.hasOccurred()) {
-//
-//
-//
-//
-//
-//                // todo add time and temp labels
-//                chartData.addEntry(new Entry(firstCrack.getSeconds(),
-//                        firstCrack.getTemperature()), FIRST_CRACK_SET_INDEX);
-//                chartData.notifyDataChanged();
-//                chart.notifyDataSetChanged();
-//            }
-            // END MPChart--------
-//
-//
-//        CrackReadingEntity firstCrack = null;
-//        for(CrackReadingEntity c : crackReadingEntities) { // find the last 1C
-//            if(c.getCrackNumber() == 1) firstCrack = c;
-//        }
-//        if(firstCrack != null && firstCrack.hasOccurred()) {
-//            BarGraphSeries<DataPoint> series = new BarGraphSeries();
-//            series.appendData(new DataPoint(
-//                    firstCrack.getSeconds(), mMaxGraphTemperature), false, 99);
-//            series.setDataWidth(5);
-//            series.setColor(Color.GREEN);
-//            mGraph.addSeries(series);
-//            double firstCrackLineLeftX = mGraph.getSeries().get(mGraph.getSeries().indexOf(series)).getLowestValueX();
-//
-//            Canvas canvas = new Canvas();
-//            mGraph.getViewport().draw(canvas);
-//        }
     }
 
     private LineDataSet createGeneralSet() {
@@ -297,7 +249,7 @@ public class GraphFragment extends Fragment {
         set.setCircleRadius(1f);
         set.setCircleColor(Color.WHITE);
         set.setFillAlpha(65);
-        set.setFillColor(ColorTemplate.getHoloBlue());
+        set.setFillColor(R.color.TemperatureColor);
         set.setHighLightColor(Color.rgb(244, 117, 117));
         set.setValueTextColor(Color.BLACK);
         set.setValueTextSize(9f);
@@ -308,7 +260,8 @@ public class GraphFragment extends Fragment {
         LineDataSet set = createGeneralSet();
         set.setLabel("Temperature");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(ColorTemplate.getHoloBlue());
+        set.setColor(getResources().getColor(R.color.TemperatureColor));
+        set.setCircleColor(getResources().getColor(R.color.TemperatureColor));
         set.setDrawValues(false);
         return set;
     }
@@ -317,7 +270,8 @@ public class GraphFragment extends Fragment {
         LineDataSet set = createGeneralSet();
         set.setLabel("Power");
         set.setAxisDependency(YAxis.AxisDependency.RIGHT);
-        set.setColor(ColorTemplate.rgb("#FF0000"));
+        set.setColor(getResources().getColor(R.color.PowerColor));
+        set.setCircleColor(getResources().getColor(R.color.PowerColor));
         set.setDrawValues(false);
         return set;
     }
@@ -326,9 +280,26 @@ public class GraphFragment extends Fragment {
         LineDataSet set = createGeneralSet();
         set.setLabel("First Crack");
         set.setLineWidth(3.5f);
-        set.setAxisDependency(YAxis.AxisDependency.RIGHT);
-        set.setColor(ColorTemplate.rgb("#00FF00"));
-        set.setDrawValues(false);
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setColor(getResources().getColor(R.color.FirstCrackColor));
+        set.setCircleColor(getResources().getColor(R.color.FirstCrackColor));
+        set.setDrawValues(true);
+        set.setValueTextSize(18); // todo extract to resource
+        set.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getPointLabel(Entry entry) {
+                if(firstCrack == null ||
+                        entry.getY() != viewModel.getSettings().getMinGraphTemperature()) {
+                    return "";
+                }
+                return String.format("%d", firstCrack.getTemperature()) + "°  "
+                        + secondsToMinSec(firstCrack.getSeconds());
+            }
+        });
         return set;
+    }
+    
+    private String secondsToMinSec(float seconds) {
+        return String.format("%d:%02d", (int)seconds / 60, (int)seconds % 60);
     }
 }

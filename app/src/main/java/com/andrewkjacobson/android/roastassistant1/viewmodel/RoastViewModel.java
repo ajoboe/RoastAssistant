@@ -72,6 +72,15 @@ public class RoastViewModel extends AndroidViewModel {
         }
 
         mRoast = repository.getRoast(mRoastId);
+//    @Override
+//    public int getElapsed() {
+//        return elapsed;
+//    }
+
+//    @Override
+//    public void incrementElapsed() {
+//        elapsed++;
+//    }oastId);
         mDetails = repository.getDetails(mRoastId);
         mReadings = repository.getReadings(mRoastId);
         mCracks = repository.getCracks(mRoastId);
@@ -213,14 +222,13 @@ public class RoastViewModel extends AndroidViewModel {
 //        repository.update((RoastEntity) r);
 //    }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean recordTemperature(String temperature) {
         if(isValidTemperature(temperature)) {
             ReadingEntity newReading = new ReadingEntity(
                     getElapsed(),
                     Integer.valueOf(temperature),
-                    getCurrentReading().getPower(),
-                    getRoastId()); // power from prev reading
+                    getCurrentReading().getPower(),  // power from prev reading
+                    getRoastId());
             repository.insert(newReading);
             return true;
         }
@@ -301,7 +309,6 @@ public class RoastViewModel extends AndroidViewModel {
         repository.update(r);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void set1c() {
         repository.insert(new CrackReadingEntity(
                 getElapsed(),
