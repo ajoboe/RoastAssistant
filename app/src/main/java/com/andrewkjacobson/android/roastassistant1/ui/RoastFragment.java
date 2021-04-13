@@ -232,7 +232,6 @@ public class RoastFragment extends Fragment
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -387,20 +386,27 @@ public class RoastFragment extends Fragment
         startActivityForResult(intent, requestCode); // callback is onActivityResult()
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void processRecognizerResults(Intent data, boolean isFirstCrack) {
         String stringCurrTemp = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
                 .get(0).replaceAll("[^0-9]", "");
 
-        if(!viewModel.recordTemperature(stringCurrTemp)) {
-            if(isFirstCrack) {
-                queryTemperature(REQUEST_CODE_1C_CLICKED);
-            } else {
-                queryTemperature(REQUEST_CODE_QUERY_TEMPERATURE);
-            }
+        if(isFirstCrack) {
+            processFirstCrack(stringCurrTemp);
+        } else {
+            processTemperature(stringCurrTemp);
         }
+    }
 
-        if(isFirstCrack) viewModel.set1c();
+    private void processTemperature(String stringCurrTemp) {
+        if(!viewModel.recordTemperature(stringCurrTemp)) {
+                queryTemperature(REQUEST_CODE_QUERY_TEMPERATURE);
+        }
+    }
+
+    private void processFirstCrack(String stringCurrTemp) {
+        if(!viewModel.record1c(stringCurrTemp)) {
+            queryTemperature(REQUEST_CODE_1C_CLICKED);
+        }
     }
 
     private void toggleRoast(View view) {

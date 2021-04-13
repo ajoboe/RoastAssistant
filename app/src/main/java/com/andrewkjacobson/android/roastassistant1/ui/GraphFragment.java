@@ -81,7 +81,6 @@ public class GraphFragment extends Fragment {
 
     public void initGraph() {
         chart = getView().findViewById(R.id.chart);
-
 //        chart.setDrawOrder(new CombinedChart.DrawOrder[]{
 //                CombinedChart.DrawOrder.LINE, CombinedChart.DrawOrder.BAR,
 //        });
@@ -198,7 +197,8 @@ public class GraphFragment extends Fragment {
                     YAxis.AxisDependency.RIGHT);
 
             // move to the latest entry
-            chart.moveViewToX(lineData.getEntryCount());
+            chart.setVisibleXRangeMinimum(chart.getXRange() + 2);
+//            chart.moveViewToX(lineData.getEntryCount());
             chart.invalidate();
             // this automatically refreshes the chart (calls invalidate())
             // chart.moveViewTo(data.getXValCount()-7, 55f, AxisDependency.LEFT);
@@ -236,6 +236,7 @@ public class GraphFragment extends Fragment {
                         viewModel.getSettings().getMaxGraphTemperature()),
                         FIRST_CRACK_SET_INDEX);
 
+                chart.setVisibleXRangeMinimum(chart.getXRange() + 5);
                 lineData.notifyDataChanged();
                 chart.notifyDataSetChanged();
                 chart.moveViewToX(lineData.getEntryCount());

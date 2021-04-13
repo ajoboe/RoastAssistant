@@ -223,16 +223,27 @@ public class RoastViewModel extends AndroidViewModel {
 //    }
 
     public boolean recordTemperature(String temperature) {
-        if(isValidTemperature(temperature)) {
-            ReadingEntity newReading = new ReadingEntity(
-                    getElapsed(),
-                    Integer.valueOf(temperature),
-                    getCurrentReading().getPower(),  // power from prev reading
-                    getRoastId());
-            repository.insert(newReading);
-            return true;
-        }
-        return false;
+        if(!isValidTemperature(temperature)) return false;
+
+        repository.insert(new ReadingEntity(
+                getElapsed(),
+                Integer.valueOf(temperature),
+                getCurrentPower(),  // power from prev reading
+                getRoastId()));
+        return true;
+    }
+
+    public boolean record1c(String temperature) {
+        if(!isValidTemperature(temperature)) return false;
+
+        repository.insert(new CrackReadingEntity(
+                getElapsed(),
+                Integer.valueOf(temperature),
+                getCurrentPower(),
+                1,
+                true,
+                getRoastId()));
+        return true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -309,30 +320,12 @@ public class RoastViewModel extends AndroidViewModel {
         repository.update(r);
     }
 
-    public void set1c() {
-        repository.insert(new CrackReadingEntity(
-                getElapsed(),
-                getCurrentTemperature(),
-                getCurrentPower(),
-                1,
-                true,
-                getRoastId()));
-    }
-
-//    private void addCrack(CrackReadingEntity crack) {
-//        repository.insert(crack);
-//    }
-
     private double getFirstCrackTime() {
         if(mCracks == null || mCracks.getValue() == null || mCracks.getValue().size() == 0) {
             return -1;
         }
         return mCracks.getValue().get(0).getSeconds();
     }
-
-//    public boolean isFirstCrack() {
-//        return firstCrackOccurred() && getFirstCrackTime() == getElapsed();
-//    }
 
     private CrackReadingEntity get1cReading() {
         return mCracks.getValue().get(0);
@@ -366,32 +359,4 @@ public class RoastViewModel extends AndroidViewModel {
                     Integer.parseInt("0")));
         }
     }
-//
-//    /**
-//     * A creator is used to inject the product ID into the ViewModel
-//     * <p>
-//     * This creator is to showcase how to inject dependencies into ViewModels. It's not
-//     * actually necessary in this case, as the product ID can be passed in a public method.
-//     */
-//    public static class Factory extends ViewModelProvider.NewInstanceFactory {
-//
-//        @NonNull
-//        private final Application mApplication;
-//        private final SavedStateHandle mSavedStateHandle;
-//        private final int mRoastId;
-//
-//
-//        public Factory(@NonNull Application application, SavedStateHandle savedStateHandle, int roastId) {
-//            mApplication = application;
-//            mSavedStateHandle = savedStateHandle;
-//            mRoastId = roastId;
-//        }
-//
-//        @SuppressWarnings("unchecked")
-//        @Override
-//        @NonNull
-//        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-//            return (T) new RoastViewModel(mApplication, mSavedStateHandle, mRoastId);
-//        }
-//    }
 }
