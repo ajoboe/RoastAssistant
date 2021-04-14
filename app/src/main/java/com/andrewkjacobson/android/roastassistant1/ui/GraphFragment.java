@@ -75,30 +75,15 @@ public class GraphFragment extends Fragment {
         viewModel.getCracks().observe(getViewLifecycleOwner(), crackObserver);
     }
 
-    // ****************
-    // PRIVATE METHODS
-    // ****************
-
-    public void initGraph() {
+    private void initGraph() {
         chart = getView().findViewById(R.id.chart);
-//        chart.setDrawOrder(new CombinedChart.DrawOrder[]{
-//                CombinedChart.DrawOrder.LINE, CombinedChart.DrawOrder.BAR,
-//        });
 
-        // disable description
         chart.getDescription().setEnabled(false);
-
-        // enable touch gestures
         chart.setTouchEnabled(true);
-
-        // enable scaling and dragging
         chart.setDragEnabled(true);
         chart.setScaleEnabled(true);
         chart.setDrawGridBackground(true);
-
-        // if disabled, scaling can be done on x- and y-axis separately
         chart.setPinchZoom(true);
-//        chart.setScaleXEnabled(true);
 
         // set an alternative background color
         chart.setBackgroundColor(Color.DKGRAY);
@@ -108,26 +93,18 @@ public class GraphFragment extends Fragment {
         data.setValueTextColor(Color.WHITE);
         chart.setData(data);
 
-        // get the legend (only possible after setting data)
+        // legend setup
         Legend l = chart.getLegend();
-
-        // modify the legend ...
         l.setForm(Legend.LegendForm.LINE);
-//        l.setTypeface(tfLight);
         l.setTextColor(Color.WHITE);
 
         XAxis xAxis = chart.getXAxis();
-//        xl.setTypeface(tfLight);
         xAxis.setTextColor(Color.WHITE);
         xAxis.setDrawGridLines(false);
         xAxis.setAvoidFirstLastClipping(true);
-        xAxis.setGranularity(1);
+        xAxis.setGranularity(2); // will be reset when data is added
         xAxis.setGranularityEnabled(true);
         xAxis.setValueFormatter(new ValueFormatter() {
-//            @Override
-//            public String getFormattedValue(float value, AxisBase axis) {
-//                return String.format("%f.0:%f.0", value / 60, value % 60);
-//            }
             @Override
             public String getAxisLabel(float value, AxisBase axis) {
                 return secondsToMinSec(value);
@@ -137,7 +114,6 @@ public class GraphFragment extends Fragment {
 
         // axis of temperature (left)
         YAxis leftAxis = chart.getAxisLeft();
-//        leftAxis.setTypeface(tfLight);
         leftAxis.setTextColor(Color.WHITE);
         leftAxis.setAxisMaximum(viewModel.getSettings().getMaxGraphTemperature());
         leftAxis.setAxisMinimum(viewModel.getSettings().getMinGraphTemperature());
@@ -146,7 +122,7 @@ public class GraphFragment extends Fragment {
         // axis of power (right)
         YAxis rightAxis = chart.getAxisRight();
         rightAxis.setTextColor(Color.WHITE);
-        rightAxis.setAxisMaximum(100f);
+        rightAxis.setAxisMaximum(101f);
         rightAxis.setAxisMinimum(0); // 0% power
         rightAxis.setGranularity(25f);
         rightAxis.setDrawGridLines(false);
@@ -162,7 +138,6 @@ public class GraphFragment extends Fragment {
         if(lineData != null) {
             ILineDataSet temperatureSet = lineData.getDataSetByIndex(TEMPERATURE_SET_INDEX);
             ILineDataSet powerSet = lineData.getDataSetByIndex(POWER_SET_INDEX);
-            // temperatureSet.addEntry(...); // can be called as well
 
             // initialize data sets as needed
             if(temperatureSet == null) {
@@ -185,7 +160,7 @@ public class GraphFragment extends Fragment {
 
             // todo remove hardcoded 0s and 100 (move to settings)
             // limit the number of visible entries
-            chart.setVisibleXRangeMinimum(0);
+            chart.setVisibleXRangeMinimum(chart.getXRange() + 2);
             chart.setVisibleXRangeMaximum(viewModel.getSettings().getExpectedRoastLength());
             chart.setVisibleYRange(
                     viewModel.getSettings().getMinGraphTemperature(),
@@ -193,16 +168,10 @@ public class GraphFragment extends Fragment {
                     YAxis.AxisDependency.LEFT);
             chart.setVisibleYRange(
                     0,
-                    100,
+                    101,
                     YAxis.AxisDependency.RIGHT);
 
-            // move to the latest entry
-            chart.setVisibleXRangeMinimum(chart.getXRange() + 2);
-//            chart.moveViewToX(lineData.getEntryCount());
-            chart.invalidate();
-            // this automatically refreshes the chart (calls invalidate())
-            // chart.moveViewTo(data.getXValCount()-7, 55f, AxisDependency.LEFT);
-
+            chart.invalidate(); // updates the chart
         } else {
             Log.w(this.getClass().toString(), "lineData was null in GraphFragment.updateGraph()");
         }

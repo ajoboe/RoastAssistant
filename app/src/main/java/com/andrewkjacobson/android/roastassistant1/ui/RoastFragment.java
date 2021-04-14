@@ -11,7 +11,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.RadioButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,7 +25,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.andrewkjacobson.android.roastassistant1.R;
 import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
-import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
 
 import java.util.List;
@@ -63,27 +64,10 @@ public class RoastFragment extends Fragment
                 mTextCurrentTemperature.setText(String.format("%d°", curr.getTemperature()));
                 setPowerRadioButton(curr.getPower(), getView());
             }
-            // set first crack info
-//            if(viewModel.firstCrackOccurred()) {
-//                ((TextView) getView().findViewById(R.id.text_1c_time)).setText(
-//                        String.format("%d:%d",
-//                                viewModel.getFirstCrackTime() / 60, // minutes
-//                                viewModel.getFirstCrackTime() % 60)); // seconds
-//                ((TextView) getView().findViewById(R.id.text_1c_temperature)).setText(
-//                        String.format("%d°", viewModel.get1cReading().getTemperature()));
-//                ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
-//                        String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
-//            }
         }
     };
 
     final Observer<List<CrackReadingEntity>> crackObserver = new Observer<List<CrackReadingEntity>>() {
-
-        /**
-         * Called when the data is changed.
-         *
-         * @param crackReadingEntities The new data
-         */
         @Override
         public void onChanged(List<CrackReadingEntity> crackReadingEntities) {
             // set first crack info
@@ -98,49 +82,13 @@ public class RoastFragment extends Fragment
                                 firstCrack.getSeconds() % 60)); // seconds
                 ((TextView) getView().findViewById(R.id.text_1c_temperature)).setText(
                         String.format("%d°", firstCrack.getTemperature()));
-//                    float percent = (float) firstCrack.getSeconds() / ((float) viewModel.getElapsed()) * 100;
-//                    ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
-//                        String.format("%.2f", percent) + "%");
             }
-        }
-    };
-
-    final Observer<RoastEntity> roastObserver = new Observer<RoastEntity>() {
-
-        /**
-         * Called when the data is changed.
-         *
-         * @param roastEntity The new data
-         */
-        @Override
-        public void onChanged(RoastEntity roastEntity) {
-            // todo doing this in Tick now...remove
-//            if(viewModel.firstCrackOccurred()) {
-//                ((TextView) getView().findViewById(R.id.text_1c_percent)).setText(
-//                        String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
-//            }
         }
     };
 
     public RoastFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided roastId. If no roastId
-     * is provided, a new roast is started.
-     *
-     * @param roastId the ID of the roast to load.
-     * @return A new instance of fragment RoastFragment.
-     */
-//    public static RoastFragment newInstance(int roastId) { // todo probably don't need the roastId stuff
-//        RoastFragment fragment = new RoastFragment();
-//        Bundle bundle = new Bundle();
-//        bundle.putInt(RoastViewModel.KEY_ROAST_ID, roastId);
-//        fragment.setArguments(bundle);
-//        return fragment;
-//    }
 
     /**
      * Called to do initial creation of a fragment.  This is called after
@@ -215,7 +163,6 @@ public class RoastFragment extends Fragment
         // Create the observers that updates the UI.
         viewModel.getReadings().observe(getViewLifecycleOwner(), readingsObserver);
         viewModel.getCracks().observe(getViewLifecycleOwner(), crackObserver);
-        viewModel.getRoast().observe(getViewLifecycleOwner(), roastObserver);
 
         if(savedInstanceState != null) {
             if (viewModel.getElapsed() > 0) {
@@ -307,7 +254,38 @@ public class RoastFragment extends Fragment
         ((RadioButton)view.findViewById(R.id.radio_button_75)).setOnClickListener(this);
         ((RadioButton)view.findViewById(R.id.radio_button_100)).setOnClickListener(this);
 
-//        setPowerRadioButton(viewModel.getSettings().getStartingPower(), view); // todo need to get this from settings in the model
+        SeekBar seekBar = (view.findViewById(R.id.seek_bar_power));
+        seekBar.setProgress(4); // todo should not be hardcoded
+        seekBar.setMax(4);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int seekBarValue;
+            Toast toast;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser) {
+                    seekBarValue = progress * 25; // todo step should not be hardcoded
+                    if(toast != null) toast.cancel();
+                    toast = Toast.makeText(
+                            getContext(),
+                            String.format("%d%%", seekBarValue),
+                            Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.d(LOG_TAG, "Power changed to " + Integer.toString(seekBarValue));
+                viewModel.recordPower(seekBarValue);
+            }
+        });
 
         // set tick listener
         mChronometerRoastTime.setOnChronometerTickListener(chronometer -> {
@@ -315,13 +293,9 @@ public class RoastFragment extends Fragment
             if((viewModel.getElapsed() + 5) % viewModel.getSettings().getTemperatureCheckFrequency() == 0) {
                 queryTemperature(REQUEST_CODE_QUERY_TEMPERATURE);
             }
-//            viewModel.incrementSeconds();
-
             // update first crack percentage
             if(viewModel.firstCrackOccurred()) {
-//                ((TextView) view.findViewById(R.id.text_1c_percent)).setText(
-//                        String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
-                ((TextView) getActivity().findViewById(R.id.text_1c_percent_floating))
+                (getActivity().findViewById(R.id.text_1c_percent_floating))
                         .setVisibility(View.VISIBLE);
                 ((TextView) getActivity().findViewById(R.id.text_1c_percent_floating))
                         .setText(String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");

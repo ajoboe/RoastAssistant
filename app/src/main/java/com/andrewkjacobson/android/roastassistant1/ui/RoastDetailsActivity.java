@@ -1,17 +1,19 @@
 package com.andrewkjacobson.android.roastassistant1.ui;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
 
 import com.andrewkjacobson.android.roastassistant1.R;
 import com.andrewkjacobson.android.roastassistant1.db.entity.DetailsEntity;
@@ -37,26 +39,15 @@ public class RoastDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_roast_details);
         mDetails = null;
         viewModel = new ViewModelProvider(this).get(RoastViewModel.class);
-//        int roastId = getIntent().getIntExtra(RoastActivity.ROAST_ID_KEY, -1);
 
-//        viewModel.loadRoast(roastId);
         viewModel.getDetails().observe(this, new Observer<DetailsEntity>() {
-            /**
-             * Called when the data is changed.
-             *
-             * @param details The new data
-             */
             @Override
             public void onChanged(DetailsEntity details) {
-                if(details != null) {
-                    populateUI(details);
-                }
+                if(details != null) populateUI(details);
             }
-
         });
 
-        // todo only do this if all fields are empty
-        autofillDate();
+//        autofillDate();
 
         // action bar
         ActionBar actionBar = getSupportActionBar();
@@ -66,12 +57,15 @@ public class RoastDetailsActivity extends AppCompatActivity {
 
         // roast degree spinner
         Spinner spinner = findViewById(R.id.spinnerRoastDegree);
-//        if(spinner != null) spinner.setOnItemSelectedListener(this);
         mSpinnerAdapter = ArrayAdapter
                 .createFromResource(this, R.array.roast_degree_spinner_labels_array,
                         android.R.layout.simple_spinner_item);
         mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         if(spinner != null) spinner.setAdapter(mSpinnerAdapter);
+
+        // calculate weight loss
+        ((TextInputEditText)findViewById(R.id.text_decimal_yield)).addTextChangedListener(new WeightWatcher());
+        ((TextInputEditText)findViewById(R.id.text_decimal_batch_size)).addTextChangedListener(new WeightWatcher());
 
         // save button
         final Button button = findViewById(R.id.button_save);
@@ -96,10 +90,12 @@ public class RoastDetailsActivity extends AppCompatActivity {
     private void populateUI(DetailsEntity details) {
         // todo Eventually populate cards with all roasts from mAllRoasts
         ((TextInputEditText)findViewById(R.id.textDate)).setText(details.getDate());
+        autofillDate(); // if date is empty, fill it in
+
         ((TextInputEditText)findViewById(R.id.autoTextBeanType)).setText(details.getBeanType());
-        ((TextInputEditText)findViewById(R.id.textDecimalBatchSize))
+        ((TextInputEditText)findViewById(R.id.text_decimal_batch_size))
                 .setText(String.format("%.2f", details.getBatchSize()));
-        ((TextInputEditText)findViewById(R.id.textDecimalYield))
+        ((TextInputEditText)findViewById(R.id.text_decimal_yield))
                 .setText(String.format("%.2f", details.getYield()));
         ((TextInputEditText)findViewById(R.id.textDecimalWeightLoss))
                 .setText(String.format("%.2f%%", 100 * details.getWeightLossPercentage()));
@@ -123,10 +119,10 @@ public class RoastDetailsActivity extends AppCompatActivity {
         details.setDate(((TextInputEditText)findViewById(R.id.textDate)).getText().toString());
         details.setBeanType(((TextInputEditText)findViewById(R.id.autoTextBeanType)).getText().toString());
 
-        String batchSize = ((TextInputEditText)findViewById(R.id.textDecimalBatchSize)).getText().toString();
+        String batchSize = ((TextInputEditText)findViewById(R.id.text_decimal_batch_size)).getText().toString();
         if(batchSize.length() > 0) details.setBatchSize(Float.parseFloat(batchSize));
 
-        String yield = ((TextInputEditText)findViewById(R.id.textDecimalYield)).getText().toString();
+        String yield = ((TextInputEditText)findViewById(R.id.text_decimal_yield)).getText().toString();
         if(yield.length() > 0) details.setYield(Float.parseFloat(yield));
 
         details.setRoastDegree(((Spinner)findViewById(R.id.spinnerRoastDegree)).getSelectedItem().toString());
@@ -146,39 +142,22 @@ public class RoastDetailsActivity extends AppCompatActivity {
             textDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(Calendar.getInstance().getTime()));
         }
     }
-//
-//    /**
-//     * <p>Callback method to be invoked when an item in this view has been
-//     * selected. This callback is invoked only when the newly selected
-//     * position is different from the previously selected position or if
-//     * there was no selected item.</p>
-//     * <p>
-//     * Implementers can call getItemAtPosition(position) if they need to access the
-//     * data associated with the selected item.
-//     *
-//     * @param parent   The AdapterView where the selection happened
-//     * @param view     The view within the AdapterView that was clicked
-//     * @param position The position of the view in the adapter
-//     * @param id       The row id of the item that is selected
-//     */
-//    @Override
-//    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-////        mDetails.setRoastDegree(parent.getItemAtPosition(position).toString());
-////        Spinner spinner = ;
-//        Toast.makeText(getApplicationContext(),
-//                ((Spinner)findViewById(R.id.spinnerRoastDegree)).getSelectedItem().toString()
-//                , Toast.LENGTH_SHORT).show();
-//    }
-//
-//    /**
-//     * Callback method to be invoked when the selection disappears from this
-//     * view. The selection can disappear for instance when touch is activated
-//     * or when the adapter becomes empty.
-//     *
-//     * @param parent The AdapterView that now contains no selected item.
-//     */
-//    @Override
-//    public void onNothingSelected(AdapterView<?> parent) {
-//
-//    }
+
+    private class WeightWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            ((TextInputEditText)findViewById(R.id.textDecimalWeightLoss))
+                    .setText(String.format("%.2f%%", 100 * fetchDetailsFromControls().getWeightLossPercentage()));
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    }
 }

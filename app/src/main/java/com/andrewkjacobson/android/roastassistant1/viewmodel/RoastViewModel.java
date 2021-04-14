@@ -205,6 +205,8 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public int getElapsed() {
+        if(mRoast == null || mRoast.getValue() == null) return 0;
+
         long startTime = mRoast.getValue().getStartTime();
         if(startTime <= 0) return 0;
         return  Math.toIntExact(elapsedRealtime() - startTime) / 1000;

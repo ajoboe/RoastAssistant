@@ -18,13 +18,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="date">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="date"
-                android:text=""/>
+                android:selectAllOnFocus="true"
+                android:text="" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -33,10 +35,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="bean type">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/autoTextBeanType"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:selectAllOnFocus="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -44,12 +48,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="batch size">
+
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textDecimalBatchSize"
+                android:id="@+id/text_decimal_batch_size"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="numberDecimal"/>
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -57,12 +63,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="yield">
+
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textDecimalYield"
+                android:id="@+id/text_decimal_yield"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="numberDecimal"/>
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -76,7 +84,8 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:text=""
-                android:inputType="none"/>
+                android:inputType="none"
+                android:focusable="false"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <Spinner
@@ -91,13 +100,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="roast notes">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textMultiRoastNotes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:gravity="start|top"
-                android:inputType="textMultiLine"/>
+                android:inputType="textMultiLine"
+                android:selectAllOnFocus="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -105,13 +116,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="tasting notes">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textMultiTastingNotes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:gravity="start|top"
-                android:inputType="textMultiLine"/>
+                android:inputType="textMultiLine"
+                android:selectAllOnFocus="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -119,10 +132,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="roaster">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/autoTextRoaster"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:selectAllOnFocus="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -130,10 +145,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="ambient temperature">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/autoTextAmbientTemp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
