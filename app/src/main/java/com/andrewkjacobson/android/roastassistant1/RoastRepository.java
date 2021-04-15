@@ -89,14 +89,14 @@ public class RoastRepository {
 //        new insertAsyncTask(mRoastDao).execute(roastEntity);
 //    }
 
-    public void update(RoastComponent... item) {
-        if(item instanceof RoastEntity[]) {
+    public void update(RoastComponent item) {
+        if(item instanceof RoastEntity) {
             new updateAsyncTask(mRoastDao).execute(item);
-        } else if(item instanceof DetailsEntity[]) {
+        } else if(item instanceof DetailsEntity) {
             new updateAsyncTask(mDetailsDao).execute(item);
-        } else if(item instanceof CrackReadingEntity[]) {
+        } else if(item instanceof CrackReadingEntity) {
             new updateAsyncTask(mCrackReadingDao).execute(item);
-        } else if(item instanceof ReadingEntity[]) {
+        } else if(item instanceof ReadingEntity) {
             new updateAsyncTask(mReadingDao).execute(item);
         }
     }

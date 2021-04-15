@@ -1,5 +1,6 @@
 package com.andrewkjacobson.android.roastassistant1.model;
 
+// todo should a Reading be temp OR power, not both??
 public interface Reading{
     int getSeconds();
 

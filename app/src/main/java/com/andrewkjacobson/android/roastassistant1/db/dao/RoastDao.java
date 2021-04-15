@@ -3,6 +3,7 @@ package com.andrewkjacobson.android.roastassistant1.db.dao;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
+
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 
 import java.util.List;

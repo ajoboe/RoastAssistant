@@ -41,7 +41,7 @@ public class ReadingDaoTest extends TestCase {
         viewModel.recordTemperature("100");
 //        readingDao.insert(r);
 //        LiveData<List<ReadingEntity>> readings = readingDao.getAll(999);
-        LiveData<List<ReadingEntity>> readings = viewModel.getReadings();
+        LiveData<List<ReadingEntity>> readings = viewModel.getReadingsLiveData();
 
         try {
             TestObserver.test(readings)

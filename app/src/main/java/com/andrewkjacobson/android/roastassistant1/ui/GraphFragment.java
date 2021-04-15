@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.andrewkjacobson.android.roastassistant1.R;
 import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
+import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 import com.andrewkjacobson.android.roastassistant1.model.Reading;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
 import com.github.mikephil.charting.charts.LineChart;
@@ -36,13 +37,23 @@ public class GraphFragment extends Fragment {
     private RoastViewModel viewModel;
     private LineChart chart;
     private CrackReadingEntity firstCrack = null;
+    private Reading currentReading;
     private static final int TEMPERATURE_SET_INDEX = 0;
     private static final int POWER_SET_INDEX = 1;
     private static final int FIRST_CRACK_SET_INDEX = 2;
 
+    final Observer<RoastEntity> roastObserver = roast -> {
+        if(roast != null && roast.isRunning()) {
+            plotNew(currentReading);
+        }
+    };
+
     final Observer<List<ReadingEntity>> readingObserver = readings -> {
         if(readings != null && !readings.isEmpty()) {
-            plotNew(readings.get(readings.size()-1));
+            currentReading = readings.get(readings.size() - 1);
+            if (viewModel.isRunning()) {
+                plotNew(currentReading);
+            }
         }
     };
 
@@ -70,9 +81,10 @@ public class GraphFragment extends Fragment {
         // The default ViewModel factory provides the appropriate SavedStateHandle to your ViewModel
         //  see https://developer.android.com/topic/libraries/architecture/viewmodel-savedstate
         viewModel = new ViewModelProvider(requireActivity()).get(RoastViewModel.class); // this is all we need to do it
+        viewModel.getReadingsLiveData().observe(getViewLifecycleOwner(), readingObserver);
+        viewModel.getCracksLiveData().observe(getViewLifecycleOwner(), crackObserver);
+        viewModel.getRoastLiveData().observe(getViewLifecycleOwner(), roastObserver);
         initGraph();
-        viewModel.getReadings().observe(getViewLifecycleOwner(), readingObserver);
-        viewModel.getCracks().observe(getViewLifecycleOwner(), crackObserver);
     }
 
     private void initGraph() {
@@ -130,6 +142,8 @@ public class GraphFragment extends Fragment {
     }
 
     public void plotNew(Reading reading) {
+//        if(!viewModel.isRunning()) return;
+
         LineData lineData = chart.getData();
 
         // todo maybe I should have an observer for isRunning in the VM
@@ -210,6 +224,7 @@ public class GraphFragment extends Fragment {
                 chart.notifyDataSetChanged();
                 chart.moveViewToX(lineData.getEntryCount());
             }
+            plotNew(firstCrack); // plot the temp and power lines too
         }
     }
 
@@ -232,7 +247,23 @@ public class GraphFragment extends Fragment {
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setColor(getResources().getColor(R.color.TemperatureColor));
         set.setCircleColor(getResources().getColor(R.color.TemperatureColor));
-        set.setDrawValues(false);
+        set.setDrawValues(true);
+        set.setValueTextSize(18); // todo extract to resource
+        set.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getPointLabel(Entry entry) {
+                // only label the first, last, and 1c temperature entries
+                if(firstCrack != null && entry.getY() == firstCrack.getTemperature()) {
+                    return String.format("%.0f°", entry.getY());
+                }
+                if(entry.getX() == 0 || entry.getX() == currentReading.getSeconds()) {
+                    return String.format("%.0f°", entry.getY());
+                }
+
+                return "";
+            }
+        });
+
         return set;
     }
 
@@ -258,12 +289,13 @@ public class GraphFragment extends Fragment {
         set.setValueFormatter(new ValueFormatter() {
             @Override
             public String getPointLabel(Entry entry) {
-                if(firstCrack == null ||
-                        entry.getY() != viewModel.getSettings().getMinGraphTemperature()) {
+                if(firstCrack == null) {
                     return "";
                 }
-                return String.format("%d", firstCrack.getTemperature()) + "°  "
-                        + secondsToMinSec(firstCrack.getSeconds());
+                if(entry.getY() == viewModel.getSettings().getMinGraphTemperature()) {
+                    return secondsToMinSec(firstCrack.getSeconds());
+                }
+                return "";
             }
         });
         return set;

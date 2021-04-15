@@ -1,7 +1,6 @@
 package com.andrewkjacobson.android.roastassistant1.ui;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.util.Log;
@@ -17,13 +16,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.andrewkjacobson.android.roastassistant1.R;
-import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
 
@@ -31,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
-import static android.os.SystemClock.elapsedRealtime;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,90 +63,21 @@ public class RoastFragment extends Fragment
         }
     };
 
-    final Observer<List<CrackReadingEntity>> crackObserver = new Observer<List<CrackReadingEntity>>() {
-        @Override
-        public void onChanged(List<CrackReadingEntity> crackReadingEntities) {
-            // set first crack info
-            CrackReadingEntity firstCrack = null;
-            for(CrackReadingEntity c : crackReadingEntities) { // find the last 1C
-                if(c.getCrackNumber() == 1) firstCrack = c;
-            }
-            if(firstCrack != null && firstCrack.hasOccurred()) {
-                ((TextView) getView().findViewById(R.id.text_1c_time)).setText(
-                        String.format("%d:%d",
-                                firstCrack.getSeconds() / 60, // minutes
-                                firstCrack.getSeconds() % 60)); // seconds
-                ((TextView) getView().findViewById(R.id.text_1c_temperature)).setText(
-                        String.format("%d°", firstCrack.getTemperature()));
-            }
-        }
-    };
-
     public RoastFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Called to do initial creation of a fragment.  This is called after
-     * onAttach(Activity) and before
-     * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     *
-     * <p>Note that this can be called while the fragment's activity is
-     * still in the process of being created.  As such, you can not rely
-     * on things like the activity's content view hierarchy being initialized
-     * at this point.  If you want to do work once the activity itself is
-     * created, see {@link #onActivityCreated(Bundle)}.
-     *
-     * <p>Any restored child fragments will be created before the base
-     * <code>Fragment.onCreate</code> method returns.</p>
-     *
-     * @param savedInstanceState If the fragment is being re-created from
-     *                           a previous saved state, this is the state.
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);             //scoped to parent activity
     }
 
-    /**
-     * Called to have the fragment instantiate its user interface view.
-     * This is optional, and non-graphical fragments can return null. This will be called between
-     * {@link #onCreate(Bundle)} and {@link #onActivityCreated(Bundle)}.
-     * <p>A default View can be returned by calling Fragment(int) in your
-     * constructor. Otherwise, this method returns null.
-     *
-     * <p>It is recommended to <strong>only</strong> inflate the layout in this method and move
-     * logic that operates on the returned View to {@link #onViewCreated(View, Bundle)}.
-     *
-     * <p>If you return a View from here, you will later be called in
-     * {@link #onDestroyView} when the view is being released.
-     *
-     * @param inflater           The LayoutInflater object that can be used to inflate
-     *                           any views in the fragment,
-     * @param container          If non-null, this is the parent view that the fragment's
-     *                           UI should be attached to.  The fragment should not add the view itself,
-     *                           but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     *                           from a previous saved state as given here.
-     * @return Return the View for the fragment's UI, or null.
-     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_roast, container, false);
     }
 
-    /**
-     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
-     * has returned, but before any saved state has been restored in to the view.
-     * This gives subclasses a chance to initialize themselves once
-     * they know their view hierarchy has been completely created.  The fragment's
-     * view hierarchy is not however attached to its parent at this point.
-     *
-     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -161,8 +88,8 @@ public class RoastFragment extends Fragment
         initControls(view);
 
         // Create the observers that updates the UI.
-        viewModel.getReadings().observe(getViewLifecycleOwner(), readingsObserver);
-        viewModel.getCracks().observe(getViewLifecycleOwner(), crackObserver);
+        viewModel.getReadingsLiveData().observe(getViewLifecycleOwner(), readingsObserver);
+//        viewModel.getCracksLiveData().observe(getViewLifecycleOwner(), crackObserver);
 
         if(savedInstanceState != null) {
             if (viewModel.getElapsed() > 0) {
@@ -392,11 +319,13 @@ public class RoastFragment extends Fragment
     }
 
     public void startRoast(View view) {
-        int chronoAddend =  -(viewModel.getSettings().getRoastTimeInSecAddend() * 1000);
-        long startTime = elapsedRealtime() + chronoAddend;
-        viewModel.setStartTime(startTime); // todo should this just happen in startRoast?
-        viewModel.startRoast(); // triggers observer
+//        int chronoAddend =  -(viewModel.getSettings().getRoastTimeInSecAddend() * 1000);
+//        long startTime = elapsedRealtime() + chronoAddend;
+//        viewModel.setStartTime(startTime); // todo should this just happen in startRoast?
 
+
+        viewModel.startRoast(); // triggers observer
+//        ((LineChart)getActivity().findViewById(R.id.chart))
 
         // todo do in observer instead??
         // how to tell if roast JUST started
@@ -416,5 +345,4 @@ public class RoastFragment extends Fragment
         mButtonRecordTemp.setVisibility(View.GONE);
         viewModel.endRoast();
     }
-
 }

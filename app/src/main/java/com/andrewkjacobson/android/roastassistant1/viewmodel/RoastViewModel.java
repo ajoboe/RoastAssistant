@@ -19,6 +19,7 @@ import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
 import com.andrewkjacobson.android.roastassistant1.model.Crack;
 import com.andrewkjacobson.android.roastassistant1.model.Reading;
+import com.andrewkjacobson.android.roastassistant1.model.Roast;
 import com.andrewkjacobson.android.roastassistant1.ui.SettingsActivity;
 
 import java.util.List;
@@ -42,15 +43,14 @@ public class RoastViewModel extends AndroidViewModel {
     private final SavedStateHandle savedStateHandle;
 
     private int mRoastId = -1;
-    private final LiveData<RoastEntity> mRoast;
+    private final LiveData<RoastEntity> mRoastLiveData;
+    private RoastEntity mRoast;
     private final LiveData<DetailsEntity> mDetails;
     private final LiveData<List<ReadingEntity>> mReadings;
     private final LiveData<List<CrackReadingEntity>> mCracks;
     private Settings settings;
     private boolean mFirstCrackOccurred = false;
 
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public RoastViewModel(@NonNull Application application, SavedStateHandle savedStateHandle) {
         super(application);
         this.application = application;
@@ -61,26 +61,17 @@ public class RoastViewModel extends AndroidViewModel {
         if(savedStateHandle != null && savedStateHandle.contains(KEY_ROAST_ID)) {
             mRoastId = savedStateHandle.get(KEY_ROAST_ID);
         } else {
-            RoastEntity roast = new RoastEntity(); // empty roast w/ id
-            mRoastId = roast.getId();    //Long.valueOf(Instant.now().getEpochSecond()).intValue();
-            repository.insert(roast);
+            mRoast = new RoastEntity(); // empty roast w/ id
+            mRoastId = mRoast.getId();    //Long.valueOf(Instant.now().getEpochSecond()).intValue();
+            repository.insert(mRoast);
             repository.insert(new DetailsEntity(mRoastId));
             repository.insert(new ReadingEntity(0,
                     settings.getStartingTemperature(),
                     settings.getStartingPower(),
-                    roast.getId()));
+                    mRoastId));
         }
 
-        mRoast = repository.getRoast(mRoastId);
-//    @Override
-//    public int getElapsed() {
-//        return elapsed;
-//    }
-
-//    @Override
-//    public void incrementElapsed() {
-//        elapsed++;
-//    }oastId);
+        mRoastLiveData = repository.getRoast(mRoastId);
         mDetails = repository.getDetails(mRoastId);
         mReadings = repository.getReadings(mRoastId);
         mCracks = repository.getCracks(mRoastId);
@@ -91,47 +82,23 @@ public class RoastViewModel extends AndroidViewModel {
      *
      * @return the current roast ID
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public int getRoastId() {
-//        if(mRoastId == -1) {
-//            newRoast();
-//        }
         return mRoastId;
     }
 
-//    /**
-//     * Get a roast and related fields by id and set it to the current roast
-//     *
-//     * @param roastId the id of the desired roast
-//     * @return the desired roast
-//     */
-//    public void loadRoast(int roastId) {
-//        mRoast = repository.getRoast(roastId);
-//        mDetails = repository.getDetails(roastId);
-//        mReadings = repository.getReadings(roastId);
-//        mCracks = repository.getCracks(roastId);
-//    }
-
     /**
-     * Get the current roast. If there isn't one, a new roast is created and returned.
+     * Get the current roast.
      *
      * @return the current roast
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public LiveData<RoastEntity> getRoast() {
-        // if we have a roastId, get that roast
-        // otherwise, create a new roast
-//        if(mRoast == null) {
-//            if(mRoastId != -1) {
-//                mRoast = repository.getRoast(mRoastId);
-//            } else {
-//                newRoast();
-//            }
-//        }
+    public LiveData<RoastEntity> getRoastLiveData() {
+         return mRoastLiveData;
+    }
+
+    public Roast getRoast() {
         return mRoast;
     }
 
-//    @RequiresApi(api = Build.VERSION_CODES.O)
 //    public void newRoast() {
 //        Roast r = new RoastEntity(); // empty roast w/ id
 //        mRoastId = r.getId();
@@ -154,14 +121,14 @@ public class RoastViewModel extends AndroidViewModel {
         return mDetails;
     }
 
-    public LiveData<List<ReadingEntity>> getReadings() {
+    public LiveData<List<ReadingEntity>> getReadingsLiveData() {
 //        if(mReadings == null) {
 //            mReadings = new MutableLiveData<List<ReadingEntity>>(); // won't work because the ref will change when
 //        }
         return mReadings;
     }
 
-    public LiveData<List<CrackReadingEntity>> getCracks() {
+    public LiveData<List<CrackReadingEntity>> getCracksLiveData() {
 //        if(mCracks == null) {
 //            mCracks = new MutableLiveData<List<CrackReadingEntity>>();
 //        }
@@ -205,32 +172,23 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public int getElapsed() {
-        if(mRoast == null || mRoast.getValue() == null) return 0;
+//        if(mRoastLiveData == null || mRoastLiveData.getValue() == null) return 0;
 
-        long startTime = mRoast.getValue().getStartTime();
+//        long startTime = mRoastLiveData.getValue().getStartTime();
+        long startTime = mRoast.getStartTime();
         if(startTime <= 0) return 0;
         return  Math.toIntExact(elapsedRealtime() - startTime) / 1000;
-
-//        if(mRoast == null || mRoast.getValue() == null) {
-//            return 0;
-//        }
-//        return mRoast.getValue().getElapsed();
     }
-
-    // todo do we really need to update the db every second???
-//    public void incrementSeconds() {
-//        Roast r = mRoast.getValue();
-//        r.incrementElapsed();
-//        repository.update((RoastEntity) r);
-//    }
 
     public boolean recordTemperature(String temperature) {
         if(!isValidTemperature(temperature)) return false;
 
+        int power = getCurrentPower();
+        if(!isRunning()) repository.deleteAllReadings();
         repository.insert(new ReadingEntity(
                 getElapsed(),
                 Integer.valueOf(temperature),
-                getCurrentPower(),  // power from prev reading
+                power,  // power from prev reading
                 getRoastId()));
         return true;
     }
@@ -248,17 +206,17 @@ public class RoastViewModel extends AndroidViewModel {
         return true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void recordPower(int power) {
-        ReadingEntity reading = new ReadingEntity(
+        int temperature = getCurrentTemperature();
+        if(!isRunning()) repository.deleteAllReadings();
+
+        repository.insert(new ReadingEntity(
                 getElapsed(),
-                getCurrentTemperature(),
+                temperature,
                 power,
-                getRoastId());
-        repository.insert(reading);
+                getRoastId()));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private boolean isValidTemperature(String temperature) {
         int allowedChange = getSettings().getAllowedTempChange();
         return temperature.length() > 0
@@ -293,33 +251,44 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public boolean isRunning() {
-        return mRoast != null && mRoast.getValue() != null && mRoast.getValue().isRunning();
+//        return mRoastLiveData != null && mRoastLiveData.getValue() != null && mRoastLiveData.getValue().isRunning();
+        return mRoast.isRunning();
     }
 
     public long getStartTime() {
-        return mRoast.getValue().getStartTime();
+//        return mRoastLiveData.getValue().getStartTime();
+        return mRoast.getStartTime();
     }
 
     public void startRoast() {
-        RoastEntity r = mRoast.getValue();
-        r.startRoast();
-        repository.update(r);
+        int chronoAddend =  -(getSettings().getRoastTimeInSecAddend() * 1000);
+        long startTime = elapsedRealtime() + chronoAddend;
+        setStartTime(startTime);
+
+//        RoastEntity r = mRoastLiveData.getValue();
+//        r.startRoast();
+//        repository.update(r);
+        mRoast.startRoast();
+        repository.update(mRoast);
     }
 
     /**
      * End the roast and send it to the repository
      */
     public void endRoast() {
-        RoastEntity r = mRoast.getValue();
-        r.endRoast();
-        repository.update(r);
+//        RoastEntity r = mRoastLiveData.getValue();
+//        r.endRoast();
+//        repository.update(r);
+        mRoast.endRoast();
+        repository.update(mRoast);
     }
 
     // todo is this the right way to update live data??
     public void setStartTime(long startTime) {
-        RoastEntity r = mRoast.getValue();
-        r.setStartTime(startTime);
-        repository.update(r);
+//        RoastEntity r = mRoastLiveData.getValue();;
+//        if(r == null) r = mRoast;
+        mRoast.setStartTime(startTime);
+        repository.update(mRoast);
     }
 
     private double getFirstCrackTime() {

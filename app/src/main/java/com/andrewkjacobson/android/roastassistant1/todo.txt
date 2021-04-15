@@ -8,6 +8,9 @@
 //      can rely on the IDE or on the type of the object to signify nullability.
 
 // todo don't tick the ViewModel! Don't store seconds in the DB. Just save the start time.
+// todo should a Reading be temp OR power, not both??
+//          how about Reading is an interface w/ TempReading and PowerReading inheriting (as interfaces)
+//          them implement as TempReadingEntity and PowerReadingEntity
 
 
 // todo update 1c percentage in either tickListener or in roastEntityObserver
