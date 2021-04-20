@@ -7,6 +7,11 @@
 //      Because you don't want to have null checks for every parameter of every method called, you
 //      can rely on the IDE or on the type of the object to signify nullability.
 
+// todo BUG: changing power right after 1C causes the temp to revert to the previous value
+//          I'm guessing that either Crack needs to be treated like a Reading, or we need to
+//          officially add a Reading that duplicates first crack, not just graph it. OR, if readings
+//          were either TemperatureReading or PowerReading, then we wouldn't have the issue.
+
 // todo don't tick the ViewModel! Don't store seconds in the DB. Just save the start time.
 // todo should a Reading be temp OR power, not both??
 //          how about Reading is an interface w/ TempReading and PowerReading inheriting (as interfaces)

@@ -34,6 +34,7 @@ import java.util.List;
 
 public class GraphFragment extends Fragment {
 
+    protected static final float SPACE_RIGHT_OF_LAST_ENTRY = 2;
     private RoastViewModel viewModel;
     private LineChart chart;
     private CrackReadingEntity firstCrack = null;
@@ -43,8 +44,12 @@ public class GraphFragment extends Fragment {
     private static final int FIRST_CRACK_SET_INDEX = 2;
 
     final Observer<RoastEntity> roastObserver = roast -> {
-        if(roast != null && roast.isRunning()) {
-            plotNew(currentReading);
+        if(roast != null && roast.isRunning()) { // fires at the start of roast
+            XAxis xAxis = chart.getXAxis();
+            xAxis.setGranularity(2);
+            xAxis.setGranularityEnabled(true);
+
+            plotNew(currentReading); // plot the initial values when the roast starts
         }
     };
 
@@ -52,6 +57,7 @@ public class GraphFragment extends Fragment {
         if(readings != null && !readings.isEmpty()) {
             currentReading = readings.get(readings.size() - 1);
             if (viewModel.isRunning()) {
+                chart.getXAxis().setGranularityEnabled(false);
                 plotNew(currentReading);
             }
         }
@@ -96,9 +102,12 @@ public class GraphFragment extends Fragment {
         chart.setScaleEnabled(true);
         chart.setDrawGridBackground(true);
         chart.setPinchZoom(true);
-
+//        chart.setAlpha(.8f);
         // set an alternative background color
         chart.setBackgroundColor(Color.DKGRAY);
+
+        chart.setGridBackgroundColor(Color.DKGRAY);
+        chart.setBorderWidth(0);
 
         // add empty data
         LineData data = new LineData();
@@ -114,7 +123,7 @@ public class GraphFragment extends Fragment {
         xAxis.setTextColor(Color.WHITE);
         xAxis.setDrawGridLines(false);
         xAxis.setAvoidFirstLastClipping(true);
-        xAxis.setGranularity(2); // will be reset when data is added
+        xAxis.setGranularity(1); // will be reset when data is added
         xAxis.setGranularityEnabled(true);
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
@@ -130,6 +139,7 @@ public class GraphFragment extends Fragment {
         leftAxis.setAxisMaximum(viewModel.getSettings().getMaxGraphTemperature());
         leftAxis.setAxisMinimum(viewModel.getSettings().getMinGraphTemperature());
         leftAxis.setDrawGridLines(true);
+        leftAxis.setTextSize(8);
 
         // axis of power (right)
         YAxis rightAxis = chart.getAxisRight();
@@ -139,15 +149,11 @@ public class GraphFragment extends Fragment {
         rightAxis.setGranularity(25f);
         rightAxis.setDrawGridLines(false);
         rightAxis.setEnabled(true);
+        rightAxis.setTextSize(8);
     }
 
     public void plotNew(Reading reading) {
-//        if(!viewModel.isRunning()) return;
-
         LineData lineData = chart.getData();
-
-        // todo maybe I should have an observer for isRunning in the VM
-        if(viewModel.isRunning()) chart.getXAxis().setGranularityEnabled(false);
 
         if(lineData != null) {
             ILineDataSet temperatureSet = lineData.getDataSetByIndex(TEMPERATURE_SET_INDEX);
@@ -174,7 +180,7 @@ public class GraphFragment extends Fragment {
 
             // todo remove hardcoded 0s and 100 (move to settings)
             // limit the number of visible entries
-            chart.setVisibleXRangeMinimum(chart.getXRange() + 2);
+            chart.setVisibleXRangeMinimum(chart.getXRange() + SPACE_RIGHT_OF_LAST_ENTRY);
             chart.setVisibleXRangeMaximum(viewModel.getSettings().getExpectedRoastLength());
             chart.setVisibleYRange(
                     viewModel.getSettings().getMinGraphTemperature(),
@@ -233,10 +239,10 @@ public class GraphFragment extends Fragment {
         set.setLineWidth(2.5f);
         set.setCircleRadius(1f);
         set.setCircleColor(Color.WHITE);
-        set.setFillAlpha(65);
+        set.setFillAlpha(85);//todo do we need this?
         set.setFillColor(R.color.TemperatureColor);
         set.setHighLightColor(Color.rgb(244, 117, 117));
-        set.setValueTextColor(Color.BLACK);
+        set.setValueTextColor(Color.WHITE);
         set.setValueTextSize(9f);
         return set;
     }

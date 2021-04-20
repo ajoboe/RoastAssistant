@@ -291,7 +291,7 @@ public class RoastViewModel extends AndroidViewModel {
         repository.update(mRoast);
     }
 
-    private double getFirstCrackTime() {
+    public double getFirstCrackTime() {
         if(mCracks == null || mCracks.getValue() == null || mCracks.getValue().size() == 0) {
             return -1;
         }

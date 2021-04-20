@@ -10,12 +10,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.RadioButton;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.andrewkjacobson.android.roastassistant1.R;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
+import com.google.android.material.slider.Slider;
 
 import java.util.List;
 import java.util.Locale;
@@ -141,6 +142,7 @@ public class RoastFragment extends Fragment
                 break;
             case R.id.button_first_crack:
                 queryTemperature(REQUEST_CODE_1C_CLICKED);
+                mButton1C.setVisibility(View.GONE);
                 break;
             case R.id.button_record_temperature:
             case R.id.button_charge_temperature:
@@ -181,38 +183,45 @@ public class RoastFragment extends Fragment
         ((RadioButton)view.findViewById(R.id.radio_button_75)).setOnClickListener(this);
         ((RadioButton)view.findViewById(R.id.radio_button_100)).setOnClickListener(this);
 
-        SeekBar seekBar = (view.findViewById(R.id.seek_bar_power));
-        seekBar.setProgress(4); // todo should not be hardcoded
-        seekBar.setMax(4);
+//        SeekBar seekBar = (view.findViewById(R.id.slider_power));
+//        seekBar.setProgress(4); // todo should not be hardcoded
+//        seekBar.setMax(4);
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            int seekBarValue;
-            Toast toast;
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser) {
-                    seekBarValue = progress * 25; // todo step should not be hardcoded
-                    if(toast != null) toast.cancel();
-                    toast = Toast.makeText(
-                            getContext(),
-                            String.format("%d%%", seekBarValue),
-                            Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.d(LOG_TAG, "Power changed to " + Integer.toString(seekBarValue));
-                viewModel.recordPower(seekBarValue);
+        Slider sliderPower = (view.findViewById(R.id.slider_power));
+        sliderPower.addOnChangeListener((slider, value, fromUser) -> {
+            if(fromUser) {
+                Log.d(LOG_TAG, "Power changed to " + Integer.toString((int)value));
+                viewModel.recordPower((int)value);
             }
         });
+//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            int seekBarValue;
+//            Toast toast;
+//
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                if(fromUser) {
+//                    seekBarValue = progress * 25; // todo step should not be hardcoded
+//                    if(toast != null) toast.cancel();
+//                    toast = Toast.makeText(
+//                            getContext(),
+//                            String.format("%d%%", seekBarValue),
+//                            Toast.LENGTH_SHORT);
+//                    toast.show();
+//                }
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                Log.d(LOG_TAG, "Power changed to " + Integer.toString(seekBarValue));
+//                viewModel.recordPower(seekBarValue);
+//            }
+//        });
 
         // set tick listener
         mChronometerRoastTime.setOnChronometerTickListener(chronometer -> {
@@ -222,10 +231,22 @@ public class RoastFragment extends Fragment
             }
             // update first crack percentage
             if(viewModel.firstCrackOccurred()) {
-                (getActivity().findViewById(R.id.text_1c_percent_floating))
-                        .setVisibility(View.VISIBLE);
-                ((TextView) getActivity().findViewById(R.id.text_1c_percent_floating))
-                        .setText(String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
+                TextView text1C = getActivity().findViewById(R.id.text_1c_percent_floating);
+                text1C.setVisibility(View.VISIBLE);
+                text1C.setText(String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
+//                text1C.
+
+                // move the text view to center of section between 0 and 1C time
+                float biasedValue = (float) (viewModel.getFirstCrackTime()
+                        / (float)(viewModel.getElapsed() + GraphFragment.SPACE_RIGHT_OF_LAST_ENTRY))
+                        - .2f;
+//                float biasedValue = .2f;
+                ConstraintSet constraintSet = new ConstraintSet();
+                constraintSet.clone(getActivity(), R.layout.fragment_graph);
+                constraintSet.setHorizontalBias(R.id.text_1c_percent, biasedValue);
+                constraintSet.applyTo((ConstraintLayout)
+                        getActivity().findViewById(R.id.fragment_graph_constraint_layout));
+                getActivity().findViewById(R.id.text_1c_percent_floating).setVisibility(View.VISIBLE);
             }
         });
     }
@@ -319,13 +340,8 @@ public class RoastFragment extends Fragment
     }
 
     public void startRoast(View view) {
-//        int chronoAddend =  -(viewModel.getSettings().getRoastTimeInSecAddend() * 1000);
-//        long startTime = elapsedRealtime() + chronoAddend;
-//        viewModel.setStartTime(startTime); // todo should this just happen in startRoast?
-
 
         viewModel.startRoast(); // triggers observer
-//        ((LineChart)getActivity().findViewById(R.id.chart))
 
         // todo do in observer instead??
         // how to tell if roast JUST started
