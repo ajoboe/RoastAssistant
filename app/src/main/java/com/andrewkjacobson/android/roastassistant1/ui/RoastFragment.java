@@ -23,7 +23,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.andrewkjacobson.android.roastassistant1.R;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
-import com.google.android.material.slider.Slider;
 
 import java.util.List;
 import java.util.Locale;
@@ -186,14 +185,14 @@ public class RoastFragment extends Fragment
 //        SeekBar seekBar = (view.findViewById(R.id.slider_power));
 //        seekBar.setProgress(4); // todo should not be hardcoded
 //        seekBar.setMax(4);
-
-        Slider sliderPower = (view.findViewById(R.id.slider_power));
-        sliderPower.addOnChangeListener((slider, value, fromUser) -> {
-            if(fromUser) {
-                Log.d(LOG_TAG, "Power changed to " + Integer.toString((int)value));
-                viewModel.recordPower((int)value);
-            }
-        });
+//
+//        Slider sliderPower = (view.findViewById(R.id.slider_power));
+//        sliderPower.addOnChangeListener((slider, value, fromUser) -> {
+//            if(fromUser) {
+//                Log.d(LOG_TAG, "Power changed to " + Integer.toString((int)value));
+//                viewModel.recordPower((int)value);
+//            }
+//        });
 //        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 //            int seekBarValue;
 //            Toast toast;

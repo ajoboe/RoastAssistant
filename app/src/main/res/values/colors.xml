@@ -7,10 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
-<!--    holo blue light-->
     <color name="TemperatureColor">#FF33B5E5</color>
-
     <color name="PowerColor">#FF0000</color>
     <color name="FirstCrackColor">#00FF00</color>
 </resources>
