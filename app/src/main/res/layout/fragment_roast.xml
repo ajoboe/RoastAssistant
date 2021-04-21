@@ -53,8 +53,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="POWER"
-            app:layout_constraintEnd_toEndOf="@+id/text_seek_100"
-            app:layout_constraintStart_toStartOf="@+id/text_seek_0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -62,80 +62,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="100%"
-            app:layout_constraintEnd_toEndOf="@+id/radio_group_powers"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-<!--        app:layout_constraintEnd_toEndOf="@+id/slider_power"-->
 
-<!--        <com.google.android.material.slider.Slider-->
-<!--            android:layout_width="fill_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:id="@+id/slider_power"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/text_seek_0" />-->
-        <RadioGroup
-            android:id="@+id/radio_group_powers"
-            android:layout_width="wrap_content"
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider_power"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_seek_0">
-
-                    <TextView
-                        android:id="@+id/label_curr_power"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/string_label_power" />
-
-                    <RadioButton
-                        android:id="@+id/radio_button_0"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/zero_percent"
-                        tools:layout_editor_absoluteX="18dp"
-                        tools:layout_editor_absoluteY="506dp" />
-
-                    <RadioButton
-                        android:id="@+id/radio_button_25"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/string_25_percent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        tools:layout_editor_absoluteY="473dp" />
-
-                    <RadioButton
-                        android:id="@+id/radio_button_50"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/string_50_percent"
-                        tools:layout_editor_absoluteX="155dp"
-                        tools:layout_editor_absoluteY="519dp" />
-
-                    <RadioButton
-                        android:id="@+id/radio_button_75"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/string_75_percent"
-                        tools:layout_editor_absoluteX="148dp"
-                        tools:layout_editor_absoluteY="575dp" />
-
-                    <RadioButton
-                        android:id="@+id/radio_button_100"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/string_100_percent"
-                        tools:layout_editor_absoluteX="149dp"
-                        tools:layout_editor_absoluteY="615dp" />
-                </RadioGroup>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toBottomOf="@+id/text_label_power"
+            android:valueFrom="0"
+            android:valueTo="100"
+            android:value="100" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             <LinearLayout
@@ -177,8 +117,68 @@
                     style="?android:attr/buttonBarButtonStyle"/>
 
             </LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>
 
 
+    <!--        <RadioGroup-->
+    <!--            android:id="@+id/radio_group_powers"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_margin="8dp"-->
+    <!--            android:orientation="horizontal"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toBottomOf="@+id/text_seek_0">-->
 
+    <!--                    <TextView-->
+    <!--                        android:id="@+id/label_curr_power"-->
+    <!--                        android:layout_width="wrap_content"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:text="@string/string_label_power" />-->
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+    <!--                    <RadioButton-->
+    <!--                        android:id="@+id/radio_button_0"-->
+    <!--                        android:layout_width="wrap_content"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:layout_weight="1"-->
+    <!--                        android:text="@string/zero_percent"-->
+    <!--                        tools:layout_editor_absoluteX="18dp"-->
+    <!--                        tools:layout_editor_absoluteY="506dp" />-->
+
+    <!--                    <RadioButton-->
+    <!--                        android:id="@+id/radio_button_25"-->
+    <!--                        android:layout_width="wrap_content"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:layout_weight="1"-->
+    <!--                        android:text="@string/string_25_percent"-->
+    <!--                        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--                        app:layout_constraintStart_toStartOf="parent"-->
+    <!--                        tools:layout_editor_absoluteY="473dp" />-->
+
+    <!--                    <RadioButton-->
+    <!--                        android:id="@+id/radio_button_50"-->
+    <!--                        android:layout_width="wrap_content"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:layout_weight="1"-->
+    <!--                        android:text="@string/string_50_percent"-->
+    <!--                        tools:layout_editor_absoluteX="155dp"-->
+    <!--                        tools:layout_editor_absoluteY="519dp" />-->
+
+    <!--                    <RadioButton-->
+    <!--                        android:id="@+id/radio_button_75"-->
+    <!--                        android:layout_width="wrap_content"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:layout_weight="1"-->
+    <!--                        android:text="@string/string_75_percent"-->
+    <!--                        tools:layout_editor_absoluteX="148dp"-->
+    <!--                        tools:layout_editor_absoluteY="575dp" />-->
+
+    <!--                    <RadioButton-->
+    <!--                        android:id="@+id/radio_button_100"-->
+    <!--                        android:layout_width="wrap_content"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:layout_weight="1"-->
+    <!--                        android:text="@string/string_100_percent"-->
+    <!--                        tools:layout_editor_absoluteX="149dp"-->
+    <!--                        tools:layout_editor_absoluteY="615dp" />-->
+    <!--                </RadioGroup>-->
