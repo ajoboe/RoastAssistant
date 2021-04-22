@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,7 +58,7 @@ public class RoastFragment extends Fragment
             if(readings != null && !readings.isEmpty()) {
                 ReadingEntity curr = readings.get(readings.size() - 1);
                 mTextCurrentTemperature.setText(String.format("%d°", curr.getTemperature()));
-                setPowerRadioButton(curr.getPower(), getView());
+//                setPowerRadioButton(curr.getPower(), getView());
             }
         }
     };
@@ -131,10 +130,10 @@ public class RoastFragment extends Fragment
      */
     @Override
     public void onClick(View v) {
-        if(v instanceof RadioButton) {
-            onRadioButtonPowerClicked(v);
-            return;
-        }
+//        if(v instanceof RadioButton) {
+//            onRadioButtonPowerClicked(v);
+//            return;
+//        }
 
         switch(v.getId()) {
             case R.id.button_start_end_roast:
@@ -177,11 +176,11 @@ public class RoastFragment extends Fragment
 
         mTextCurrentTemperature = (TextView) view.findViewById(R.id.text_current_temperature);
 
-        ((RadioButton)view.findViewById(R.id.radio_button_0)).setOnClickListener(this);
-        ((RadioButton)view.findViewById(R.id.radio_button_25)).setOnClickListener(this);
-        ((RadioButton)view.findViewById(R.id.radio_button_50)).setOnClickListener(this);
-        ((RadioButton)view.findViewById(R.id.radio_button_75)).setOnClickListener(this);
-        ((RadioButton)view.findViewById(R.id.radio_button_100)).setOnClickListener(this);
+//        ((RadioButton)view.findViewById(R.id.radio_button_0)).setOnClickListener(this);
+//        ((RadioButton)view.findViewById(R.id.radio_button_25)).setOnClickListener(this);
+//        ((RadioButton)view.findViewById(R.id.radio_button_50)).setOnClickListener(this);
+//        ((RadioButton)view.findViewById(R.id.radio_button_75)).setOnClickListener(this);
+//        ((RadioButton)view.findViewById(R.id.radio_button_100)).setOnClickListener(this);
 
 //        SeekBar seekBar = (view.findViewById(R.id.slider_power));
 //        seekBar.setProgress(4); // todo should not be hardcoded
@@ -250,56 +249,56 @@ public class RoastFragment extends Fragment
             }
         });
     }
-
-    private void setPowerRadioButton(int power, View view) {
-        switch (power) {
-            case 0:
-                ((RadioButton)view.findViewById(R.id.radio_button_0)).setChecked(true);
-                break;
-            case 25:
-                ((RadioButton)view.findViewById(R.id.radio_button_25)).setChecked(true);
-                break;
-            case 50:
-                ((RadioButton)view.findViewById(R.id.radio_button_50)).setChecked(true);
-                break;
-            case 75:
-                ((RadioButton)view.findViewById(R.id.radio_button_75)).setChecked(true);
-                break;
-            case 100:
-                ((RadioButton)view.findViewById(R.id.radio_button_100)).setChecked(true);
-                break;
-            default:
-                // do nothing
-                break;
-        }
-    }
-
-    public void onRadioButtonPowerClicked(View view) {
-        boolean checked = ((RadioButton) view).isChecked();
-        int power =0;
-        switch (view.getId()) {
-            case R.id.radio_button_0:
-                if(checked) power = 0;
-                break;
-            case R.id.radio_button_25:
-                if(checked) power = 25;
-                break;
-            case R.id.radio_button_50:
-                if(checked) power = 50;
-                break;
-            case R.id.radio_button_75:
-                if(checked) power = 75;
-                break;
-            case R.id.radio_button_100:
-                if(checked) power = 100;
-                break;
-            default:
-                // do nothing
-                break;
-        }
-        Log.d(LOG_TAG, "Power changed to " + Integer.toString(power));
-        viewModel.recordPower(power);
-    }
+//
+//    private void setPowerRadioButton(int power, View view) {
+//        switch (power) {
+//            case 0:
+//                ((RadioButton)view.findViewById(R.id.radio_button_0)).setChecked(true);
+//                break;
+//            case 25:
+//                ((RadioButton)view.findViewById(R.id.radio_button_25)).setChecked(true);
+//                break;
+//            case 50:
+//                ((RadioButton)view.findViewById(R.id.radio_button_50)).setChecked(true);
+//                break;
+//            case 75:
+//                ((RadioButton)view.findViewById(R.id.radio_button_75)).setChecked(true);
+//                break;
+//            case 100:
+//                ((RadioButton)view.findViewById(R.id.radio_button_100)).setChecked(true);
+//                break;
+//            default:
+//                // do nothing
+//                break;
+//        }
+//    }
+//
+//    public void onRadioButtonPowerClicked(View view) {
+//        boolean checked = ((RadioButton) view).isChecked();
+//        int power =0;
+//        switch (view.getId()) {
+//            case R.id.radio_button_0:
+//                if(checked) power = 0;
+//                break;
+//            case R.id.radio_button_25:
+//                if(checked) power = 25;
+//                break;
+//            case R.id.radio_button_50:
+//                if(checked) power = 50;
+//                break;
+//            case R.id.radio_button_75:
+//                if(checked) power = 75;
+//                break;
+//            case R.id.radio_button_100:
+//                if(checked) power = 100;
+//                break;
+//            default:
+//                // do nothing
+//                break;
+//        }
+//        Log.d(LOG_TAG, "Power changed to " + Integer.toString(power));
+//        viewModel.recordPower(power);
+//    }
 
     public void queryTemperature(int requestCode) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
