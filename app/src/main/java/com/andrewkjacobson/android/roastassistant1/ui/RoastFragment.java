@@ -193,6 +193,18 @@ public class RoastFragment extends Fragment
                 viewModel.recordPower((int)value);
             }
         });
+//        sliderPower.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+//            @Override
+//            public void onStartTrackingTouch(@NonNull Slider slider) {
+//
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(@NonNull Slider slider) {
+//                Log.d(LOG_TAG, "Power changed to " + Integer.toString((int)slider.getValue()));
+//                viewModel.recordPower((int)slider.getValue());
+//            }
+//        });
 //        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 //            int seekBarValue;
 //            Toast toast;
