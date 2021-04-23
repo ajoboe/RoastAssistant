@@ -26,7 +26,7 @@
         android:id="@+id/text_1c_percent_floating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/FirstCrackColor"
+        android:textColor="@color/first_crack_color"
         android:textSize="36sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"

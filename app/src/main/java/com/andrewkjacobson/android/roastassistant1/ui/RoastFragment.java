@@ -176,35 +176,37 @@ public class RoastFragment extends Fragment
 
         mTextCurrentTemperature = (TextView) view.findViewById(R.id.text_current_temperature);
 
-//        ((RadioButton)view.findViewById(R.id.radio_button_0)).setOnClickListener(this);
-//        ((RadioButton)view.findViewById(R.id.radio_button_25)).setOnClickListener(this);
-//        ((RadioButton)view.findViewById(R.id.radio_button_50)).setOnClickListener(this);
-//        ((RadioButton)view.findViewById(R.id.radio_button_75)).setOnClickListener(this);
-//        ((RadioButton)view.findViewById(R.id.radio_button_100)).setOnClickListener(this);
+
+        Slider sliderPower = (view.findViewById(R.id.slider_power));
+
+        //doing it this way updates the graph as you slide...we only want to update on finger release
+//        sliderPower.addOnChangeListener((slider, value, fromUser) -> {
+//            if(fromUser) {
+//                Log.d(LOG_TAG, "Power changed to " + Integer.toString((int)value));
+//                viewModel.recordPower((int)value);
+//            }
+//        });
+
+        sliderPower.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+            @Override
+            public void onStartTrackingTouch(@NonNull Slider slider) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(@NonNull Slider slider) {
+                Log.d(LOG_TAG, "Power changed to " + Integer.toString((int)slider.getValue()));
+                viewModel.recordPower((int)slider.getValue());
+            }
+        });
+
+        // todo this might be useful for compatibility later on
+
 
 //        SeekBar seekBar = (view.findViewById(R.id.slider_power));
 //        seekBar.setProgress(4); // todo should not be hardcoded
 //        seekBar.setMax(4);
-//
-        Slider sliderPower = (view.findViewById(R.id.slider_power));
-        sliderPower.addOnChangeListener((slider, value, fromUser) -> {
-            if(fromUser) {
-                Log.d(LOG_TAG, "Power changed to " + Integer.toString((int)value));
-                viewModel.recordPower((int)value);
-            }
-        });
-//        sliderPower.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
-//            @Override
-//            public void onStartTrackingTouch(@NonNull Slider slider) {
-//
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(@NonNull Slider slider) {
-//                Log.d(LOG_TAG, "Power changed to " + Integer.toString((int)slider.getValue()));
-//                viewModel.recordPower((int)slider.getValue());
-//            }
-//        });
+
 //        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 //            int seekBarValue;
 //            Toast toast;
@@ -233,6 +235,13 @@ public class RoastFragment extends Fragment
 //                viewModel.recordPower(seekBarValue);
 //            }
 //        });
+
+        // todo or this for compatibility...
+//        ((RadioButton)view.findViewById(R.id.radio_button_0)).setOnClickListener(this);
+//        ((RadioButton)view.findViewById(R.id.radio_button_25)).setOnClickListener(this);
+//        ((RadioButton)view.findViewById(R.id.radio_button_50)).setOnClickListener(this);
+//        ((RadioButton)view.findViewById(R.id.radio_button_75)).setOnClickListener(this);
+//        ((RadioButton)view.findViewById(R.id.radio_button_100)).setOnClickListener(this);
 
         // set tick listener
         mChronometerRoastTime.setOnChronometerTickListener(chronometer -> {

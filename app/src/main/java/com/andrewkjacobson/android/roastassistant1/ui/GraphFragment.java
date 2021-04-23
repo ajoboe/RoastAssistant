@@ -100,13 +100,14 @@ public class GraphFragment extends Fragment {
         chart.setTouchEnabled(true);
         chart.setDragEnabled(true);
         chart.setScaleEnabled(true);
-        chart.setDrawGridBackground(true);
         chart.setPinchZoom(true);
 //        chart.setAlpha(.8f);
         // set an alternative background color
-        chart.setBackgroundColor(Color.DKGRAY);
+        chart.setBackgroundColor(Color.parseColor("#222222"));
 
-        chart.setGridBackgroundColor(Color.DKGRAY);
+        chart.setDrawGridBackground(false); // todo change to true to enable setGridBackgroundColor()
+        chart.setGridBackgroundColor(Color.parseColor("#111111"));
+
         chart.setBorderWidth(0);
 
         // add empty data
@@ -169,9 +170,22 @@ public class GraphFragment extends Fragment {
                 lineData.addDataSet(powerSet);
             }
 
-            // add temperature and power
+            // add temperature
             lineData.addEntry(new Entry(
                     reading.getSeconds(), reading.getTemperature()), TEMPERATURE_SET_INDEX);
+
+            // add power
+            // make a stepped line for power (not sloped) -- todo this works, but I don't like it
+            float prevPower;
+            if(powerSet.getEntryCount() > 0)
+                prevPower = powerSet.getEntryForIndex(powerSet.getEntryCount() - 1).getY();
+            else
+                prevPower = viewModel.getSettings().getStartingPower();
+            if(powerSet.getEntryCount() > 0 &&
+                    reading.getPower() !=  powerSet.getEntryForIndex(powerSet.getEntryCount() - 1).getY()) {
+                lineData.addEntry(new Entry(
+                        reading.getSeconds() - 0.00001f, prevPower), POWER_SET_INDEX);
+            }
             lineData.addEntry(new Entry(
                     reading.getSeconds(), reading.getPower()), POWER_SET_INDEX);
 
@@ -234,13 +248,14 @@ public class GraphFragment extends Fragment {
         }
     }
 
+    // todo can we do some of this in a style file
     private LineDataSet createGeneralSet() {
         LineDataSet set = new LineDataSet(null, "");
         set.setLineWidth(2.5f);
         set.setCircleRadius(1f);
         set.setCircleColor(Color.WHITE);
         set.setFillAlpha(85);//todo do we need this?
-        set.setFillColor(R.color.TemperatureColor);
+        set.setFillColor(R.color.temperature_color);
         set.setHighLightColor(Color.rgb(244, 117, 117));
         set.setValueTextColor(Color.WHITE);
         set.setValueTextSize(9f);
@@ -251,8 +266,8 @@ public class GraphFragment extends Fragment {
         LineDataSet set = createGeneralSet();
         set.setLabel("Temperature");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(getResources().getColor(R.color.TemperatureColor));
-        set.setCircleColor(getResources().getColor(R.color.TemperatureColor));
+        set.setColor(getResources().getColor(R.color.temperature_color));
+        set.setCircleColor(getResources().getColor(R.color.temperature_color));
         set.setDrawValues(true);
         set.setValueTextSize(18); // todo extract to resource
         set.setValueFormatter(new ValueFormatter() {
@@ -277,8 +292,8 @@ public class GraphFragment extends Fragment {
         LineDataSet set = createGeneralSet();
         set.setLabel("Power");
         set.setAxisDependency(YAxis.AxisDependency.RIGHT);
-        set.setColor(getResources().getColor(R.color.PowerColor));
-        set.setCircleColor(getResources().getColor(R.color.PowerColor));
+        set.setColor(getResources().getColor(R.color.power_color));
+        set.setCircleColor(getResources().getColor(R.color.power_color));
         set.setDrawValues(false);
         return set;
     }
@@ -288,8 +303,8 @@ public class GraphFragment extends Fragment {
         set.setLabel("First Crack");
         set.setLineWidth(3.5f);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(getResources().getColor(R.color.FirstCrackColor));
-        set.setCircleColor(getResources().getColor(R.color.FirstCrackColor));
+        set.setColor(getResources().getColor(R.color.first_crack_color));
+        set.setCircleColor(getResources().getColor(R.color.first_crack_color));
         set.setDrawValues(true);
         set.setValueTextSize(18); // todo extract to resource
         set.setValueFormatter(new ValueFormatter() {
