@@ -193,8 +193,11 @@ public class RoastFragment extends Fragment
 
             @Override
             public void onStopTrackingTouch(@NonNull Slider slider) {
-                Log.d(LOG_TAG, "Power changed to " + Integer.toString((int)slider.getValue()));
-                viewModel.recordPower((int)slider.getValue());
+                int power = (int)slider.getValue(); // todo exception handling needed
+                Log.d(LOG_TAG, "Power changed to " + Integer.toString(power));
+                viewModel.recordPower(power);
+                ((TextView)getActivity().findViewById(R.id.text_current_power))
+                        .setText(Integer.toString(power) + "%");
             }
         });
 
