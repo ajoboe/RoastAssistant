@@ -48,7 +48,6 @@ public class GraphFragment extends Fragment {
             XAxis xAxis = chart.getXAxis();
             xAxis.setGranularity(2);
             xAxis.setGranularityEnabled(true);
-
             plotNew(currentReading); // plot the initial values when the roast starts
         }
     };
@@ -57,7 +56,8 @@ public class GraphFragment extends Fragment {
         if(readings != null && !readings.isEmpty()) {
             currentReading = readings.get(readings.size() - 1);
             if (viewModel.isRunning()) {
-                chart.getXAxis().setGranularityEnabled(false);
+                chart.getXAxis().setGranularity(5);
+                chart.zoomOut();
                 plotNew(currentReading);
             }
         }
@@ -108,20 +108,20 @@ public class GraphFragment extends Fragment {
         chart.setDrawGridBackground(false); // todo change to true to enable setGridBackgroundColor()
         chart.setGridBackgroundColor(Color.parseColor("#111111"));
 
-        chart.setBorderWidth(0);
+//        chart.setBorderWidth(0);
 
         // add empty data
         LineData data = new LineData();
-        data.setValueTextColor(Color.WHITE);
+        data.setValueTextColor(Color.WHITE); // todo should not be hardcoded
         chart.setData(data);
 
         // legend setup
         Legend l = chart.getLegend();
         l.setForm(Legend.LegendForm.LINE);
-        l.setTextColor(Color.WHITE);
+        l.setTextColor(Color.WHITE); // todo should not be hardcoded
 
         XAxis xAxis = chart.getXAxis();
-        xAxis.setTextColor(Color.WHITE);
+        xAxis.setTextColor(Color.WHITE); // todo should not be hardcoded
         xAxis.setDrawGridLines(false);
         xAxis.setAvoidFirstLastClipping(true);
         xAxis.setGranularity(1); // will be reset when data is added
@@ -136,7 +136,7 @@ public class GraphFragment extends Fragment {
 
         // axis of temperature (left)
         YAxis leftAxis = chart.getAxisLeft();
-        leftAxis.setTextColor(Color.WHITE);
+        leftAxis.setTextColor(Color.WHITE); // todo should not be hardcoded
         leftAxis.setAxisMaximum(viewModel.getSettings().getMaxGraphTemperature());
         leftAxis.setAxisMinimum(viewModel.getSettings().getMinGraphTemperature());
         leftAxis.setDrawGridLines(true);
@@ -144,10 +144,10 @@ public class GraphFragment extends Fragment {
 
         // axis of power (right)
         YAxis rightAxis = chart.getAxisRight();
-        rightAxis.setTextColor(Color.WHITE);
+        rightAxis.setTextColor(Color.WHITE); // todo should not be hardcoded
         rightAxis.setAxisMaximum(101f);
         rightAxis.setAxisMinimum(0); // 0% power
-        rightAxis.setGranularity(25f);
+        rightAxis.setGranularity(25f); // 0%, 25%, 50%, 75%, 100%
         rightAxis.setDrawGridLines(false);
         rightAxis.setEnabled(true);
         rightAxis.setTextSize(8);
