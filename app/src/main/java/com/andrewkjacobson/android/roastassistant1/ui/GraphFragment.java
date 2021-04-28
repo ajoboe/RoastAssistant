@@ -101,14 +101,10 @@ public class GraphFragment extends Fragment {
         chart.setDragEnabled(true);
         chart.setScaleEnabled(true);
         chart.setPinchZoom(true);
-//        chart.setAlpha(.8f);
-        // set an alternative background color
         chart.setBackgroundColor(Color.parseColor("#222222"));
 
         chart.setDrawGridBackground(false); // todo change to true to enable setGridBackgroundColor()
         chart.setGridBackgroundColor(Color.parseColor("#111111"));
-
-//        chart.setBorderWidth(0);
 
         // add empty data
         LineData data = new LineData();
