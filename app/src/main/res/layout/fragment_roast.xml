@@ -66,10 +66,10 @@
 
         <com.google.android.material.slider.Slider
             android:id="@+id/slider_power"
-            style="@style/PowerSlider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="2dp"
+            android:layout_marginRight="2dp"
             android:stepSize="25"
             android:value="100"
             android:valueFrom="0"
