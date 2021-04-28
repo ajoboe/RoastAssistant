@@ -253,8 +253,14 @@ public class RoastFragment extends Fragment
             // update first crack percentage
             if(viewModel.firstCrackOccurred()) {
                 TextView text1C = getActivity().findViewById(R.id.text_1c_percent_floating);
+                TextView textLookahead = getActivity().findViewById(R.id.text_1c_lookahead);
                 text1C.setVisibility(View.VISIBLE);
+                textLookahead.setVisibility(View.VISIBLE);
                 text1C.setText(String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
+                textLookahead.setText(String.format("%.2f%% / %.2f%%",
+                        viewModel.getFirstCrackLookaheadPercent(15),
+                        viewModel.getFirstCrackLookaheadPercent(30)));
+
 //                text1C.
 
                 // move the text view to center of section between 0 and 1C time
@@ -267,7 +273,7 @@ public class RoastFragment extends Fragment
 //                constraintSet.setHorizontalBias(R.id.text_1c_percent_floating, biasedValue);
 //                constraintSet.applyTo((ConstraintLayout)
 //                        getActivity().findViewById(R.id.fragment_graph_constraint_layout));
-                getActivity().findViewById(R.id.text_1c_percent_floating).setVisibility(View.VISIBLE);
+//                getActivity().findViewById(R.id.text_1c_percent_floating).setVisibility(View.VISIBLE);
             }
         });
     }

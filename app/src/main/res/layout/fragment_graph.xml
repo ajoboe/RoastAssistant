@@ -35,5 +35,19 @@
         app:layout_constraintStart_toStartOf="@+id/chart"
         app:layout_constraintTop_toTopOf="@+id/chart"
         app:layout_constraintVertical_bias="0.9" />
+
+    <TextView
+        android:id="@+id/text_1c_lookahead"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/first_crack_color"
+        android:textSize="12sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.12"
+        app:layout_constraintStart_toStartOf="@+id/chart"
+        app:layout_constraintTop_toTopOf="@+id/chart"
+        app:layout_constraintVertical_bias="0.95" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 

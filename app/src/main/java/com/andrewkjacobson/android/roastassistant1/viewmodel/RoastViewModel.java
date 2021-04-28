@@ -304,7 +304,16 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public float getFirstCrackPercent() {
-        return (float) getFirstCrackTime() / ((float) getElapsed()) * 100;
+        return getFirstCrackLookaheadPercent(0);
+    }
+
+    /**
+     * Gives a future first crack percent.
+     * @param seconds into the future
+     * @return the percent
+     */
+    public float getFirstCrackLookaheadPercent(int seconds) {
+        return (float) getFirstCrackTime() / ((float) getElapsed() + seconds) * 100;
     }
 
     // todo remove hardcoded defaults
