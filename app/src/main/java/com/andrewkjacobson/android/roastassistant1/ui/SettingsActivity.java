@@ -15,6 +15,8 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String KEY_PREF_STARTING_TEMPERATURE = "starting_temperature";
     public static final String KEY_PREF_STARTING_POWER = "starting_power";
     public static final String KEY_PREF_ROAST_TIME_ADDEND = "roast_time_addend";
+    public static final String KEY_PREF_FIRST_CRACK_LOOKAHEAD_TIME = "first_crack_lookahead_time";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +28,6 @@ public class SettingsActivity extends AppCompatActivity {
                     .replace(R.id.settings, new SettingsFragment())
                     .commit();
         }
-//        setSupportActionBar(findViewById(R.id.toolbar));
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

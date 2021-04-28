@@ -122,16 +122,10 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<ReadingEntity>> getReadingsLiveData() {
-//        if(mReadings == null) {
-//            mReadings = new MutableLiveData<List<ReadingEntity>>(); // won't work because the ref will change when
-//        }
         return mReadings;
     }
 
     public LiveData<List<CrackReadingEntity>> getCracksLiveData() {
-//        if(mCracks == null) {
-//            mCracks = new MutableLiveData<List<CrackReadingEntity>>();
-//        }
         return mCracks;
     }
 
@@ -172,9 +166,6 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public int getElapsed() {
-//        if(mRoastLiveData == null || mRoastLiveData.getValue() == null) return 0;
-
-//        long startTime = mRoastLiveData.getValue().getStartTime();
         long startTime = mRoast.getStartTime();
         if(startTime <= 0) return 0;
         return  Math.toIntExact(elapsedRealtime() - startTime) / 1000;
@@ -252,12 +243,10 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public boolean isRunning() {
-//        return mRoastLiveData != null && mRoastLiveData.getValue() != null && mRoastLiveData.getValue().isRunning();
         return mRoast.isRunning();
     }
 
     public long getStartTime() {
-//        return mRoastLiveData.getValue().getStartTime();
         return mRoast.getStartTime();
     }
 
@@ -265,10 +254,6 @@ public class RoastViewModel extends AndroidViewModel {
         int chronoAddend =  -(getSettings().getRoastTimeInSecAddend() * 1000);
         long startTime = elapsedRealtime() + chronoAddend;
         setStartTime(startTime);
-
-//        RoastEntity r = mRoastLiveData.getValue();
-//        r.startRoast();
-//        repository.update(r);
         mRoast.startRoast();
         repository.update(mRoast);
     }
@@ -277,17 +262,12 @@ public class RoastViewModel extends AndroidViewModel {
      * End the roast and send it to the repository
      */
     public void endRoast() {
-//        RoastEntity r = mRoastLiveData.getValue();
-//        r.endRoast();
-//        repository.update(r);
         mRoast.endRoast();
         repository.update(mRoast);
     }
 
     // todo is this the right way to update live data??
     public void setStartTime(long startTime) {
-//        RoastEntity r = mRoastLiveData.getValue();;
-//        if(r == null) r = mRoast;
         mRoast.setStartTime(startTime);
         repository.update(mRoast);
     }
@@ -329,7 +309,8 @@ public class RoastViewModel extends AndroidViewModel {
                     Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ALLOWED_TEMP_CHANGE, "50")),
                     Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_TEMPERATURE, "68")),
                     Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_POWER, "100")),
-                    Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ROAST_TIME_ADDEND, "0"))
+                    Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ROAST_TIME_ADDEND, "0")),
+                    Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_FIRST_CRACK_LOOKAHEAD_TIME, "0"))
             ));
         } catch (NullPointerException e) {
             this.setSettings(new Settings(
@@ -337,6 +318,7 @@ public class RoastViewModel extends AndroidViewModel {
                     Integer.parseInt("50"),
                     Integer.parseInt("68"),
                     Integer.parseInt("100"),
+                    Integer.parseInt("0"),
                     Integer.parseInt("0")));
         }
     }

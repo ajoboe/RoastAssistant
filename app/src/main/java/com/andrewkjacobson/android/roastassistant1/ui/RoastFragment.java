@@ -254,12 +254,15 @@ public class RoastFragment extends Fragment
             if(viewModel.firstCrackOccurred()) {
                 TextView text1C = getActivity().findViewById(R.id.text_1c_percent_floating);
                 TextView textLookahead = getActivity().findViewById(R.id.text_1c_lookahead);
+                int lookaheadTime = viewModel.getSettings().getFirstCrackLookaheadTime();
                 text1C.setVisibility(View.VISIBLE);
-                textLookahead.setVisibility(View.VISIBLE);
+                if(lookaheadTime > 0) {
+                    textLookahead.setVisibility(View.VISIBLE);
+                }
                 text1C.setText(String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
-                textLookahead.setText(String.format("%.2f%% / %.2f%%",
-                        viewModel.getFirstCrackLookaheadPercent(15),
-                        viewModel.getFirstCrackLookaheadPercent(30)));
+                textLookahead.setText(String.format("%d sec hence: %.2f%%",
+                        lookaheadTime,
+                        viewModel.getFirstCrackLookaheadPercent(lookaheadTime)));
 
 //                text1C.
 

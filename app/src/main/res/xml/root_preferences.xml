@@ -34,6 +34,14 @@
         android:defaultValue="0" />
 
     <EditTextPreference
+        android:dialogMessage="@string/string_first_crack_lookahead_time_summary"
+        android:summary="@string/string_first_crack_lookahead_time_summary"
+        app:key="first_crack_lookahead_time"
+        app:title="First crack lookahead time"
+        app:useSimpleSummaryProvider="true"
+        android:defaultValue="0" />
+
+    <EditTextPreference
         android:dialogMessage="@string/string_starting_power_setting_summary"
         android:summary="@string/string_starting_power_setting_summary"
         app:key="starting_power"

@@ -40,6 +40,5 @@
     <string name="string_starting_power_setting_summary">Enter the default starting power for your roast. You will also be able to change this value right before you start the roast.</string>
     <string name="string_roast_time_addend_summary">When you have a roaster that coasts after the roast ends, it can be helpful think ahead by some amount of time. Enter that amount here in seconds.</string>
     <string name="string_graph_label_temperature">Temperature</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="string_first_crack_lookahead_time_summary">Enter the number of seconds to look forward in time for the small first crack percentage display. This can be useful if you have a roaster that continues to roast after stopping the roast due to in-roaster cooling. Enter 0 to hide the lookahead display.</string>
 </resources>
