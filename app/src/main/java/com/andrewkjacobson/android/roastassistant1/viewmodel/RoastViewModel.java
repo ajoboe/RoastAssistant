@@ -218,6 +218,7 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     private boolean isValidTemperature(String temperature) {
+        if(mReadings.getValue().size() < 3) return true; // large leaps in temp allowed at start
         int allowedChange = getSettings().getAllowedTempChange();
         return temperature.length() > 0
                 && Integer.valueOf(temperature)
