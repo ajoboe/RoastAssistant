@@ -99,7 +99,6 @@ public class RoastFragment extends Fragment
         // Create the observers that updates the UI.
         viewModel.getReadingsLiveData().observe(getViewLifecycleOwner(), readingsObserver);
         viewModel.getCracksLiveData().observe(getViewLifecycleOwner(), crackObserver);
-//        viewModel.getCracksLiveData().observe(getViewLifecycleOwner(), crackObserver);
 
         if(savedInstanceState != null) {
             if (viewModel.getElapsed() > 0) {
@@ -166,9 +165,6 @@ public class RoastFragment extends Fragment
         outState.putLong(CHRONO_BASE_KEY, mChronometerRoastTime.getBase());
     }
 
-    // ****************
-    // PRIVATE METHODS
-    // ****************
     private void initControls(View view) {
         mChronometerRoastTime = (Chronometer) view.findViewById(R.id.chrono_roast_time);
 
@@ -190,14 +186,6 @@ public class RoastFragment extends Fragment
 
         Slider sliderPower = (view.findViewById(R.id.slider_power));
 
-        //doing it this way updates the graph as you slide...we only want to update on finger release
-//        sliderPower.addOnChangeListener((slider, value, fromUser) -> {
-//            if(fromUser) {
-//                Log.d(LOG_TAG, "Power changed to " + Integer.toString((int)value));
-//                viewModel.recordPower((int)value);
-//            }
-//        });
-
         sliderPower.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
             @Override
             public void onStartTrackingTouch(@NonNull Slider slider) {
@@ -215,8 +203,6 @@ public class RoastFragment extends Fragment
         });
 
         // todo this might be useful for compatibility later on
-
-
 //        SeekBar seekBar = (view.findViewById(R.id.slider_power));
 //        seekBar.setProgress(4); // todo should not be hardcoded
 //        seekBar.setMax(4);
@@ -264,7 +250,6 @@ public class RoastFragment extends Fragment
                 queryTemperature(REQUEST_CODE_QUERY_TEMPERATURE);
             }
             // update first crack percentage
-//            if(viewModel.firstCrackOccurred()) {
             if(mText1C.isShown()) {
                 mText1C = getActivity().findViewById(R.id.text_1c_percent_floating);
                 TextView textLookahead = getActivity().findViewById(R.id.text_1c_lookahead);
@@ -278,8 +263,8 @@ public class RoastFragment extends Fragment
                         lookaheadTime,
                         viewModel.getFirstCrackLookaheadPercent(lookaheadTime)));
 
-//                text1C.
 
+                // todo moving the 1c % around
                 // move the text view to center of section between 0 and 1C time
 //                float biasedValue = (float) (viewModel.getFirstCrackTime()
 //                        / (float)(viewModel.getElapsed() + GraphFragment.SPACE_RIGHT_OF_LAST_ENTRY))
@@ -294,6 +279,8 @@ public class RoastFragment extends Fragment
             }
         });
     }
+
+// todo add radio buttons later for compat
 //
 //    private void setPowerRadioButton(int power, View view) {
 //        switch (power) {

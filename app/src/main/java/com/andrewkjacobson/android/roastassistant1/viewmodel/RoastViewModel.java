@@ -103,24 +103,6 @@ public class RoastViewModel extends AndroidViewModel {
         return mRoast;
     }
 
-//    public void newRoast() {
-//        Roast r = new RoastEntity(); // empty roast w/ id
-//        mRoastId = r.getId();
-//        repository.insert(r);
-//        mRoast = repository.getRoast(mRoastId);
-//
-//        repository.insert(new DetailsEntity(mRoastId));
-//        mDetails = repository.getDetails(mRoastId);
-//
-//        repository.insert(new ReadingEntity(0,
-//                settings.getStartingTemperature(),
-//                settings.getStartingPower()));
-//        mReadings = repository.getReadings(mRoastId);
-//
-//        mCracks = repository.getCracks(mRoastId);
-//    }
-
-
     public LiveData<DetailsEntity> getDetails() {
         return mDetailsLiveData;
     }
@@ -133,18 +115,6 @@ public class RoastViewModel extends AndroidViewModel {
         return mCracksLiveData;
     }
 
-
-
-
-//    /**
-//     * Works for inserting a new roastComponent or modifying an existing roastComponent.
-//     *
-//     * @param roastComponent to insert or modify
-//     */
-//    public void insert(RoastComponent roastComponent) {
-//        repository.insert(roastComponent);
-//    }
-
     public Settings getSettings() {
         return settings;
     }
@@ -152,22 +122,6 @@ public class RoastViewModel extends AndroidViewModel {
     private void setSettings(Settings settings) {
         this.settings = settings;
     }
-
-    // todo this should probably not happen here---getValue() is not great
-    //          better to observe mCracks and set mFirstCrackOccurred = true
-//    public boolean firstCrackOccurred() {
-//        if(mCracksLiveData == null || mCracksLiveData.getValue() == null || mCracksLiveData.getValue().isEmpty()) {
-//            return false;
-//        }
-//
-//        List<CrackReadingEntity> cracks = mCracksLiveData.getValue();
-//        for(Crack c : cracks) {
-//            if(c.getCrackNumber() == 1 && c.hasOccurred()) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
     public int getElapsed() {
         long startTime = mRoast.getStartTime();
@@ -246,15 +200,6 @@ public class RoastViewModel extends AndroidViewModel {
                     getRoastId());
     }
 
-//    private int getCurrentTemperature() {
-//        return getCurrentReading().getTemperature();
-//    }
-//
-//    private int getCurrentPower() {
-//        return getCurrentReading().getPower();
-//    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void setDetails(DetailsEntity details) {
         details.setRoastId(getRoastId());
         repository.insert(details);

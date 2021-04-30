@@ -30,11 +30,6 @@ public class RoastActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_roast);
         roastViewModel = new ViewModelProvider(this).get(RoastViewModel.class);
-//        if(savedInstanceState != null && savedInstanceState.containsKey(ROAST_ID_KEY)) {
-//            roastViewModel.loadRoast(savedInstanceState.getInt(ROAST_ID_KEY)); // ViewModel gets this itself
-//        }
-//
-//        loadSettings();
 
         getSupportFragmentManager()
                 .beginTransaction()
@@ -92,25 +87,6 @@ public class RoastActivity extends AppCompatActivity {
         outState.putInt(ROAST_ID_KEY, roastViewModel.getRoastId());
     }
 
-    // ****************
-    // PRIVATE METHODS
-    // ****************
-//    private void loadSettings() {
-//        // moved to model...still need to init tho todo
-//        androidx.preference.PreferenceManager
-//                .setDefaultValues(this, R.xml.root_preferences, false);
-//        SharedPreferences sharedPreferences =
-//                androidx.preference.PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
-//
-//        roastViewModel.setSettings(new Settings(
-//                Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_TEMP_CHECK_FREQ, "60")),
-//                Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ALLOWED_TEMP_CHANGE, "50")),
-//                Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_TEMPERATURE, "68")),
-//                Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_POWER, "100")),
-//                Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ROAST_TIME_ADDEND, "0"))
-//        ));
-//    }
-
     private void showRoastDetails() {
         Intent roastDetailsIntent = new Intent(this, RoastDetailsActivity.class);
         roastDetailsIntent.putExtra(ROAST_ID_KEY, roastViewModel.getRoastId());
@@ -144,10 +120,8 @@ public class RoastActivity extends AppCompatActivity {
     }
 
     private void newRoast() {
-//        roastViewModel.newRoast();
 
         if (Build.VERSION.SDK_INT >= 11) {
-//            mChronometerRoastTime.setBase(elapsedRealtime()); // todo store this in viewModel and retrieve on recreate
             recreate();
         } else {
             Intent intent = getIntent();

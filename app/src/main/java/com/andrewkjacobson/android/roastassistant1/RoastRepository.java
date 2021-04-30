@@ -85,10 +85,6 @@ public class RoastRepository {
         }
     }
 
-//    public void insertRoast(RoastEntity roastEntity) {
-//        new insertAsyncTask(mRoastDao).execute(roastEntity);
-//    }
-
     public void update(RoastComponent item) {
         if(item instanceof RoastEntity) {
             new updateAsyncTask(mRoastDao).execute(item);

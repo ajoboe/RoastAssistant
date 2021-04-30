@@ -28,7 +28,6 @@ public class RoastDetailsActivity extends AppCompatActivity {
     private final String DETAILS_KEY = "roast details";
     public static final String EXTRA_REPLY = "com.andrewkjacobson.android.roastassistant1.REPLY";
     private DetailsEntity mDetails;
-//    private List<RoastEntity> mAllRoasts;
     private RoastViewModel viewModel;
     private  RoastEntity mCurrRoast;
     private ArrayAdapter<CharSequence> mSpinnerAdapter;
@@ -46,8 +45,6 @@ public class RoastDetailsActivity extends AppCompatActivity {
                 if(details != null) populateUI(details);
             }
         });
-
-//        autofillDate();
 
         // action bar
         ActionBar actionBar = getSupportActionBar();

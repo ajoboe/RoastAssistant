@@ -7,9 +7,6 @@ public interface Roast {
     void setRunning(boolean isRunning);
     boolean isFinished();
     void setFinished(boolean isFinished);
-//    int getElapsed();
-//    void setElapsed(int seconds);
-//    void incrementElapsed();
     long getStartTime();
     void setStartTime(long seconds);
     void startRoast();
