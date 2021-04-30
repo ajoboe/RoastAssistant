@@ -50,6 +50,7 @@ public class RoastViewModel extends AndroidViewModel {
     private final LiveData<List<CrackReadingEntity>> mCracksLiveData;
     private Settings settings;
     private boolean mFirstCrackOccurred = false;
+    private ReadingEntity mCurrentReading;
 
     public RoastViewModel(@NonNull Application application, SavedStateHandle savedStateHandle) {
         super(application);
@@ -176,11 +177,12 @@ public class RoastViewModel extends AndroidViewModel {
 
         int power = getCurrentPower();
         if(!isRunning()) repository.deleteAllReadings();
-        repository.insert(new ReadingEntity(
+        mCurrentReading = new ReadingEntity(
                 getElapsed(),
                 Integer.valueOf(temperature),
                 power,  // power from prev reading
-                getRoastId()));
+                getRoastId());
+        repository.insert(mCurrentReading);
         return true;
     }
 
@@ -201,11 +203,12 @@ public class RoastViewModel extends AndroidViewModel {
         int temperature = getCurrentTemperature();
         if(!isRunning()) repository.deleteAllReadings();
 
-        repository.insert(new ReadingEntity(
+        mCurrentReading = new ReadingEntity(
                 getElapsed(),
                 temperature,
                 power,
-                getRoastId()));
+                getRoastId());
+        repository.insert(mCurrentReading);
     }
 
     private boolean isValidTemperature(String temperature) {
@@ -219,13 +222,12 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     private Reading getCurrentReading() {
-        if(mReadingsLiveData == null || mReadingsLiveData.getValue() == null || mReadingsLiveData.getValue().isEmpty()) {
-            return new ReadingEntity(0,
+        if(mCurrentReading != null) return mCurrentReading;
+
+        return new ReadingEntity(0,
                     settings.getStartingTemperature(),
                     settings.getStartingPower(),
                     getRoastId());
-        }
-        return mReadingsLiveData.getValue().get(mReadingsLiveData.getValue().size() - 1);
     }
 
     private int getCurrentTemperature() {
