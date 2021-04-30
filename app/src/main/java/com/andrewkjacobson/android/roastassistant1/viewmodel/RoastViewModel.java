@@ -17,11 +17,11 @@ import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.DetailsEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.RoastEntity;
-import com.andrewkjacobson.android.roastassistant1.model.Crack;
 import com.andrewkjacobson.android.roastassistant1.model.Reading;
 import com.andrewkjacobson.android.roastassistant1.model.Roast;
 import com.andrewkjacobson.android.roastassistant1.ui.SettingsActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.os.SystemClock.elapsedRealtime;
@@ -51,6 +51,7 @@ public class RoastViewModel extends AndroidViewModel {
     private Settings settings;
     private boolean mFirstCrackOccurred = false;
     private ReadingEntity mCurrentReading;
+    private List<CrackReadingEntity> mCracks;
 
     public RoastViewModel(@NonNull Application application, SavedStateHandle savedStateHandle) {
         super(application);
@@ -76,6 +77,8 @@ public class RoastViewModel extends AndroidViewModel {
         mDetailsLiveData = repository.getDetailsLiveData(mRoastId);
         mReadingsLiveData = repository.getReadingsLiveData(mRoastId);
         mCracksLiveData = repository.getCracksLiveData(mRoastId);
+
+        mCracks = new ArrayList<>();
     }
 
     /**
@@ -175,7 +178,7 @@ public class RoastViewModel extends AndroidViewModel {
     public boolean recordTemperature(String temperature) {
         if(!isValidTemperature(temperature)) return false;
 
-        int power = getCurrentPower();
+        int power = getCurrentReading().getPower();
         if(!isRunning()) repository.deleteAllReadings();
         mCurrentReading = new ReadingEntity(
                 getElapsed(),
@@ -189,18 +192,21 @@ public class RoastViewModel extends AndroidViewModel {
     public boolean record1c(String temperature) {
         if(!isValidTemperature(temperature)) return false;
 
-        repository.insert(new CrackReadingEntity(
+        CrackReadingEntity crack = new CrackReadingEntity(
                 getElapsed(),
                 Integer.valueOf(temperature),
-                getCurrentPower(),
+                getCurrentReading().getPower(),
                 1,
                 true,
-                getRoastId()));
+                getRoastId());
+        mCracks.add(crack); // cache the crack
+        repository.insert(crack);
+
         return true;
     }
 
     public void recordPower(int power) {
-        int temperature = getCurrentTemperature();
+        int temperature = getCurrentReading().getTemperature();
         if(!isRunning()) repository.deleteAllReadings();
 
         mCurrentReading = new ReadingEntity(
@@ -211,6 +217,7 @@ public class RoastViewModel extends AndroidViewModel {
         repository.insert(mCurrentReading);
     }
 
+    // todo remove the getValue when revamping
     private boolean isValidTemperature(String temperature) {
         if(mReadingsLiveData.getValue().size() < 3) return true; // large leaps in temp allowed at start
         int allowedChange = getSettings().getAllowedTempChange();
@@ -230,13 +237,13 @@ public class RoastViewModel extends AndroidViewModel {
                     getRoastId());
     }
 
-    private int getCurrentTemperature() {
-        return getCurrentReading().getTemperature();
-    }
-
-    private int getCurrentPower() {
-        return getCurrentReading().getPower();
-    }
+//    private int getCurrentTemperature() {
+//        return getCurrentReading().getTemperature();
+//    }
+//
+//    private int getCurrentPower() {
+//        return getCurrentReading().getPower();
+//    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void setDetails(DetailsEntity details) {
@@ -268,21 +275,18 @@ public class RoastViewModel extends AndroidViewModel {
         repository.update(mRoast);
     }
 
-    // todo is this the right way to update live data??
-    public void setStartTime(long startTime) {
+    private void setStartTime(long startTime) {
         mRoast.setStartTime(startTime);
         repository.update(mRoast);
     }
 
-    public double getFirstCrackTime() {
-        if(mCracksLiveData == null || mCracksLiveData.getValue() == null || mCracksLiveData.getValue().size() == 0) {
-            return -1;
-        }
-        return mCracksLiveData.getValue().get(0).getSeconds();
-    }
-
-    private CrackReadingEntity get1cReading() {
-        return mCracksLiveData.getValue().get(0);
+    /**
+     * Get the current first crack reading. Null if it hasn't occurred.
+     *
+     * @return the first crack reading or null if it hasn't occurred.
+     */
+    private CrackReadingEntity getFirstCrack() {
+        return mCracks == null ? null : mCracks.get(0); // todo need to revamp the crack stuff
     }
 
     public float getFirstCrackPercent() {
@@ -290,12 +294,12 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     /**
-     * Gives a future first crack percent.
+     * Get a future first crack percent.
      * @param seconds into the future
      * @return the percent
      */
     public float getFirstCrackLookaheadPercent(int seconds) {
-        return (float) getFirstCrackTime() / ((float) getElapsed() + seconds) * 100;
+        return (float) getFirstCrack().getSeconds() / ((float) getElapsed() + seconds) * 100;
     }
 
     // todo remove hardcoded defaults
