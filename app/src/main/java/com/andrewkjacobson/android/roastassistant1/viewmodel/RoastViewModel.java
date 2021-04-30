@@ -176,33 +176,41 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public boolean recordTemperature(String temperature) {
-        if(!isValidTemperature(temperature)) return false;
+        try {
+            if (!isValidTemperature(temperature)) return false;
 
-        int power = getCurrentReading().getPower();
-        if(!isRunning()) repository.deleteAllReadings();
-        mCurrentReading = new ReadingEntity(
-                getElapsed(),
-                Integer.valueOf(temperature),
-                power,  // power from prev reading
-                getRoastId());
-        repository.insert(mCurrentReading);
-        return true;
+            int power = getCurrentReading().getPower();
+            if (!isRunning()) repository.deleteAllReadings();
+            mCurrentReading = new ReadingEntity(
+                    getElapsed(),
+                    Integer.valueOf(temperature),
+                    power,  // power from prev reading
+                    getRoastId());
+            repository.insert(mCurrentReading);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     public boolean record1c(String temperature) {
-        if(!isValidTemperature(temperature)) return false;
+        try {
+            if (!isValidTemperature(temperature)) return false;
 
-        CrackReadingEntity crack = new CrackReadingEntity(
-                getElapsed(),
-                Integer.valueOf(temperature),
-                getCurrentReading().getPower(),
-                1,
-                true,
-                getRoastId());
-        mCracks.add(crack); // cache the crack
-        repository.insert(crack);
+            CrackReadingEntity crack = new CrackReadingEntity(
+                    getElapsed(),
+                    Integer.valueOf(temperature),
+                    getCurrentReading().getPower(),
+                    1,
+                    true,
+                    getRoastId());
+            mCracks.add(crack); // cache the crack
+            repository.insert(crack);
 
-        return true;
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     public void recordPower(int power) {
@@ -218,8 +226,9 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     // todo remove the getValue when revamping
-    private boolean isValidTemperature(String temperature) {
-        if(mReadingsLiveData.getValue().size() < 3) return true; // large leaps in temp allowed at start
+    private boolean isValidTemperature(String temperature) throws NumberFormatException{
+        if (mReadingsLiveData.getValue().size() < 3)
+            return true; // large leaps in temp allowed at start
         int allowedChange = getSettings().getAllowedTempChange();
         return temperature.length() > 0
                 && Integer.valueOf(temperature)

@@ -31,10 +31,10 @@ public class RoastRepository {
     private final ReadingDao mReadingDao;
     private final CrackReadingDao mCrackReadingDao;
 
-    private LiveData<RoastEntity> mRoast;
-    private LiveData<DetailsEntity> mDetails;
-    private LiveData<List<ReadingEntity>> mReadings;
-    private LiveData<List<CrackReadingEntity>> mCracks;
+    private LiveData<RoastEntity> mRoastLiveData;
+    private LiveData<DetailsEntity> mDetailsLiveData;
+    private LiveData<List<ReadingEntity>> mReadingsLiveData;
+    private LiveData<List<CrackReadingEntity>> mCracksLiveData;
 
     public RoastRepository(Application application) {
         RoastRoomDatabase db = RoastRoomDatabase.getDatabase(application);
@@ -45,31 +45,31 @@ public class RoastRepository {
     }
 
     public LiveData<RoastEntity> getRoastLiveData(int roastId) {
-        if(mRoast == null || mRoast.getValue().getId() != roastId) {
-            mRoast = mRoastDao.getLiveData(roastId);
+        if(mRoastLiveData == null || mRoastLiveData.getValue().getId() != roastId) {
+            mRoastLiveData = mRoastDao.getLiveData(roastId);
         }
-        return mRoast;
+        return mRoastLiveData;
     }
 
     public LiveData<DetailsEntity> getDetailsLiveData(int roastId) {
-        if(mDetails == null || mDetails.getValue().getRoastId() != roastId) {
-            mDetails = mDetailsDao.get(roastId);
+        if(mDetailsLiveData == null || mDetailsLiveData.getValue().getRoastId() != roastId) {
+            mDetailsLiveData = mDetailsDao.get(roastId);
         }
-        return mDetails;
+        return mDetailsLiveData;
     }
 
     public LiveData<List<ReadingEntity>> getReadingsLiveData(int roastId) {
-        if(mReadings == null || mReadings.getValue().get(0).getRoastId() != roastId) {
-            mReadings = mReadingDao.getAll(roastId);
+        if(mReadingsLiveData == null || mReadingsLiveData.getValue().get(0).getRoastId() != roastId) {
+            mReadingsLiveData = mReadingDao.getAll(roastId);
         }
-        return mReadings;
+        return mReadingsLiveData;
     }
 
     public LiveData<List<CrackReadingEntity>> getCracksLiveData(int roastId) {
-        if(mCracks == null || mCracks.getValue().get(0).getRoastId() != roastId) {
-            mCracks = mCrackReadingDao.getAll(roastId);
+        if(mCracksLiveData == null || mCracksLiveData.getValue().get(0).getRoastId() != roastId) {
+            mCracksLiveData = mCrackReadingDao.getAll(roastId);
         }
-        return mCracks;
+        return mCracksLiveData;
     }
 
     // todo use a Future here. see: https://www.baeldung.com/java-util-concurrent
