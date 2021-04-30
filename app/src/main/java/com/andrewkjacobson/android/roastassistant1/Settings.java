@@ -7,7 +7,7 @@ public class Settings {
     private int startingPower;
     private int roastTimeInSecAddend;
     private int firstCrackLookaheadTime;
-    private final int expectedRoastLength = 60 * 12; // todo should be a setting
+    private final int expectedRoastLength = 60 * 10; // todo should be a setting
     private final int maxGraphTemperature = 400; // todo should be a setting
     private final int minGraphTemperature = 50; // todo should be a setting
 

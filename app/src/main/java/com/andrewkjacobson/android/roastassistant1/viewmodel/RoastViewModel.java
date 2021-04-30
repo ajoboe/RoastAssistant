@@ -45,9 +45,9 @@ public class RoastViewModel extends AndroidViewModel {
     private int mRoastId = -1;
     private final LiveData<RoastEntity> mRoastLiveData;
     private RoastEntity mRoast;
-    private final LiveData<DetailsEntity> mDetails;
-    private final LiveData<List<ReadingEntity>> mReadings;
-    private final LiveData<List<CrackReadingEntity>> mCracks;
+    private final LiveData<DetailsEntity> mDetailsLiveData;
+    private final LiveData<List<ReadingEntity>> mReadingsLiveData;
+    private final LiveData<List<CrackReadingEntity>> mCracksLiveData;
     private Settings settings;
     private boolean mFirstCrackOccurred = false;
 
@@ -71,10 +71,10 @@ public class RoastViewModel extends AndroidViewModel {
                     mRoastId));
         }
 
-        mRoastLiveData = repository.getRoast(mRoastId);
-        mDetails = repository.getDetails(mRoastId);
-        mReadings = repository.getReadings(mRoastId);
-        mCracks = repository.getCracks(mRoastId);
+        mRoastLiveData = repository.getRoastLiveData(mRoastId);
+        mDetailsLiveData = repository.getDetailsLiveData(mRoastId);
+        mReadingsLiveData = repository.getReadingsLiveData(mRoastId);
+        mCracksLiveData = repository.getCracksLiveData(mRoastId);
     }
 
     /**
@@ -118,15 +118,15 @@ public class RoastViewModel extends AndroidViewModel {
 
 
     public LiveData<DetailsEntity> getDetails() {
-        return mDetails;
+        return mDetailsLiveData;
     }
 
     public LiveData<List<ReadingEntity>> getReadingsLiveData() {
-        return mReadings;
+        return mReadingsLiveData;
     }
 
     public LiveData<List<CrackReadingEntity>> getCracksLiveData() {
-        return mCracks;
+        return mCracksLiveData;
     }
 
 
@@ -151,19 +151,19 @@ public class RoastViewModel extends AndroidViewModel {
 
     // todo this should probably not happen here---getValue() is not great
     //          better to observe mCracks and set mFirstCrackOccurred = true
-    public boolean firstCrackOccurred() {
-        if(mCracks == null || mCracks.getValue() == null || mCracks.getValue().isEmpty()) {
-            return false;
-        }
-
-        List<CrackReadingEntity> cracks = mCracks.getValue();
-        for(Crack c : cracks) {
-            if(c.getCrackNumber() == 1 && c.hasOccurred()) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean firstCrackOccurred() {
+//        if(mCracksLiveData == null || mCracksLiveData.getValue() == null || mCracksLiveData.getValue().isEmpty()) {
+//            return false;
+//        }
+//
+//        List<CrackReadingEntity> cracks = mCracksLiveData.getValue();
+//        for(Crack c : cracks) {
+//            if(c.getCrackNumber() == 1 && c.hasOccurred()) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     public int getElapsed() {
         long startTime = mRoast.getStartTime();
@@ -209,7 +209,7 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     private boolean isValidTemperature(String temperature) {
-        if(mReadings.getValue().size() < 3) return true; // large leaps in temp allowed at start
+        if(mReadingsLiveData.getValue().size() < 3) return true; // large leaps in temp allowed at start
         int allowedChange = getSettings().getAllowedTempChange();
         return temperature.length() > 0
                 && Integer.valueOf(temperature)
@@ -219,13 +219,13 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     private Reading getCurrentReading() {
-        if(mReadings == null || mReadings.getValue() == null || mReadings.getValue().isEmpty()) {
+        if(mReadingsLiveData == null || mReadingsLiveData.getValue() == null || mReadingsLiveData.getValue().isEmpty()) {
             return new ReadingEntity(0,
                     settings.getStartingTemperature(),
                     settings.getStartingPower(),
                     getRoastId());
         }
-        return mReadings.getValue().get(mReadings.getValue().size() - 1);
+        return mReadingsLiveData.getValue().get(mReadingsLiveData.getValue().size() - 1);
     }
 
     private int getCurrentTemperature() {
@@ -273,14 +273,14 @@ public class RoastViewModel extends AndroidViewModel {
     }
 
     public double getFirstCrackTime() {
-        if(mCracks == null || mCracks.getValue() == null || mCracks.getValue().size() == 0) {
+        if(mCracksLiveData == null || mCracksLiveData.getValue() == null || mCracksLiveData.getValue().size() == 0) {
             return -1;
         }
-        return mCracks.getValue().get(0).getSeconds();
+        return mCracksLiveData.getValue().get(0).getSeconds();
     }
 
     private CrackReadingEntity get1cReading() {
-        return mCracks.getValue().get(0);
+        return mCracksLiveData.getValue().get(0);
     }
 
     public float getFirstCrackPercent() {

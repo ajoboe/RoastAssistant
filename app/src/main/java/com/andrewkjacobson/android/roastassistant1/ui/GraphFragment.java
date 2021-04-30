@@ -116,6 +116,7 @@ public class GraphFragment extends Fragment {
         l.setForm(Legend.LegendForm.LINE);
         l.setTextColor(Color.WHITE); // todo should not be hardcoded
 
+        // axis of time
         XAxis xAxis = chart.getXAxis();
         xAxis.setTextColor(Color.WHITE); // todo should not be hardcoded
         xAxis.setDrawGridLines(false);
@@ -188,9 +189,10 @@ public class GraphFragment extends Fragment {
             lineData.notifyDataChanged();
             chart.notifyDataSetChanged();
 
+            // todo WHY IS THIS BEING SET HERE? and not in initGraph()?
             // todo remove hardcoded 0s and 100 (move to settings)
             // limit the number of visible entries
-            chart.setVisibleXRangeMinimum(chart.getXRange() + SPACE_RIGHT_OF_LAST_ENTRY);
+            chart.setVisibleXRangeMinimum(calculateVisibleXRangeMinimum()); // todo this doesn't do what you think it does. fix.
             chart.setVisibleXRangeMaximum(viewModel.getSettings().getExpectedRoastLength());
             chart.setVisibleYRange(
                     viewModel.getSettings().getMinGraphTemperature(),
@@ -205,6 +207,17 @@ public class GraphFragment extends Fragment {
         } else {
             Log.w(this.getClass().toString(), "lineData was null in GraphFragment.updateGraph()");
         }
+    }
+    
+    float calculateVisibleXRangeMinimum() {
+        int expectedNumReadings = viewModel.getSettings().getExpectedRoastLength()
+                / viewModel.getSettings().getTemperatureCheckFrequency();
+        if(chart.getXRange() < expectedNumReadings / 2) {
+            return expectedNumReadings / 2;
+        } else {
+            return expectedNumReadings;
+        }
+//        return chart.getXRange() + SPACE_RIGHT_OF_LAST_ENTRY;
     }
 
     private void plotFirstCrack(List<CrackReadingEntity> crackReadingEntities) {

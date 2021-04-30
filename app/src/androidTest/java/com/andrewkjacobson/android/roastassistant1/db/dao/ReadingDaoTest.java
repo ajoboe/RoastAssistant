@@ -52,15 +52,4 @@ public class ReadingDaoTest extends TestCase {
             fail("Interrupted Exception");
         }
     }
-
-//    @Test
-//    public void testGet() {
-//        createDb();
-//        ReadingEntity r = new ReadingEntity(3, 200, 75, 999);
-//        readingDao.insert(r);
-//
-//        LiveData<ReadingEntity> readings = readingDao.get(999, 3);
-//        System.out.println(readings);
-//        assertEquals(readings.getValue(), r);
-//    }
 }

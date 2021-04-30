@@ -44,28 +44,28 @@ public class RoastRepository {
         mCrackReadingDao = db.crackReadingDao();
     }
 
-    public LiveData<RoastEntity> getRoast(int roastId) {
+    public LiveData<RoastEntity> getRoastLiveData(int roastId) {
         if(mRoast == null || mRoast.getValue().getId() != roastId) {
-            mRoast = mRoastDao.get(roastId);
+            mRoast = mRoastDao.getLiveData(roastId);
         }
         return mRoast;
     }
 
-    public LiveData<DetailsEntity> getDetails(int roastId) {
+    public LiveData<DetailsEntity> getDetailsLiveData(int roastId) {
         if(mDetails == null || mDetails.getValue().getRoastId() != roastId) {
             mDetails = mDetailsDao.get(roastId);
         }
         return mDetails;
     }
 
-    public LiveData<List<ReadingEntity>> getReadings(int roastId) {
+    public LiveData<List<ReadingEntity>> getReadingsLiveData(int roastId) {
         if(mReadings == null || mReadings.getValue().get(0).getRoastId() != roastId) {
             mReadings = mReadingDao.getAll(roastId);
         }
         return mReadings;
     }
 
-    public LiveData<List<CrackReadingEntity>> getCracks(int roastId) {
+    public LiveData<List<CrackReadingEntity>> getCracksLiveData(int roastId) {
         if(mCracks == null || mCracks.getValue().get(0).getRoastId() != roastId) {
             mCracks = mCrackReadingDao.getAll(roastId);
         }

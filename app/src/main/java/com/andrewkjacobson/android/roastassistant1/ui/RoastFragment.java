@@ -18,7 +18,9 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.andrewkjacobson.android.roastassistant1.R;
+import com.andrewkjacobson.android.roastassistant1.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant1.db.entity.ReadingEntity;
+import com.andrewkjacobson.android.roastassistant1.model.Crack;
 import com.andrewkjacobson.android.roastassistant1.viewmodel.RoastViewModel;
 import com.google.android.material.slider.Slider;
 
@@ -49,6 +51,7 @@ public class RoastFragment extends Fragment
     private Button mButton1C;
     private Button mButtonRecordTemp;
     private TextView mTextCurrentTemperature;
+    TextView mText1C;
 
     final Observer<List<ReadingEntity>> readingsObserver = new Observer<List<ReadingEntity>>() {
         @Override
@@ -56,7 +59,15 @@ public class RoastFragment extends Fragment
             if(readings != null && !readings.isEmpty()) {
                 ReadingEntity curr = readings.get(readings.size() - 1);
                 mTextCurrentTemperature.setText(String.format("%d°", curr.getTemperature()));
-//                setPowerRadioButton(curr.getPower(), getView());
+            }
+        }
+    };
+
+    final Observer<List<CrackReadingEntity>> crackObserver = new Observer<List<CrackReadingEntity>>() {
+        @Override
+        public void onChanged(List<CrackReadingEntity> crackReadingEntities) {
+            if(crackReadingEntities.size() > 0) {
+                mText1C.setVisibility(View.VISIBLE);
             }
         }
     };
@@ -87,6 +98,7 @@ public class RoastFragment extends Fragment
 
         // Create the observers that updates the UI.
         viewModel.getReadingsLiveData().observe(getViewLifecycleOwner(), readingsObserver);
+        viewModel.getCracksLiveData().observe(getViewLifecycleOwner(), crackObserver);
 //        viewModel.getCracksLiveData().observe(getViewLifecycleOwner(), crackObserver);
 
         if(savedInstanceState != null) {
@@ -174,6 +186,7 @@ public class RoastFragment extends Fragment
 
         mTextCurrentTemperature = (TextView) view.findViewById(R.id.text_current_temperature);
 
+        mText1C = (TextView) getActivity().findViewById(R.id.text_1c_percent_floating);
 
         Slider sliderPower = (view.findViewById(R.id.slider_power));
 
@@ -251,15 +264,16 @@ public class RoastFragment extends Fragment
                 queryTemperature(REQUEST_CODE_QUERY_TEMPERATURE);
             }
             // update first crack percentage
-            if(viewModel.firstCrackOccurred()) {
-                TextView text1C = getActivity().findViewById(R.id.text_1c_percent_floating);
+//            if(viewModel.firstCrackOccurred()) {
+            if(mText1C.isShown()) {
+                mText1C = getActivity().findViewById(R.id.text_1c_percent_floating);
                 TextView textLookahead = getActivity().findViewById(R.id.text_1c_lookahead);
                 int lookaheadTime = viewModel.getSettings().getFirstCrackLookaheadTime();
-                text1C.setVisibility(View.VISIBLE);
+                mText1C.setVisibility(View.VISIBLE);
                 if(lookaheadTime > 0) {
                     textLookahead.setVisibility(View.VISIBLE);
                 }
-                text1C.setText(String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
+                mText1C.setText(String.format("%.2f", viewModel.getFirstCrackPercent()) + "%");
                 textLookahead.setText(String.format("%d sec hence: %.2f%%",
                         lookaheadTime,
                         viewModel.getFirstCrackLookaheadPercent(lookaheadTime)));
