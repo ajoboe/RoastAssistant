@@ -1,12 +1,12 @@
 package com.andrewkjacobson.android.roastassistant1;
 
 public class Settings {
-    private int temperatureCheckFrequency;
-    private int allowedTempChange;
-    private int startingTemperature;
-    private int startingPower;
-    private int roastTimeInSecAddend;
-    private int firstCrackLookaheadTime;
+    private final int temperatureCheckFrequency;
+    private final int allowedTempChange;
+    private final int startingTemperature;
+    private final int startingPower;
+    private final int roastTimeInSecAddend;
+    private final int firstCrackLookaheadTime;
     private final int expectedRoastLength = 60 * 10; // todo should be a setting
     private final int maxGraphTemperature = 400; // todo should be a setting
     private final int minGraphTemperature = 50; // todo should be a setting

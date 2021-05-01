@@ -275,8 +275,8 @@ public class GraphFragment extends Fragment {
         LineDataSet set = createGeneralSet();
         set.setLabel("Temperature");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(getResources().getColor(R.color.temperature_color));
-        set.setCircleColor(getResources().getColor(R.color.temperature_color));
+        set.setColor(getResources().getColor(R.color.temperature_color, getActivity().getTheme()));
+        set.setCircleColor(getResources().getColor(R.color.temperature_color, getActivity().getTheme()));
         set.setDrawValues(true);
         set.setValueTextSize(18); // todo extract to resource
         set.setValueFormatter(new ValueFormatter() {
@@ -301,8 +301,8 @@ public class GraphFragment extends Fragment {
         LineDataSet set = createGeneralSet();
         set.setLabel("Power");
         set.setAxisDependency(YAxis.AxisDependency.RIGHT);
-        set.setColor(getResources().getColor(R.color.power_color));
-        set.setCircleColor(getResources().getColor(R.color.power_color));
+        set.setColor(getResources().getColor(R.color.power_color, getActivity().getTheme()));
+        set.setCircleColor(getResources().getColor(R.color.power_color, getActivity().getTheme()));
         set.setDrawValues(false);
         return set;
     }
@@ -312,8 +312,8 @@ public class GraphFragment extends Fragment {
         set.setLabel("First Crack");
         set.setLineWidth(3.5f);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(getResources().getColor(R.color.first_crack_color));
-        set.setCircleColor(getResources().getColor(R.color.first_crack_color));
+        set.setColor(getResources().getColor(R.color.first_crack_color, getActivity().getTheme()));
+        set.setCircleColor(getResources().getColor(R.color.first_crack_color, getActivity().getTheme()));
         set.setDrawValues(true);
         set.setValueTextSize(18); // todo extract to resource
         set.setValueFormatter(new ValueFormatter() {

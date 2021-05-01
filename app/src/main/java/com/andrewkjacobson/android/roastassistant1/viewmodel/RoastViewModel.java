@@ -48,9 +48,8 @@ public class RoastViewModel extends AndroidViewModel {
     private final LiveData<List<ReadingEntity>> mReadingsLiveData;
     private final LiveData<List<CrackReadingEntity>> mCracksLiveData;
     private Settings settings;
-    private boolean mFirstCrackOccurred = false;
     private ReadingEntity mCurrentReading;
-    private List<CrackReadingEntity> mCracks;
+    private final List<CrackReadingEntity> mCracks;
 
     public RoastViewModel(@NonNull Application application, SavedStateHandle savedStateHandle) {
         super(application);
