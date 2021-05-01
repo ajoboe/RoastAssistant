@@ -28,8 +28,6 @@ public class RoastDetailsActivity extends AppCompatActivity {
     private final String DETAILS_KEY = "roast details";
     public static final String EXTRA_REPLY = "com.andrewkjacobson.android.roastassistant1.REPLY";
     private DetailsEntity mDetails;
-    private RoastViewModel viewModel;
-    private  RoastEntity mCurrRoast;
     private ArrayAdapter<CharSequence> mSpinnerAdapter;
 
     @Override
@@ -37,7 +35,7 @@ public class RoastDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_roast_details);
         mDetails = null;
-        viewModel = new ViewModelProvider(this).get(RoastViewModel.class);
+        RoastViewModel viewModel = new ViewModelProvider(this).get(RoastViewModel.class);
 
         viewModel.getDetails().observe(this, new Observer<DetailsEntity>() {
             @Override

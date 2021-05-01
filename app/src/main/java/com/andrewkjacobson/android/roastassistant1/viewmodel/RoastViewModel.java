@@ -40,7 +40,6 @@ public class RoastViewModel extends AndroidViewModel {
     public static final String KEY_ROAST_ID = "roast id";
     private final Application application;
     private final RoastRepository repository;
-    private final SavedStateHandle savedStateHandle;
 
     private int mRoastId = -1;
     private final LiveData<RoastEntity> mRoastLiveData;
@@ -57,7 +56,6 @@ public class RoastViewModel extends AndroidViewModel {
         super(application);
         this.application = application;
         this.repository = new RoastRepository(application);
-        this.savedStateHandle = savedStateHandle;
         loadSettings();
 
         if(savedStateHandle != null && savedStateHandle.contains(KEY_ROAST_ID)) {
