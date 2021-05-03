@@ -11,7 +11,7 @@ android {
     useLibrary 'android.test.mock'
 
     defaultConfig {
-        applicationId "com.andrewkjacobson.android.roastassistant1"
+        applicationId "com.andrewkjacobson.android.roastassistant"
         minSdkVersion 30
         targetSdkVersion 30
         versionCode 1

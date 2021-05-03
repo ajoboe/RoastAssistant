@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Roast Assistant 1</string>
+    <string name="app_name">Roast Assistant</string>
     <string name="roast_start_time">0</string>
     <string name="string_button_start_roast">Start Roast</string>
     <string name="string_button_end_roast">End Roast</string>

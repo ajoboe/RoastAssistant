@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.andrewkjacobson.android.roastassistant1">
+    package="com.andrewkjacobson.android.roastassistant">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
@@ -10,9 +10,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.RoastAssistant1">
+        android:theme="@style/Theme.RoastAssistant">
         <activity
-            android:name=".ui.RoastActivity"
+            android:name="com.andrewkjacobson.android.roastassistant.ui.RoastActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,19 +31,19 @@
 <!--            </intent-filter>-->
 <!--        </activity> &lt;!&ndash; RoastEntity Details Activity &ndash;&gt;-->
         <activity
-            android:name=".ui.RoastDetailsActivity"
-            android:parentActivityName=".ui.RoastActivity"
+            android:name="com.andrewkjacobson.android.roastassistant.ui.RoastDetailsActivity"
+            android:parentActivityName="com.andrewkjacobson.android.roastassistant.ui.RoastActivity"
             android:screenOrientation="portrait"></activity>
 
         <!-- Settings Activity -->
         <activity
-            android:name=".ui.SettingsActivity"
+            android:name="com.andrewkjacobson.android.roastassistant.ui.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".ui.RoastActivity"
+            android:parentActivityName="com.andrewkjacobson.android.roastassistant.ui.RoastActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.andrewkjacobson.android.roastassistant1.ui.RoastActivity" />
+                android:value="com.andrewkjacobson.android.roastassistant.ui.RoastActivity" />
         </activity>
     </application>
 
