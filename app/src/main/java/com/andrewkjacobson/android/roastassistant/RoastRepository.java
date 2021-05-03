@@ -87,24 +87,24 @@ public class RoastRepository {
 
     public void update(RoastComponent item) {
         if(item instanceof RoastEntity) {
-            new updateAsyncTask(mRoastDao).execute(item);
+            new updateAsyncTask(mRoastDao).execute((RoastEntity) item);
         } else if(item instanceof DetailsEntity) {
-            new updateAsyncTask(mDetailsDao).execute(item);
+            new updateAsyncTask(mDetailsDao).execute((DetailsEntity) item);
         } else if(item instanceof CrackReadingEntity) {
-            new updateAsyncTask(mCrackReadingDao).execute(item);
+            new updateAsyncTask(mCrackReadingDao).execute((CrackReadingEntity) item);
         } else if(item instanceof ReadingEntity) {
-            new updateAsyncTask(mReadingDao).execute(item);
+            new updateAsyncTask(mReadingDao).execute((ReadingEntity) item);
         }
     }
 
-    public void upsert(RoastComponent... item) {
-        if(item instanceof RoastEntity[]) {
+    public void upsert(RoastComponent item) {
+        if(item instanceof RoastEntity) {
             new upsertAsyncTask(mRoastDao).execute(item);
-        } else if(item instanceof DetailsEntity[]) {
+        } else if(item instanceof DetailsEntity) {
             new upsertAsyncTask(mDetailsDao).execute(item);
-        } else if(item instanceof CrackReadingEntity[]) {
+        } else if(item instanceof CrackReadingEntity) {
             new upsertAsyncTask(mCrackReadingDao).execute(item);
-        } else if(item instanceof ReadingEntity[]) {
+        } else if(item instanceof ReadingEntity) {
             new upsertAsyncTask(mReadingDao).execute(item);
         }
     }

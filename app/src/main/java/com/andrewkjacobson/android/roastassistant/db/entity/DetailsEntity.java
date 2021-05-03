@@ -13,9 +13,10 @@ import com.andrewkjacobson.android.roastassistant.model.Details;
 @Entity(tableName = "details_entity")
 public class DetailsEntity extends RoastComponent implements Details, Parcelable {
 
-   @PrimaryKey(autoGenerate = true)
-    private int id;
+//   @PrimaryKey(autoGenerate = true)
+//    private int id;
 
+    @PrimaryKey
     @ForeignKey(entity = RoastEntity.class, parentColumns = "id", childColumns = "roastId",
             onDelete = ForeignKey.CASCADE)
     private int roastId;
@@ -74,13 +75,13 @@ public class DetailsEntity extends RoastComponent implements Details, Parcelable
         }
     };
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
 
     @Override
     public int getRoastId() {

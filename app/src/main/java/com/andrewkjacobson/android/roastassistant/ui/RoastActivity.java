@@ -40,7 +40,6 @@ public class RoastActivity extends AppCompatActivity {
                 .setReorderingAllowed(true)
                 .add(R.id.roast_fragment_container_view, RoastFragment.class, null)
                 .commit();
-
     }
 
 
@@ -75,7 +74,7 @@ public class RoastActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_CODE_ROAST_DETAILS_ACTIVITY:
                 if(resultCode == RESULT_OK && data != null)
-                    roastViewModel.setDetails(data.getParcelableExtra(RoastDetailsActivity.EXTRA_REPLY));
+                    roastViewModel.recordDetails(data.getParcelableExtra(RoastDetailsActivity.EXTRA_REPLY));
                 break;
         }
     }

@@ -195,7 +195,7 @@ public class RoastViewModel extends AndroidViewModel {
                     getRoastId());
     }
 
-    public void setDetails(DetailsEntity details) {
+    public void recordDetails(DetailsEntity details) {
         details.setRoastId(getRoastId());
         repository.insert(details);
     }
@@ -213,7 +213,7 @@ public class RoastViewModel extends AndroidViewModel {
         long startTime = elapsedRealtime() + chronoAddend;
         setStartTime(startTime);
         mRoast.startRoast();
-        repository.update(mRoast);
+        repository.insert(mRoast);
     }
 
     /**
