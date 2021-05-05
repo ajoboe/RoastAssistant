@@ -55,19 +55,19 @@ public class RoastViewModel extends AndroidViewModel {
         this.repository = new RoastRepository(application);
         loadSettings();
 
-        if(savedStateHandle != null && savedStateHandle.contains(KEY_ROAST_ID)) {
-            mRoastId = savedStateHandle.get(KEY_ROAST_ID);
-        } else {
+        mRoastLiveData = repository.getMostRecentRoast();
+
+        if(mRoast == null) {
             mRoast = new RoastEntity(); // empty roast w/ id
-            mRoastId = mRoast.getId();    //Long.valueOf(Instant.now().getEpochSecond()).intValue();
             repository.insert(mRoast);
-            repository.insert(new DetailsEntity(mRoastId));
+            repository.insert(new DetailsEntity(mRoast.getId()));
             repository.insert(new ReadingEntity(0,
                     settings.getStartingTemperature(),
                     settings.getStartingPower(),
-                    mRoastId));
+                    mRoast.getId()));
         }
 
+        mRoastId = mRoast.getId();    //Long.valueOf(Instant.now().getEpochSecond()).intValue();
         mRoastLiveData = repository.getRoastLiveData(mRoastId);
         mDetailsLiveData = repository.getDetailsLiveData(mRoastId);
         mReadingsLiveData = repository.getReadingsLiveData(mRoastId);
@@ -211,7 +211,7 @@ public class RoastViewModel extends AndroidViewModel {
     public void startRoast() {
         int chronoAddend =  -(getSettings().getRoastTimeInSecAddend() * 1000);
         long startTime = elapsedRealtime() + chronoAddend;
-        setStartTime(startTime);
+        mRoast.setStartTime(startTime);
         mRoast.startRoast();
         repository.insert(mRoast);
     }
@@ -224,10 +224,10 @@ public class RoastViewModel extends AndroidViewModel {
         repository.update(mRoast);
     }
 
-    private void setStartTime(long startTime) {
-        mRoast.setStartTime(startTime);
-        repository.update(mRoast);
-    }
+//    private void setStartTime(long startTime) {
+//        mRoast.setStartTime(startTime);
+//        repository.update(mRoast);
+//    }
 
     /**
      * Get the current first crack reading. Null if it hasn't occurred.

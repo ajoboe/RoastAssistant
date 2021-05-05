@@ -373,7 +373,7 @@ public class RoastFragment extends Fragment
 
     public void startRoast(View view) {
 
-        viewModel.startRoast(); // triggers observer
+        viewModel.startRoast(); // triggers Roast observer
 
         // todo do in observer instead??
         // how to tell if roast JUST started

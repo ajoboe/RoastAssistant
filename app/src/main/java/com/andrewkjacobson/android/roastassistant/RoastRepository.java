@@ -72,6 +72,10 @@ public class RoastRepository {
         return mCracksLiveData;
     }
 
+    public LiveData<RoastEntity> getMostRecentRoast() {
+        return mRoastDao.getMostRecent();
+    }
+
     // todo use a Future here. see: https://www.baeldung.com/java-util-concurrent
     public void insert(RoastComponent item) {
         if(item instanceof RoastEntity) {
@@ -120,6 +124,8 @@ public class RoastRepository {
             new deleteAsyncTask(mReadingDao).execute(item);
         }
     }
+
+
 
     public void deleteAllReadings() {
         new deleteAllAsyncTask(mReadingDao).execute();

@@ -27,6 +27,7 @@ public class RoastActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_roast);
         roastViewModel = new ViewModelProvider(this).get(RoastViewModel.class);
 
