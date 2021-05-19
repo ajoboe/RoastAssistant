@@ -20,6 +20,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Objects;
 
 public class RoastDetailsActivity extends AppCompatActivity {
     private final String DETAILS_KEY = "roast details";
@@ -58,19 +59,27 @@ public class RoastDetailsActivity extends AppCompatActivity {
 
         // save button
         final Button button = findViewById(R.id.button_save);
-        button.setOnClickListener(v -> {
-            Intent replyIntent = new Intent();
-            mDetails = fetchDetailsFromControls();
-            replyIntent.putExtra(EXTRA_REPLY, mDetails);
-            setResult(RESULT_OK, replyIntent);
-            finish();
-        });
+        button.setOnClickListener(v -> saveAndReturn());
 
         // restore state
         if(savedInstanceState != null) {
             mDetails = savedInstanceState.getParcelable(DETAILS_KEY);
             populateUI(mDetails);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        saveAndReturn();
+    }
+
+    private void saveAndReturn()  {
+        Intent replyIntent = new Intent();
+        mDetails = fetchDetailsFromControls();
+        replyIntent.putExtra(EXTRA_REPLY, mDetails);
+        setResult(RESULT_OK, replyIntent);
+        finish();
     }
 
     private void populateUI(DetailsEntity details) {
@@ -102,21 +111,21 @@ public class RoastDetailsActivity extends AppCompatActivity {
 
     private DetailsEntity fetchDetailsFromControls() {
         DetailsEntity details = new DetailsEntity();
-        details.setDate(((TextInputEditText)findViewById(R.id.textDate)).getText().toString());
-        details.setBeanType(((TextInputEditText)findViewById(R.id.autoTextBeanType)).getText().toString());
+        details.setDate(String.valueOf(((TextInputEditText)findViewById(R.id.textDate)).getText()));
+        details.setBeanType(String.valueOf(((TextInputEditText)findViewById(R.id.autoTextBeanType)).getText()));
 
-        String batchSize = ((TextInputEditText)findViewById(R.id.text_decimal_batch_size)).getText().toString();
+        String batchSize = String.valueOf(((TextInputEditText)findViewById(R.id.text_decimal_batch_size)).getText());
         if(batchSize.length() > 0) details.setBatchSize(Float.parseFloat(batchSize));
 
-        String yield = ((TextInputEditText)findViewById(R.id.text_decimal_yield)).getText().toString();
+        String yield = String.valueOf(((TextInputEditText)findViewById(R.id.text_decimal_yield)).getText());
         if(yield.length() > 0) details.setYield(Float.parseFloat(yield));
 
         details.setRoastDegree(((Spinner)findViewById(R.id.spinnerRoastDegree)).getSelectedItem().toString());
-        details.setRoastNotes(((TextInputEditText)findViewById(R.id.textMultiRoastNotes)).getText().toString());
-        details.setTastingNotes(((TextInputEditText)findViewById(R.id.textMultiTastingNotes)).getText().toString());
-        details.setRoaster(((TextInputEditText)findViewById(R.id.autoTextRoaster)).getText().toString());
+        details.setRoastNotes(String.valueOf(((TextInputEditText)findViewById(R.id.textMultiRoastNotes)).getText()));
+        details.setTastingNotes(String.valueOf(((TextInputEditText)findViewById(R.id.textMultiTastingNotes)).getText()));
+        details.setRoaster(String.valueOf(((TextInputEditText)findViewById(R.id.autoTextRoaster)).getText()));
 
-        String ambient = ((TextInputEditText)findViewById(R.id.autoTextAmbientTemp)).getText().toString();
+        String ambient = String.valueOf(((TextInputEditText)findViewById(R.id.autoTextAmbientTemp)).getText());
         if(ambient.length() >0 ) details.setAmbientTemperature(Integer.parseInt(ambient));
 
         return details;
@@ -124,7 +133,8 @@ public class RoastDetailsActivity extends AppCompatActivity {
 
     private void autofillDate() {
         TextInputEditText textDate = findViewById(R.id.textDate);
-        if(textDate.getText().length() == 0) {
+        if(textDate == null) return;
+        if(Objects.requireNonNull(textDate.getText()).length() == 0) {
             textDate.setText(new SimpleDateFormat("MM/dd/yyyy").format(Calendar.getInstance().getTime()));
         }
     }

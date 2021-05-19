@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.os.SystemClock.elapsedRealtime;
+import static com.andrewkjacobson.android.roastassistant.ui.RoastActivity.ROAST_ID_KEY;
 
 
 // A ViewModel object provides the data for a specific UI component, such as a fragment or activity,
@@ -39,7 +40,7 @@ public class RoastViewModel extends AndroidViewModel {
     private final Application application;
     private final RoastRepository repository;
 
-    private int mRoastId = -1;
+//    private int mRoastId = -1;
     private final LiveData<RoastEntity> mRoastLiveData;
     private RoastEntity mRoast;
     private final LiveData<DetailsEntity> mDetailsLiveData;
@@ -55,9 +56,11 @@ public class RoastViewModel extends AndroidViewModel {
         this.repository = new RoastRepository(application);
         loadSettings();
 
-        mRoastLiveData = repository.getMostRecentRoast();
-
-        if(mRoast == null) {
+//        mRoastLiveData = repository.getMostRecentRoast();
+        int id;
+        if(savedStateHandle != null && savedStateHandle.contains(ROAST_ID_KEY)) {
+            id = savedStateHandle.get(ROAST_ID_KEY);
+        } else {
             mRoast = new RoastEntity(); // empty roast w/ id
             repository.insert(mRoast);
             repository.insert(new DetailsEntity(mRoast.getId()));
@@ -65,25 +68,27 @@ public class RoastViewModel extends AndroidViewModel {
                     settings.getStartingTemperature(),
                     settings.getStartingPower(),
                     mRoast.getId()));
+            id = mRoast.getId();
         }
 
-        mRoastId = mRoast.getId();    //Long.valueOf(Instant.now().getEpochSecond()).intValue();
-        mRoastLiveData = repository.getRoastLiveData(mRoastId);
-        mDetailsLiveData = repository.getDetailsLiveData(mRoastId);
-        mReadingsLiveData = repository.getReadingsLiveData(mRoastId);
-        mCracksLiveData = repository.getCracksLiveData(mRoastId);
+//        mRoastId = mRoast.getId();    //Long.valueOf(Instant.now().getEpochSecond()).intValue();
+        mRoastLiveData = repository.getRoastLiveData(id);
+        mDetailsLiveData = repository.getDetailsLiveData(id);
+        mReadingsLiveData = repository.getReadingsLiveData(id);
+        mCracksLiveData = repository.getCracksLiveData(id);
 
         mCracks = new ArrayList<>();
     }
 
-    /**
-     * Get the ID for the current roast. If there isn't one, a new roast is created and  the ID returned.
-     *
-     * @return the current roast ID
-     */
-    public int getRoastId() {
-        return mRoastId;
-    }
+//    /**
+//     * Get the ID for the current roast. If there isn't one, a new roast is created and  the ID returned.
+//     *
+//     * @return the current roast ID
+//     */
+//    public int getRoastId() {
+////        return mRoastId;
+//        return m
+//    }
 
     /**
      * Get the current roast.
@@ -134,7 +139,7 @@ public class RoastViewModel extends AndroidViewModel {
                     getElapsed(),
                     Integer.parseInt(temperature),
                     power,  // power from prev reading
-                    getRoastId());
+                    getRoast().getId());
             repository.insert(mCurrentReading);
             return true;
         } catch (NumberFormatException e) {
@@ -152,7 +157,7 @@ public class RoastViewModel extends AndroidViewModel {
                     getCurrentReading().getPower(),
                     1,
                     true,
-                    getRoastId());
+                    getRoast().getId());
             mCracks.add(crack); // cache the crack
             repository.insert(crack);
 
@@ -170,7 +175,7 @@ public class RoastViewModel extends AndroidViewModel {
                 getElapsed(),
                 temperature,
                 power,
-                getRoastId());
+                getRoast().getId());
         repository.insert(mCurrentReading);
     }
 
@@ -192,11 +197,11 @@ public class RoastViewModel extends AndroidViewModel {
         return new ReadingEntity(0,
                     settings.getStartingTemperature(),
                     settings.getStartingPower(),
-                    getRoastId());
+                    getRoast().getId());
     }
 
     public void recordDetails(DetailsEntity details) {
-        details.setRoastId(getRoastId());
+        details.setRoastId(getRoast().getId());
         repository.insert(details);
     }
 
