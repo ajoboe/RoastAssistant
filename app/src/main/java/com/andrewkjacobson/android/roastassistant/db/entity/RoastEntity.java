@@ -1,5 +1,6 @@
 package com.andrewkjacobson.android.roastassistant.db.entity;
 
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -76,5 +77,10 @@ public class RoastEntity extends RoastComponent implements Roast {
     @Override
     public long getStartTime() {
         return startTime;
+    }
+
+    @Override
+    public boolean equals(@Nullable @org.jetbrains.annotations.Nullable Object obj) {
+        return obj instanceof RoastEntity && getId() == ((RoastEntity) obj).getId();
     }
 }

@@ -1,3 +1,5 @@
+// todo TESTING!!!!!!!!!!!!
+
 // todo CHECK FOR NULL!! number one cause of Android App crashes
 //      from https://developer.android.com/topic/performance/vitals/crash
 //      you need to make sure that the object references you're working with are non-null before
@@ -12,11 +14,15 @@
 //          officially add a Reading that duplicates first crack, not just graph it. OR, if readings
 //          were either TemperatureReading or PowerReading, then we wouldn't have the issue.
 
-// todo don't tick the ViewModel! Don't store seconds in the DB. Just save the start time.
 // todo should a Reading be temp OR power, not both??
 //          how about Reading is an interface w/ TempReading and PowerReading inheriting (as interfaces)
 //          them implement as TempReadingEntity and PowerReadingEntity
 
+// todo BUG: after touching 1C if you touch out of the voice recognizer, 1C gets lost and the button is
+
+// todo toggle graph / event list
+
+// todo rolling event display (like slot machine)
 
 // todo update 1c percentage in either tickListener or in roastEntityObserver
 
