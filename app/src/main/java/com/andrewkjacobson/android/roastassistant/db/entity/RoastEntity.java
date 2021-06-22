@@ -50,8 +50,10 @@ public class RoastEntity extends RoastComponent implements Roast {
 
     @Override
     public void endRoast() {
-        isRunning = false;
-        isFinished = true;
+        if(isRunning()) {
+            isRunning = false;
+            isFinished = true;
+        }
     }
 
     @Override
