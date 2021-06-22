@@ -1,5 +1,6 @@
 package com.andrewkjacobson.android.roastassistant.db.entity;
 
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
@@ -78,7 +79,8 @@ public class ReadingEntity extends RoastComponent implements Reading {
     public String toString() {
         return "Time: " + getSeconds()
                 + " seconds. Temperature: " + getTemperature()
-                + "° Power: " + getPower() + "%";
+                + "° Power: " + getPower() + "%"
+                + " RoastId: " + getRoastId();
     }
 
     @Override
@@ -89,5 +91,14 @@ public class ReadingEntity extends RoastComponent implements Reading {
     @Override
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(@Nullable @org.jetbrains.annotations.Nullable Object obj) {
+        return obj instanceof ReadingEntity &&
+                getSeconds() == ((ReadingEntity) obj).getSeconds() &&
+                getTemperature() == ((ReadingEntity) obj).getTemperature() &&
+                getPower() == ((ReadingEntity) obj).getPower() &&
+                getRoastId() == ((ReadingEntity) obj).getRoastId();
     }
 }
