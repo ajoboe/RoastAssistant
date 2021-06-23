@@ -103,4 +103,28 @@ public class ReadingDaoTest extends TestCase {
             fail("Interrupted Exception");
         }
     }
+
+    @Test
+    public void testInsert() {
+        fail();
+    }
+
+    @Test
+    public void testUpdate() {
+        fail();
+    }
+
+    @Test
+    public void testDelete() {
+        fail();
+        // check that intended item is gone
+        // check that other items are still there
+            // by number of items
+            // by item equality for one
+    }
+
+//    @Test
+//    public void testUpsert() {
+//        fail();
+//    }
 }
