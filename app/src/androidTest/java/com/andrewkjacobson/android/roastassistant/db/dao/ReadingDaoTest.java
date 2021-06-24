@@ -106,7 +106,15 @@ public class ReadingDaoTest extends TestCase {
 
     @Test
     public void testInsert() {
-        fail();
+        ReadingEntity r = new ReadingEntity(77, 666, 25, 888);
+        readingDao.insert(r);
+        try {
+            TestObserver.test(readingDao.get(r.getRoastId(), r.getSeconds()))
+                    .awaitValue()
+                    .assertValue(r);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -116,15 +124,51 @@ public class ReadingDaoTest extends TestCase {
 
     @Test
     public void testDelete() {
-        fail();
+        ReadingEntity r = expected.get(0);
+        try {
+            // make sure it's there
+            TestObserver.test(readingDao.get(r.getRoastId(), r.getSeconds()))
+                    .awaitValue()
+                    .assertValue(r);
+            // make sure the correct number of items are there
+            assertEquals(expected.size(),
+                    TestObserver.test(readingDao.getAll(999)) // by number of items
+                            .awaitValue()
+                            .value()
+                            .size()
+            );
+            // delete it and see if it's gone
+            readingDao.delete(expected.get(0)); // todo shouldn't delete and get have the same prams??
+            Thread.sleep(1000);
+//            ReadingEntity ret =
+            TestObserver.test(readingDao.get(r.getRoastId(), r.getSeconds()))
+                    .awaitValue()
+                    .assertNullValue();
+
+            // check that the correct number of items are left
+            assertEquals(expected.size() - 1,
+                TestObserver.test(readingDao.getAll(999)) // by number of items
+                    .awaitValue()
+                    .value()
+                    .size()
+            );
+            // check that one of the items that's supposed to be there is still there
+            TestObserver.test(readingDao.get(expected.get(0).getRoastId(),
+                                             expected.get(0).getSeconds()))
+                    .awaitValue()
+                    .assertHasValue();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        readingDao.delete(r);
         // check that intended item is gone
         // check that other items are still there
             // by number of items
             // by item equality for one
     }
 
-//    @Test
-//    public void testUpsert() {
-//        fail();
-//    }
+    @Test
+    public void testUpsert() {
+        fail();
+    }
 }
