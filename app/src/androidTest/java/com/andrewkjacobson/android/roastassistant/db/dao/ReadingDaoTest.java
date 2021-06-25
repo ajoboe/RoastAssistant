@@ -137,10 +137,6 @@ public class ReadingDaoTest extends TestCase {
     }
 
     @Test
-    public void testNewUpdate() {
-        fail("Need to re-implement update to do so via id.");
-    }
-    @Test
     public void testDelete() {
         ReadingEntity r = expected.get(0);
         try {
@@ -178,13 +174,25 @@ public class ReadingDaoTest extends TestCase {
         }
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testBaseDelete() {
-        readingDao.delete(expected.get(0));
+    @Test
+    public void testBaseDelete() throws InterruptedException {
+        ReadingEntity r = expected.get(0);
+        readingDao.delete(r);
+        TestObserver.test(readingDao.get(r.getRoastId(), r.getSeconds()))
+                .awaitValue()
+                .assertNullValue();
     }
 
     @Test
-    public void testUpsert() {
+    public void testUpsert() throws InterruptedException {
+        ReadingEntity r = expected.get(0);
+        r.setPower(123);
+        r.setTemperature(123);
+
+        readingDao.upsert(r);
+        TestObserver.test(readingDao.get(r.getRoastId(), r.getSeconds()))
+                .awaitValue()
+                .assertValue(r);
         fail();
     }
 }
