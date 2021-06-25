@@ -1,15 +1,16 @@
 package com.andrewkjacobson.android.roastassistant.db.dao;
 
 import android.app.Application;
-import android.util.Log;
+import android.content.Context;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.LiveData;
+import androidx.room.Room;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.andrewkjacobson.android.roastassistant.db.RoastRoomDatabase;
 import com.andrewkjacobson.android.roastassistant.db.entity.ReadingEntity;
-import com.andrewkjacobson.android.roastassistant.viewmodel.RoastViewModel;
 import com.jraska.livedata.TestObserver;
 
 import junit.framework.TestCase;
@@ -30,18 +31,16 @@ public class ReadingDaoTest extends TestCase {
     @Rule
     public InstantTaskExecutorRule testRule = new InstantTaskExecutorRule();
 
-    private RoastViewModel viewModel;
-    private Application application;
     private ReadingDao readingDao;
     private List<ReadingEntity> expected;
+    private RoastRoomDatabase db;
 
     @Before
     public void setUp() {
-        application = mock(Application.class);
-
-        RoastRoomDatabase db = RoastRoomDatabase.getDatabase(application);
+        Context context = ApplicationProvider.getApplicationContext();
+        db = Room.inMemoryDatabaseBuilder(context, RoastRoomDatabase.class).build();
         readingDao = db.readingDao();
-        expected = new ArrayList<ReadingEntity>();
+        expected = new ArrayList<>();
 
         ReadingEntity r = new ReadingEntity(3, 200, 75, 999);
         expected.add(r);
@@ -54,6 +53,7 @@ public class ReadingDaoTest extends TestCase {
     @After
     public void tearDown() {
         readingDao.deleteAll();
+        db.close();
     }
 
     @Test
