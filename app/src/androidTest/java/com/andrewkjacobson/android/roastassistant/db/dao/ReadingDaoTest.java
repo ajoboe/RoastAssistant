@@ -42,11 +42,12 @@ public class ReadingDaoTest extends TestCase {
         expected = new ArrayList<>();
 
         ReadingEntity r = new ReadingEntity(3, 200, 75, 999);
+        r.setId((int) readingDao.insert(r)); // this needs to happen in the repo and id should probably be completely hidden AND therefore we can't really do the serializing
         expected.add(r);
-        readingDao.insert(r);
+
         r = new ReadingEntity(9, 230, 50, 999);
+        r.setId((int) readingDao.insert(r));
         expected.add(r);
-        readingDao.insert(r);
     }
 
     @After
@@ -116,11 +117,29 @@ public class ReadingDaoTest extends TestCase {
         }
     }
 
+    // todo should a Reading really be identified by roastId/seconds? why not just use the
+    // auto-generated id? That way, the client can change the seconds if desired.
+    // Use case: user records a temperature later than desired and wants to move it to an earlier time.
+    // This would require the following changes:
+    //      todo get(roastId, seconds) returns a list (more than one reading poss per second)
+    //      todo delete is via id. OR if keeping roastId/seconds than multi-delete possible.
+    //      todo ANOTHER possibility would be to make seconds a floating point and only allow one entry per roastId/time
     @Test
-    public void testUpdate() {
-        fail();
+    public void testUpdate() throws InterruptedException {
+        ReadingEntity r = expected.get(0);
+        r.setPower(123);
+        r.setTemperature(123);
+
+        readingDao.update(r);
+        TestObserver.test(readingDao.get(r.getRoastId(), r.getSeconds()))
+                .awaitValue()
+                .assertValue(r);
     }
 
+    @Test
+    public void testNewUpdate() {
+        fail("Need to re-implement update to do so via id.");
+    }
     @Test
     public void testDelete() {
         ReadingEntity r = expected.get(0);

@@ -80,7 +80,8 @@ public class ReadingEntity extends RoastComponent implements Reading {
         return "Time: " + getSeconds()
                 + " seconds. Temperature: " + getTemperature()
                 + "° Power: " + getPower() + "%"
-                + " RoastId: " + getRoastId();
+                + " RoastId: " + getRoastId()
+                + " Id: " + getId();
     }
 
     @Override
