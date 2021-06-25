@@ -26,5 +26,5 @@ public abstract class BaseDao<T> {
     }
 
     @Delete
-    public abstract void delete(T items);
+    public abstract void delete(T... items);
 }

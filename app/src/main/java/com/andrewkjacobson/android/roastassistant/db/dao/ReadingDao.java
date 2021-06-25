@@ -21,4 +21,10 @@ public abstract class ReadingDao extends BaseDao<ReadingEntity> {
 
     @Query("DELETE FROM reading_entity")
     public abstract void deleteAll();
+
+    @Override
+    public void delete(ReadingEntity... items) {
+        throw new UnsupportedOperationException(ReadingDao.class.toString() +
+                " doesn't support delete from the base class. Use delete(int, int) instead.");
+    }
 }

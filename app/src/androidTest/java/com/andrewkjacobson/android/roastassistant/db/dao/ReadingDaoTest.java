@@ -25,8 +25,6 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
-
 @RunWith(AndroidJUnit4.class)
 public class ReadingDaoTest extends TestCase {
     @Rule
@@ -159,6 +157,11 @@ public class ReadingDaoTest extends TestCase {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testBaseDelete() {
+        readingDao.delete(expected.get(0));
     }
 
     @Test
