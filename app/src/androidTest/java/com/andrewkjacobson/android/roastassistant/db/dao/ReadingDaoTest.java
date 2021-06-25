@@ -11,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.andrewkjacobson.android.roastassistant.db.RoastRoomDatabase;
 import com.andrewkjacobson.android.roastassistant.db.entity.ReadingEntity;
+import com.andrewkjacobson.android.roastassistant.db.entity.RoastEntity;
 import com.jraska.livedata.TestObserver;
 
 import junit.framework.TestCase;
@@ -129,18 +130,16 @@ public class ReadingDaoTest extends TestCase {
             // make sure it's there
             TestObserver.test(readingDao.get(r.getRoastId(), r.getSeconds()))
                     .awaitValue()
-                    .assertValue(r);
+                    .assertValue(r);// todo shouldn't delete and get have the same prams??
             // make sure the correct number of items are there
             assertEquals(expected.size(),
-                    TestObserver.test(readingDao.getAll(999)) // by number of items
+                    TestObserver.test(readingDao.getAll(999))
                             .awaitValue()
                             .value()
                             .size()
             );
             // delete it and see if it's gone
-            readingDao.delete(expected.get(0)); // todo shouldn't delete and get have the same prams??
-            Thread.sleep(1000);
-//            ReadingEntity ret =
+            readingDao.delete(r.getRoastId(), r.getSeconds());
             TestObserver.test(readingDao.get(r.getRoastId(), r.getSeconds()))
                     .awaitValue()
                     .assertNullValue();
@@ -160,11 +159,6 @@ public class ReadingDaoTest extends TestCase {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        readingDao.delete(r);
-        // check that intended item is gone
-        // check that other items are still there
-            // by number of items
-            // by item equality for one
     }
 
     @Test

@@ -7,6 +7,8 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
+import com.andrewkjacobson.android.roastassistant.db.entity.ReadingEntity;
+
 @Dao
 public abstract class BaseDao<T> {
     @Insert
@@ -24,5 +26,5 @@ public abstract class BaseDao<T> {
     }
 
     @Delete
-    public abstract void delete(T...items);
+    public abstract void delete(T items);
 }
