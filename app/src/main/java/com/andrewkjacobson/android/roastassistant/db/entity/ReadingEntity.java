@@ -16,7 +16,7 @@ public class ReadingEntity extends RoastComponent implements Reading {
     private int roastId;
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private int id; // todo change to long
     private int seconds;
     private int temperature;
     private int power;
