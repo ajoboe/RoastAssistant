@@ -45,6 +45,7 @@ public class CrackReadingEntity extends ReadingEntity implements Crack {
     @NotNull
     @Override
     public String toString() {
-        return super.toString() + " Crack #" + getCrackNumber();
+        return super.toString() + " Crack #" + getCrackNumber()
+                                + " Has occurred: " + hasOccurred();
     }
 }
