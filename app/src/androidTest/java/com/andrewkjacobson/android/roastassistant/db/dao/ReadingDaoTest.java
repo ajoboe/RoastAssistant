@@ -1,27 +1,20 @@
 package com.andrewkjacobson.android.roastassistant.db.dao;
 
-import android.app.Application;
 import android.content.Context;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.LiveData;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.andrewkjacobson.android.roastassistant.db.RoastRoomDatabase;
 import com.andrewkjacobson.android.roastassistant.db.entity.ReadingEntity;
-import com.andrewkjacobson.android.roastassistant.db.entity.RoastEntity;
 import com.jraska.livedata.TestObserver;
-
 import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,13 +110,6 @@ public class ReadingDaoTest extends TestCase {
         }
     }
 
-    // todo should a Reading really be identified by roastId/seconds? why not just use the
-    // auto-generated id? That way, the client can change the seconds if desired.
-    // Use case: user records a temperature later than desired and wants to move it to an earlier time.
-    // This would require the following changes:
-    //      todo get(roastId, seconds) returns a list (more than one reading poss per second)
-    //      todo delete is via id. OR if keeping roastId/seconds than multi-delete possible.
-    //      todo ANOTHER possibility would be to make seconds a floating point and only allow one entry per roastId/time
     @Test
     public void testUpdate() throws InterruptedException {
         ReadingEntity r = expected.get(0);
@@ -181,18 +167,5 @@ public class ReadingDaoTest extends TestCase {
         TestObserver.test(readingDao.get(r.getRoastId(), r.getSeconds()))
                 .awaitValue()
                 .assertNullValue();
-    }
-
-    @Test
-    public void testUpsert() throws InterruptedException {
-        ReadingEntity r = expected.get(0);
-        r.setPower(123);
-        r.setTemperature(123);
-
-        readingDao.upsert(r);
-        TestObserver.test(readingDao.get(r.getRoastId(), r.getSeconds()))
-                .awaitValue()
-                .assertValue(r);
-        fail();
     }
 }

@@ -17,14 +17,6 @@ public abstract class BaseDao<T> {
     @Update
     public abstract void update(T item);
 
-    @Transaction
-    public void upsert(T item) {
-        long id = insert(item);
-        if(id == -1) {
-            update(item);
-        }
-    }
-
     @Delete
     public abstract void delete(T... items);
 }

@@ -101,18 +101,6 @@ public class RoastRepository {
         }
     }
 
-    public void upsert(RoastComponent item) {
-        if(item instanceof RoastEntity) {
-            new upsertAsyncTask(mRoastDao).execute(item);
-        } else if(item instanceof DetailsEntity) {
-            new upsertAsyncTask(mDetailsDao).execute(item);
-        } else if(item instanceof CrackReadingEntity) {
-            new upsertAsyncTask(mCrackReadingDao).execute(item);
-        } else if(item instanceof ReadingEntity) {
-            new upsertAsyncTask(mReadingDao).execute(item);
-        }
-    }
-
     public void delete(RoastComponent...item) {
         if(item instanceof RoastEntity[]) {
             new deleteAsyncTask(mRoastDao).execute(item);
@@ -196,20 +184,6 @@ public class RoastRepository {
         @Override
         protected Void doInBackground(final RoastComponent... params) {
             mAsyncTaskDao.update((params[0]));
-            return null;
-        }
-    }
-
-    private class upsertAsyncTask extends AsyncTask<RoastComponent, Void, Void> {
-        private BaseDao mAsyncTaskDao;
-
-        upsertAsyncTask(BaseDao dao) {
-            mAsyncTaskDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(final RoastComponent... params) {
-            mAsyncTaskDao.upsert((params[0]));
             return null;
         }
     }
