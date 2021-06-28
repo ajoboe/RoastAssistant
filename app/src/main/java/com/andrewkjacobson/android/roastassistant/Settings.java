@@ -8,8 +8,8 @@ public class Settings {
     private final int roastTimeInSecAddend;
     private final int firstCrackLookaheadTime;
     private final int expectedRoastLength;
-    private final int maxGraphTemperature; // todo should be a setting
-    private final int minGraphTemperature; // todo should be a setting
+    private final int maxGraphTemperature;
+    private final int minGraphTemperature;
 
     public Settings(int temperatureCheckFrequency, int allowedTempChange, int startingTemperature,
                     int startingPower, int roastTimeInSecAddend, int firstCrackLookaheadTime,

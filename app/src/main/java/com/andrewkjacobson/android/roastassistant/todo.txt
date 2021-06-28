@@ -1,4 +1,9 @@
 // todo TESTING!!!!!!!!!!!!
+        xx non-android
+        xx DAOs
+        Repository
+        ViewModel
+        UI
 
 // todo CHECK FOR NULL!! number one cause of Android App crashes
 //      from https://developer.android.com/topic/performance/vitals/crash
@@ -8,6 +13,9 @@
 //      the object reference and write information to a debug log).
 //      Because you don't want to have null checks for every parameter of every method called, you
 //      can rely on the IDE or on the type of the object to signify nullability.
+
+
+
 
 // todo BUG: changing power right after 1C causes the temp to revert to the previous value
 //          I'm guessing that either Crack needs to be treated like a Reading, or we need to
