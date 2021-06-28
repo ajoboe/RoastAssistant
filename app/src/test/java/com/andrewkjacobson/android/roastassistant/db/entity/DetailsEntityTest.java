@@ -2,6 +2,8 @@ package com.andrewkjacobson.android.roastassistant.db.entity;
 
 import junit.framework.TestCase;
 
+import org.junit.runner.RunWith;
+
 public class DetailsEntityTest extends TestCase {
 
     public void testGetRoastId() {
@@ -68,6 +70,9 @@ public class DetailsEntityTest extends TestCase {
         d.setBatchSize(100);
         d.setYield(87);
         assertEquals(0.13f, d.getWeightLossPercentage());
+        d.setBatchSize(0);
+        d.setYield(0);
+        assertEquals(0f, d.getWeightLossPercentage());
     }
 
     public void testGetRoastDegree() {

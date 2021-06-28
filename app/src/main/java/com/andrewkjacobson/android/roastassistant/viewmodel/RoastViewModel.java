@@ -270,7 +270,10 @@ public class RoastViewModel extends AndroidViewModel {
                     Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_TEMPERATURE, "68")),
                     Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_STARTING_POWER, "100")),
                     Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_ROAST_TIME_ADDEND, "0")),
-                    Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_FIRST_CRACK_LOOKAHEAD_TIME, "0"))
+                    Integer.parseInt(sharedPreferences.getString(SettingsActivity.KEY_PREF_FIRST_CRACK_LOOKAHEAD_TIME, "0")),
+                    600, // todo remove hardcoded settings
+                    401,
+                    50
             ));
         } catch (NullPointerException e) {
             this.setSettings(new Settings(
@@ -279,7 +282,10 @@ public class RoastViewModel extends AndroidViewModel {
                     Integer.parseInt("68"),
                     Integer.parseInt("100"),
                     Integer.parseInt("0"),
-                    Integer.parseInt("0")));
+                    Integer.parseInt("0"),
+                    600, // todo remove hardcoded settings
+                    401,
+                    50));
         }
     }
 }

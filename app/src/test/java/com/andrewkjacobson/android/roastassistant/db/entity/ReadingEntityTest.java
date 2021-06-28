@@ -86,4 +86,11 @@ public class ReadingEntityTest extends TestCase {
     public void testToString() {
         assertNotNull(reading.toString());
     }
+
+    public void testEquals() {
+        assertEquals(reading, reading);
+        ReadingEntity r = new ReadingEntity(2, 111,100, 55);
+        assertNotSame(r, reading);
+        assert r != reading;
+    }
 }

@@ -7,18 +7,22 @@ public class Settings {
     private final int startingPower;
     private final int roastTimeInSecAddend;
     private final int firstCrackLookaheadTime;
-    private final int expectedRoastLength = 60 * 10; // todo should be a setting
-    private final int maxGraphTemperature = 400; // todo should be a setting
-    private final int minGraphTemperature = 50; // todo should be a setting
+    private final int expectedRoastLength;
+    private final int maxGraphTemperature; // todo should be a setting
+    private final int minGraphTemperature; // todo should be a setting
 
     public Settings(int temperatureCheckFrequency, int allowedTempChange, int startingTemperature,
-                    int startingPower, int roastTimeInSecAddend, int firstCrackLookaheadTime) {
+                    int startingPower, int roastTimeInSecAddend, int firstCrackLookaheadTime,
+                    int expectedRoastLength, int maxGraphTemperature, int minGraphTemperature) {
         this.temperatureCheckFrequency = temperatureCheckFrequency;
         this.allowedTempChange = allowedTempChange;
         this.startingTemperature = startingTemperature;
         this.startingPower = startingPower;
         this.roastTimeInSecAddend = roastTimeInSecAddend;
         this.firstCrackLookaheadTime = firstCrackLookaheadTime;
+        this.expectedRoastLength = expectedRoastLength;
+        this.maxGraphTemperature = maxGraphTemperature;
+        this.minGraphTemperature = minGraphTemperature;
     }
 
     public int getTemperatureCheckFrequency() {
@@ -41,7 +45,9 @@ public class Settings {
         return roastTimeInSecAddend;
     }
 
-    public int getFirstCrackLookaheadTime() { return firstCrackLookaheadTime; }
+    public int getFirstCrackLookaheadTime() {
+        return firstCrackLookaheadTime;
+    }
 
     public int getExpectedRoastLength() {
         return expectedRoastLength;
