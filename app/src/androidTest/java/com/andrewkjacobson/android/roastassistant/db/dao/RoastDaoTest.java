@@ -49,7 +49,7 @@ public class RoastDaoTest extends TestCase {
         roast2.startRoast();
         roast2.endRoast();
         long id = dao.insert(roast);
-        roast.setId(id); // todo shouldn't have to cast to int! setId should take long
+        roast.setId(id);
         long id2 = dao.insert(roast2);
         roast2.setId((int) id2);
 

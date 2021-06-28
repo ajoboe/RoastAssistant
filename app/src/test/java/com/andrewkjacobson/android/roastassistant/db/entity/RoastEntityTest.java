@@ -4,8 +4,6 @@ import junit.framework.TestCase;
 
 public class RoastEntityTest extends TestCase {
 
-    // todo try and make two with the same id
-
     private RoastEntity roastEntity;
 
     public void setUp() throws Exception {

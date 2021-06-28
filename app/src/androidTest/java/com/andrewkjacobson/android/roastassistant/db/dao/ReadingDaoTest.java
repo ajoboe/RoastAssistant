@@ -129,7 +129,7 @@ public class ReadingDaoTest extends TestCase {
             // make sure it's there
             TestObserver.test(readingDao.get(r.getRoastId(), r.getSeconds()))
                     .awaitValue()
-                    .assertValue(r);// todo shouldn't delete and get have the same prams??
+                    .assertValue(r);
             // make sure the correct number of items are there
             assertEquals(expected.size(),
                     TestObserver.test(readingDao.getAll(999))

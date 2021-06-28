@@ -138,20 +138,4 @@ public class DetailsEntityTest extends TestCase {
         DetailsEntity d = new DetailsEntity();
         assertNotNull(d.describeContents());
     }
-
-    //todo this should be in androidTest as it is an instrumented test
-//    public void testWriteToParcel() {
-//        DetailsEntity d = new DetailsEntity();
-//
-//        // Obtain a Parcel object and write the parcelable object to it:
-//        Parcel parcel = Parcel.obtain();
-//        d.writeToParcel(parcel, 0);
-//
-//        // After you're done with writing, you need to reset the parcel for reading:
-//        parcel.setDataPosition(0);
-//
-//        // Reconstruct object from parcel and asserts:
-//        DetailsEntity createdFromParcel = DetailsEntity.CREATOR.createFromParcel(parcel);
-//        assertEquals(d, createdFromParcel);
-//    }
 }
