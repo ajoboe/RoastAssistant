@@ -1,9 +1,9 @@
 // todo TESTING!!!!!!!!!!!!
-        xx non-android
-        xx DAOs
-        Repository
-        ViewModel
-        UI
+        x non-android
+        x DAOs
+          Repository
+          ViewModel
+          UI
 
 // todo CHECK FOR NULL!! number one cause of Android App crashes
 //      from https://developer.android.com/topic/performance/vitals/crash
