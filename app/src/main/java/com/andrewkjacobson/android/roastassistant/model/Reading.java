@@ -14,11 +14,11 @@ public interface Reading{
 
     void setPower(int power);
 
-    int getRoastId();
+    long getRoastId();
 
-    void setRoastId(int roastId);
+    void setRoastId(long roastId);
 
-    int getId();
+    long getId();
 
-    void setId(int id);
+    void setId(long id);
 }

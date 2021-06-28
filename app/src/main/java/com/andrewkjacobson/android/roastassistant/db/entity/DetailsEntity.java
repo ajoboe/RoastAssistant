@@ -20,7 +20,7 @@ public class DetailsEntity extends RoastComponent implements Details, Parcelable
     @PrimaryKey
     @ForeignKey(entity = RoastEntity.class, parentColumns = "id", childColumns = "roastId",
             onDelete = ForeignKey.CASCADE)
-    private int roastId;
+    private long roastId;
 
     private String date;
     private String beanType;
@@ -34,7 +34,7 @@ public class DetailsEntity extends RoastComponent implements Details, Parcelable
     private int ambientTemperature;
 
     @Ignore
-    public DetailsEntity(int roastId) {
+    public DetailsEntity(long roastId) {
         this();
         this.roastId = roastId;
     }
@@ -85,12 +85,12 @@ public class DetailsEntity extends RoastComponent implements Details, Parcelable
 //    }
 
     @Override
-    public int getRoastId() {
+    public long getRoastId() {
         return roastId;
     }
 
     @Override
-    public void setRoastId(int roastId) {
+    public void setRoastId(long roastId) {
         this.roastId = roastId;
     }
 
@@ -136,7 +136,7 @@ public class DetailsEntity extends RoastComponent implements Details, Parcelable
 
     @Override
     public float getWeightLossPercentage() {
-        return getBatchSize() > 0 ? (float)(getBatchSize() - getYield()) / (float) getBatchSize() : 0;
+        return getBatchSize() > 0 ? (getBatchSize() - getYield()) / getBatchSize() : 0;
     }
 
     @Override

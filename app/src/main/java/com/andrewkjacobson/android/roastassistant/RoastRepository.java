@@ -44,28 +44,28 @@ public class RoastRepository {
         mCrackReadingDao = db.crackReadingDao();
     }
 
-    public LiveData<RoastEntity> getRoastLiveData(int roastId) {
+    public LiveData<RoastEntity> getRoastLiveData(long roastId) {
         if(mRoastLiveData == null || mRoastLiveData.getValue().getId() != roastId) {
             mRoastLiveData = mRoastDao.getLiveData(roastId);
         }
         return mRoastLiveData;
     }
 
-    public LiveData<DetailsEntity> getDetailsLiveData(int roastId) {
+    public LiveData<DetailsEntity> getDetailsLiveData(long roastId) {
         if(mDetailsLiveData == null || mDetailsLiveData.getValue().getRoastId() != roastId) {
             mDetailsLiveData = mDetailsDao.get(roastId);
         }
         return mDetailsLiveData;
     }
 
-    public LiveData<List<ReadingEntity>> getReadingsLiveData(int roastId) {
+    public LiveData<List<ReadingEntity>> getReadingsLiveData(long roastId) {
         if(mReadingsLiveData == null || mReadingsLiveData.getValue().get(0).getRoastId() != roastId) {
             mReadingsLiveData = mReadingDao.getAll(roastId);
         }
         return mReadingsLiveData;
     }
 
-    public LiveData<List<CrackReadingEntity>> getCracksLiveData(int roastId) {
+    public LiveData<List<CrackReadingEntity>> getCracksLiveData(long roastId) {
         if(mCracksLiveData == null || mCracksLiveData.getValue().get(0).getRoastId() != roastId) {
             mCracksLiveData = mCrackReadingDao.getAll(roastId);
         }

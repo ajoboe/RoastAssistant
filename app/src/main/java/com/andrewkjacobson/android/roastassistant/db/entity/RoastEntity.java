@@ -15,8 +15,8 @@ import java.time.Instant;
 public class RoastEntity extends RoastComponent implements Roast {
 
     // fields
-    @PrimaryKey
-    private int id;
+    @PrimaryKey(autoGenerate = true)
+    private long id;
 
     private boolean isRunning = false;
     private boolean isFinished = false;
@@ -24,12 +24,12 @@ public class RoastEntity extends RoastComponent implements Roast {
 
     // constructors
     public RoastEntity() {
-        this.id = Long.valueOf(Instant.now().getEpochSecond()).intValue();
+//        this.id = Long.valueOf(Instant.now().getEpochSecond()).intValue();
     }
 
     // public methods
     @Override
-    public void setId(int roastId) {
+    public void setId(long roastId) {
         this.id = roastId;
     }
 
@@ -39,7 +39,7 @@ public class RoastEntity extends RoastComponent implements Roast {
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return id;
     }
 

@@ -83,7 +83,7 @@ public class RoastActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(ROAST_ID_KEY, roastViewModel.getRoast().getId());
+        outState.putLong(ROAST_ID_KEY, roastViewModel.getRoast().getId());
     }
 
     private void showRoastDetails() {

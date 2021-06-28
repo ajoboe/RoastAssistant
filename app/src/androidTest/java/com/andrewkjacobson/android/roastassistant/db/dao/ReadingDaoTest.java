@@ -51,7 +51,7 @@ public class ReadingDaoTest extends TestCase {
 
     @Test
     public void testGet() {
-        int roastId = expected.get(0).getRoastId();
+        long roastId = expected.get(0).getRoastId();
         int seconds = expected.get(0).getSeconds();
         LiveData<ReadingEntity> retrieved = readingDao.get(roastId, seconds);
 

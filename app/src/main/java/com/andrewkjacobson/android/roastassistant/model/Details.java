@@ -3,9 +3,9 @@ package com.andrewkjacobson.android.roastassistant.model;
 import androidx.annotation.NonNull;
 
 public interface Details {
-    int getRoastId();
+    long getRoastId();
 
-    void setRoastId(int roastId);
+    void setRoastId(long roastId);
 
     String getDate();
 

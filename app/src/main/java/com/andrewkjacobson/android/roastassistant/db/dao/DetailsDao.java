@@ -14,5 +14,5 @@ public abstract class DetailsDao extends BaseDao<DetailsEntity> {
     public abstract long insert(DetailsEntity item);
 
     @Query("SELECT * FROM details_entity WHERE roastId=:roastId")
-    public abstract LiveData<DetailsEntity> get(int roastId);
+    public abstract LiveData<DetailsEntity> get(long roastId);
 }

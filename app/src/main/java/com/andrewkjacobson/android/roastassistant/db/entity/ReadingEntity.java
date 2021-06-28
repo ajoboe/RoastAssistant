@@ -13,10 +13,10 @@ import org.jetbrains.annotations.NotNull;
 public class ReadingEntity extends RoastComponent implements Reading {
     @ForeignKey(entity = RoastEntity.class, parentColumns = "id", childColumns = "roastId",
             onDelete = ForeignKey.CASCADE)
-    private int roastId;
+    private long roastId;
 
     @PrimaryKey(autoGenerate = true)
-    private int id; // todo change to long
+    private long id; // todo change to long
     private int seconds;
     private int temperature;
     private int power;
@@ -28,7 +28,7 @@ public class ReadingEntity extends RoastComponent implements Reading {
      * @param power the reading power percentage
      * @param roastId the id of the roast to which this reading belongs
      */
-    public ReadingEntity(int seconds, int temperature, int power, int roastId) {
+    public ReadingEntity(int seconds, int temperature, int power, long roastId) {
         setSeconds(seconds);
         setTemperature(temperature);
         setPower(power);
@@ -66,12 +66,12 @@ public class ReadingEntity extends RoastComponent implements Reading {
     }
 
     @Override
-    public int getRoastId() {
+    public long getRoastId() {
         return roastId;
     }
 
     @Override
-    public void setRoastId(int roastId) {
+    public void setRoastId(long roastId) {
         this.roastId = roastId;
     }
 
@@ -85,17 +85,17 @@ public class ReadingEntity extends RoastComponent implements Reading {
     }
 
     @Override
-    public int getId() {
+    public long getId() {
         return id;
     }
 
     @Override
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
     @Override
-    public boolean equals(@Nullable @org.jetbrains.annotations.Nullable Object obj) {
+    public final boolean equals(@Nullable @org.jetbrains.annotations.Nullable Object obj) {
         return obj instanceof ReadingEntity &&
                 getSeconds() == ((ReadingEntity) obj).getSeconds() &&
                 getTemperature() == ((ReadingEntity) obj).getTemperature() &&

@@ -16,7 +16,7 @@ public class CrackReadingEntity extends ReadingEntity implements Crack {
      * @param temperature the reading temperature
      * @param power       the reading power percentage
      */
-    public CrackReadingEntity(int seconds, int temperature, int power, int crackNumber, boolean hasOccurred, int roastId) {
+    public CrackReadingEntity(int seconds, int temperature, int power, int crackNumber, boolean hasOccurred, long roastId) {
         super(seconds, temperature, power, roastId);
         this.crackNumber = crackNumber;
         this.hasOccurred = hasOccurred;

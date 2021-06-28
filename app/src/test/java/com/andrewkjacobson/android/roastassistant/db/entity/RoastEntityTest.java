@@ -93,6 +93,8 @@ public class RoastEntityTest extends TestCase {
     public void testEquals() {
         RoastEntity r1 = new RoastEntity();
         RoastEntity r2 = new RoastEntity();
+        r1.setId(666);
+        r2.setId(999);
         assertNotSame(r1, r2);
         assertNotSame(r1.getId(), r2.getId());
         r1 = r2;

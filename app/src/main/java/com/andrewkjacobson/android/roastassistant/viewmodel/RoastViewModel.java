@@ -57,7 +57,7 @@ public class RoastViewModel extends AndroidViewModel {
         loadSettings();
 
 //        mRoastLiveData = repository.getMostRecentRoast();
-        int id;
+        long id;
         if(savedStateHandle != null && savedStateHandle.contains(ROAST_ID_KEY)) {
             id = savedStateHandle.get(ROAST_ID_KEY);
         } else {
