@@ -13,8 +13,8 @@ public class RoastEntityTest extends TestCase {
 
     public void testSetId() {
         roastEntity = new RoastEntity();
-        roastEntity.setId(1);
-        assertEquals(1, roastEntity.getId());
+        roastEntity.setRoastId(1);
+        assertEquals(1, roastEntity.getRoastId());
     }
 
     public void testSetRunning() {
@@ -91,12 +91,12 @@ public class RoastEntityTest extends TestCase {
     public void testEquals() {
         RoastEntity r1 = new RoastEntity();
         RoastEntity r2 = new RoastEntity();
-        r1.setId(666);
-        r2.setId(999);
+        r1.setRoastId(666);
+        r2.setRoastId(999);
         assertNotSame(r1, r2);
-        assertNotSame(r1.getId(), r2.getId());
+        assertNotSame(r1.getRoastId(), r2.getRoastId());
         r1 = r2;
         assertEquals(r1, r2);
-        assertEquals(r1.getId(), r2.getId());
+        assertEquals(r1.getRoastId(), r2.getRoastId());
     }
 }

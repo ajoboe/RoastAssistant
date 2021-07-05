@@ -1,6 +1,6 @@
 package com.andrewkjacobson.android.roastassistant;
 
-import android.app.Application;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -36,8 +36,8 @@ public class RoastRepository {
     private LiveData<List<ReadingEntity>> mReadingsLiveData;
     private LiveData<List<CrackReadingEntity>> mCracksLiveData;
 
-    public RoastRepository(Application application) {
-        RoastRoomDatabase db = RoastRoomDatabase.getDatabase(application);
+    public RoastRepository(Context context) {
+        RoastRoomDatabase db = RoastRoomDatabase.getDatabase(context);
         mRoastDao = db.roastDao();
         mDetailsDao = db.detailsDao();
         mReadingDao = db.readingDao();
@@ -45,7 +45,7 @@ public class RoastRepository {
     }
 
     public LiveData<RoastEntity> getRoastLiveData(long roastId) {
-        if(mRoastLiveData == null || mRoastLiveData.getValue().getId() != roastId) {
+        if(mRoastLiveData == null || mRoastLiveData.getValue().getRoastId() != roastId) {
             mRoastLiveData = mRoastDao.getLiveData(roastId);
         }
         return mRoastLiveData;
@@ -77,16 +77,18 @@ public class RoastRepository {
     }
 
     // todo use a Future here. see: https://www.baeldung.com/java-util-concurrent
-    public void insert(RoastComponent item) {
+    public long insert(RoastComponent item) {
         if(item instanceof RoastEntity) {
-            new insertAsyncTask(mRoastDao).execute((RoastEntity) item);
+            new insertAsyncTask(mRoastDao, item).execute((RoastEntity) item);
         } else if(item instanceof DetailsEntity) {
-            new insertAsyncTask(mDetailsDao).execute((DetailsEntity) item);
+            new insertAsyncTask(mDetailsDao, item).execute((DetailsEntity) item);
         } else if(item instanceof CrackReadingEntity) {
-            new insertAsyncTask(mCrackReadingDao).execute((CrackReadingEntity) item);
+            new insertAsyncTask(mCrackReadingDao, item).execute((CrackReadingEntity) item);
         } else if(item instanceof ReadingEntity) {
-            new insertAsyncTask(mReadingDao).execute((ReadingEntity) item);
+            new insertAsyncTask(mReadingDao, item).execute((ReadingEntity) item);
         }
+        while(item.getRoastId() < 1); // TODO VERY BAD!!! JUST MAKING THE TEST PASS
+        return item.getRoastId(); // todo get the id dangit
     }
 
     public void update(RoastComponent item) {
@@ -121,9 +123,11 @@ public class RoastRepository {
 
     private class insertAsyncTask extends AsyncTask<RoastComponent, Void, Long> {
         private BaseDao mAsyncTaskDao;
+        private RoastComponent roastComponent;
 
-        insertAsyncTask(BaseDao dao) {
+        insertAsyncTask(BaseDao dao, RoastComponent roastComponent) {
             mAsyncTaskDao = dao;
+            this.roastComponent = roastComponent;
         }
 
         @Override
@@ -170,6 +174,7 @@ public class RoastRepository {
         protected void onPostExecute(Long result) {
             super.onPostExecute(result);
             Log.w(getClass().toString(),"New rowId: " + result);
+            roastComponent.setRoastId(result.longValue());
         }
 
     }

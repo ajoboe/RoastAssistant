@@ -49,11 +49,11 @@ public class RoastDaoTest extends TestCase {
         roast2.startRoast();
         roast2.endRoast();
         long id = dao.insert(roast);
-        roast.setId(id);
+        roast.setRoastId(id);
         long id2 = dao.insert(roast2);
-        roast2.setId((int) id2);
+        roast2.setRoastId((int) id2);
 
-        assertEquals(id, roast.getId());
+        assertEquals(id, roast.getRoastId());
         TestObserver.test(dao.getLiveData((int) id))
                 .awaitValue()
                 .assertValue(roast);
@@ -71,14 +71,14 @@ public class RoastDaoTest extends TestCase {
         roast2.startRoast();
         roast2.endRoast();
         long id = dao.insert(roast);
-        roast.setId((int)id);
+        roast.setRoastId((int)id);
         long id2 = dao.insert(roast2);
-        roast.setId((int)id2);
+        roast.setRoastId((int)id2);
         assert !roast.equals(roast2);
 
         List<RoastEntity> roasts = TestObserver.test(dao.getAll()).awaitValue().value();
         assertEquals(2, roasts.size());
-        assertEquals(id, roasts.get(0).getId());
+        assertEquals(id, roasts.get(0).getRoastId());
     }
 
     @Test
@@ -86,9 +86,9 @@ public class RoastDaoTest extends TestCase {
         RoastEntity roast = new RoastEntity();
         roast.startRoast();
         long id = dao.insert(roast);
-        roast.setId((int) id);
+        roast.setRoastId((int) id);
 
-        assertEquals(id, roast.getId());
+        assertEquals(id, roast.getRoastId());
         TestObserver.test(dao.getLiveData((int) id))
                 .awaitValue()
                 .assertValue(roast);

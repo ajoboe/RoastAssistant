@@ -1,8 +1,8 @@
 package com.andrewkjacobson.android.roastassistant.model;
 
 public interface Roast {
-    long getId();
-    void setId(long id);
+    long getRoastId();
+    void setRoastId(long id);
     boolean isRunning();
     void setRunning(boolean isRunning);
     boolean isFinished();

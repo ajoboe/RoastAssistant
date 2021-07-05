@@ -63,12 +63,12 @@ public class RoastViewModel extends AndroidViewModel {
         } else {
             mRoast = new RoastEntity(); // empty roast w/ id
             repository.insert(mRoast);
-            repository.insert(new DetailsEntity(mRoast.getId()));
+            repository.insert(new DetailsEntity(mRoast.getRoastId()));
             repository.insert(new ReadingEntity(0,
                     settings.getStartingTemperature(),
                     settings.getStartingPower(),
-                    mRoast.getId()));
-            id = mRoast.getId();
+                    mRoast.getRoastId()));
+            id = mRoast.getRoastId();
         }
 
 //        mRoastId = mRoast.getId();    //Long.valueOf(Instant.now().getEpochSecond()).intValue();
@@ -139,7 +139,7 @@ public class RoastViewModel extends AndroidViewModel {
                     getElapsed(),
                     Integer.parseInt(temperature),
                     power,  // power from prev reading
-                    getRoast().getId());
+                    getRoast().getRoastId());
             repository.insert(mCurrentReading);
             return true;
         } catch (NumberFormatException e) {
@@ -157,7 +157,7 @@ public class RoastViewModel extends AndroidViewModel {
                     getCurrentReading().getPower(),
                     1,
                     true,
-                    getRoast().getId());
+                    getRoast().getRoastId());
             mCracks.add(crack); // cache the crack
             repository.insert(crack);
 
@@ -175,7 +175,7 @@ public class RoastViewModel extends AndroidViewModel {
                 getElapsed(),
                 temperature,
                 power,
-                getRoast().getId());
+                getRoast().getRoastId());
         repository.insert(mCurrentReading);
     }
 
@@ -197,11 +197,11 @@ public class RoastViewModel extends AndroidViewModel {
         return new ReadingEntity(0,
                     settings.getStartingTemperature(),
                     settings.getStartingPower(),
-                    getRoast().getId());
+                    getRoast().getRoastId());
     }
 
     public void recordDetails(DetailsEntity details) {
-        details.setRoastId(getRoast().getId());
+        details.setRoastId(getRoast().getRoastId());
         repository.insert(details);
     }
 

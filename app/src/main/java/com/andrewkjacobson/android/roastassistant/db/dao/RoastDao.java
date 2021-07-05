@@ -20,7 +20,7 @@ public abstract class RoastDao extends BaseDao<RoastEntity> {
     @Query("SELECT * FROM roast_entity") // add ORDER BY date DESC
     public abstract LiveData<List<RoastEntity>> getAll();
 
-    @Query("SELECT * FROM roast_entity WHERE id=:roastId")
+    @Query("SELECT * FROM roast_entity WHERE roastId=:roastId")
     public abstract LiveData<RoastEntity> getLiveData(long roastId);
 
     @Query("SELECT * FROM roast_entity WHERE startTime=(SELECT max(startTime) FROM roast_entity)")

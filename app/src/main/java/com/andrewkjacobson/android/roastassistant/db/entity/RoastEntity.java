@@ -6,8 +6,6 @@ import androidx.room.PrimaryKey;
 
 import com.andrewkjacobson.android.roastassistant.model.Roast;
 
-import java.time.Instant;
-
 /**
  * Represents a single roast
  */
@@ -16,7 +14,7 @@ public class RoastEntity extends RoastComponent implements Roast {
 
     // fields
     @PrimaryKey(autoGenerate = true)
-    private long id;
+    private long roastId;
 
     private boolean isRunning = false;
     private boolean isFinished = false;
@@ -29,8 +27,8 @@ public class RoastEntity extends RoastComponent implements Roast {
 
     // public methods
     @Override
-    public void setId(long roastId) {
-        this.id = roastId;
+    public void setRoastId(long roastId) {
+        this.roastId = roastId;
     }
 
     @Override
@@ -39,8 +37,8 @@ public class RoastEntity extends RoastComponent implements Roast {
     }
 
     @Override
-    public long getId() {
-        return id;
+    public long getRoastId() {
+        return roastId;
     }
 
     @Override
@@ -83,6 +81,6 @@ public class RoastEntity extends RoastComponent implements Roast {
 
     @Override
     public boolean equals(@Nullable @org.jetbrains.annotations.Nullable Object obj) {
-        return obj instanceof RoastEntity && getId() == ((RoastEntity) obj).getId();
+        return obj instanceof RoastEntity && getRoastId() == ((RoastEntity) obj).getRoastId();
     }
 }
