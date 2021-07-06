@@ -42,10 +42,9 @@ public class RoastRepositoryTest extends TestCase {
         r.setStartTime(123);
         long id = repository.insert(r);
         // instead of returning the id, just set it somewhere and notify
-        RoastEntity r2 = TestObserver.test(repository.getRoastLiveData(id))
+        TestObserver.test(repository.getRoastLiveData(id))
                 .awaitValue()
-                .value();
-        assertEquals(r, r2);
+                .assertValue(r);
     }
 
     public void testGetDetailsLiveData() {

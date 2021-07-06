@@ -91,9 +91,11 @@ public class RoastRepository {
         } else if(item instanceof ReadingEntity) {
             new insertAsyncTask(mReadingDao, item).execute((ReadingEntity) item);
         }
+        // todo BAD BAD BAD BAD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         while(item.getRoastId() < 1); // TODO VERY BAD!!! JUST MAKING THE TEST PASS
 //        // instead, wait for a callback to return
 //        long id =
+        // todo return a LiveData?...can't need the id to grab it
         return item.getRoastId(); // todo get the id dangit
 //        ExecutorService executorService = Executors.newSingleThreadExecutor();
 //        Callable<Long> insertCallable = () -> mRoastDao.insert((RoastEntity)item);

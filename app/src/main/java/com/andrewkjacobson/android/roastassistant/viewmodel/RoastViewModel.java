@@ -61,7 +61,7 @@ public class RoastViewModel extends AndroidViewModel {
         if(savedStateHandle != null && savedStateHandle.contains(ROAST_ID_KEY)) {
             id = savedStateHandle.get(ROAST_ID_KEY);
         } else {
-            mRoast = new RoastEntity(); // empty roast w/ id
+            mRoast = new RoastEntity();
             repository.insert(mRoast);
             repository.insert(new DetailsEntity(mRoast.getRoastId()));
             repository.insert(new ReadingEntity(0,
