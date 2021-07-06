@@ -40,11 +40,16 @@ public class RoastRepositoryTest extends TestCase {
     public void testGetRoastLiveData() throws InterruptedException {
         RoastEntity r = new RoastEntity(); // todo hide setId...make it protected?
         r.setStartTime(123);
-        long id = repository.insert(r);
-        // instead of returning the id, just set it somewhere and notify
-        TestObserver.test(repository.getRoastLiveData(id))
-                .awaitValue()
-                .assertValue(r);
+//        long id = repository.insert(r);
+        repository.insertRoast(r, (id) -> {
+            try {
+                TestObserver.test(repository.getRoastLiveData(id))
+                        .awaitValue()
+                        .assertValue(r);
+            } catch (InterruptedException e) {
+
+            }
+        });
     }
 
     public void testGetDetailsLiveData() {

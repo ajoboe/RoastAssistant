@@ -102,6 +102,10 @@ public class RoastRepository {
 //        return executorService.submit(insertCallable);
     }
 
+    public void insertRoast(RoastEntity roast, insertAsyncTask.InsertTaskDelegate task) {
+        new insertAsyncTask(mRoastDao, roast).execute((RoastEntity) roast);
+    }
+
     public void update(RoastComponent item) {
         if(item instanceof RoastEntity) {
             new updateAsyncTask(mRoastDao).execute((RoastEntity) item);
@@ -132,7 +136,15 @@ public class RoastRepository {
         new deleteAllAsyncTask(mReadingDao).execute();
     }
 
-    private class insertAsyncTask extends AsyncTask<RoastComponent, Void, Long> {
+    private static class insertAsyncTask extends AsyncTask<RoastComponent, Void, Long> {
+        //declare a delegate with type of protocol declared in this task
+        private InsertTaskDelegate delegate;
+
+        //here is the task protocol to can delegate on other object
+        public interface InsertTaskDelegate {
+            void onTaskFinished(long id);
+        }
+
         private BaseDao mAsyncTaskDao;
         private RoastComponent roastComponent;
 
@@ -146,6 +158,7 @@ public class RoastRepository {
 //            Callable<Long> insertCallable = () -> mAsyncTaskDao.insert(params[0]);
 //            return params[0].getRoastId();
             return mAsyncTaskDao.insert(params[0]);
+//            return mAsyncTaskDao.insert(params[0]);
         }
 
 //        /**
@@ -179,15 +192,18 @@ public class RoastRepository {
          *
          * <p>This method won't be invoked if the task was cancelled.</p>
          *
-         * @param result The result of the operation computed by {@link #doInBackground}.
+         * @param id The result of the operation computed by {@link #doInBackground}.
          * @see #onPreExecute
          * @see #doInBackground
          */
         @Override
-        protected void onPostExecute(Long result) {
-            super.onPostExecute(result);
-            Log.w(getClass().toString(),"New rowId: " + result);
-            roastComponent.setRoastId(result.longValue());
+        protected void onPostExecute(Long id) {
+            super.onPostExecute(id);
+//            Log.w(getClass().toString(),"New rowId: " + result);
+//            roastComponent.setRoastId(result.longValue());
+            if(delegate != null) {
+                delegate.onTaskFinished(id);
+            }
         }
 
     }
