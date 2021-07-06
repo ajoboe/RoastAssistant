@@ -81,23 +81,23 @@ public class RoastRepository {
     }
 
     // todo use a Future here. see: https://www.baeldung.com/java-util-concurrent
-    public Future<Long> insert(RoastComponent item) {
-//        if(item instanceof RoastEntity) {
-//            new insertAsyncTask(mRoastDao, item).execute((RoastEntity) item);
-//        } else if(item instanceof DetailsEntity) {
-//            new insertAsyncTask(mDetailsDao, item).execute((DetailsEntity) item);
-//        } else if(item instanceof CrackReadingEntity) {
-//            new insertAsyncTask(mCrackReadingDao, item).execute((CrackReadingEntity) item);
-//        } else if(item instanceof ReadingEntity) {
-//            new insertAsyncTask(mReadingDao, item).execute((ReadingEntity) item);
-//        }
-//        while(item.getRoastId() < 1); // TODO VERY BAD!!! JUST MAKING THE TEST PASS
+    public long insert(RoastComponent item) {
+        if(item instanceof RoastEntity) {
+            new insertAsyncTask(mRoastDao, item).execute((RoastEntity) item);
+        } else if(item instanceof DetailsEntity) {
+            new insertAsyncTask(mDetailsDao, item).execute((DetailsEntity) item);
+        } else if(item instanceof CrackReadingEntity) {
+            new insertAsyncTask(mCrackReadingDao, item).execute((CrackReadingEntity) item);
+        } else if(item instanceof ReadingEntity) {
+            new insertAsyncTask(mReadingDao, item).execute((ReadingEntity) item);
+        }
+        while(item.getRoastId() < 1); // TODO VERY BAD!!! JUST MAKING THE TEST PASS
 //        // instead, wait for a callback to return
 //        long id =
-//        return item.getRoastId(); // todo get the id dangit
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Callable<Long> insertCallable = () -> mRoastDao.insert((RoastEntity)item);
-        return executorService.submit(insertCallable);
+        return item.getRoastId(); // todo get the id dangit
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//        Callable<Long> insertCallable = () -> mRoastDao.insert((RoastEntity)item);
+//        return executorService.submit(insertCallable);
     }
 
     public void update(RoastComponent item) {
@@ -130,7 +130,7 @@ public class RoastRepository {
         new deleteAllAsyncTask(mReadingDao).execute();
     }
 
-    private class insertAsyncTask extends AsyncTask<RoastComponent, Void, Callable<Long>> {
+    private class insertAsyncTask extends AsyncTask<RoastComponent, Void, Long> {
         private BaseDao mAsyncTaskDao;
         private RoastComponent roastComponent;
 
@@ -140,9 +140,9 @@ public class RoastRepository {
         }
 
         @Override
-        protected Callable<Long> doInBackground(final RoastComponent... params) {
-            Callable<Long> insertCallable = () -> mAsyncTaskDao.insert(params[0]);
-            return insertCallable;
+        protected Long doInBackground(final RoastComponent... params) {
+//            Callable<Long> insertCallable = () -> mAsyncTaskDao.insert(params[0]);
+            return params[0].getRoastId();
         }
 
 //        /**
