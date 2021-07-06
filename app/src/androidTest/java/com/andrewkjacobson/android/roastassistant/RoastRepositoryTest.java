@@ -41,6 +41,7 @@ public class RoastRepositoryTest extends TestCase {
         RoastEntity r = new RoastEntity(); // todo hide setId...make it protected?
         r.setStartTime(123);
         long id = repository.insert(r);
+        // instead of returning the id, just set it somewhere and notify
         RoastEntity r2 = TestObserver.test(repository.getRoastLiveData(id))
                 .awaitValue()
                 .value();

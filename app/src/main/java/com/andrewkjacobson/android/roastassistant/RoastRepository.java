@@ -19,6 +19,10 @@ import com.andrewkjacobson.android.roastassistant.db.entity.RoastComponent;
 import com.andrewkjacobson.android.roastassistant.db.entity.RoastEntity;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 // Repository modules handle data operations. They provide a clean API so that the rest of the app
 // can retrieve this data easily. They know where to get the data from and what API calls to make
@@ -77,18 +81,23 @@ public class RoastRepository {
     }
 
     // todo use a Future here. see: https://www.baeldung.com/java-util-concurrent
-    public long insert(RoastComponent item) {
-        if(item instanceof RoastEntity) {
-            new insertAsyncTask(mRoastDao, item).execute((RoastEntity) item);
-        } else if(item instanceof DetailsEntity) {
-            new insertAsyncTask(mDetailsDao, item).execute((DetailsEntity) item);
-        } else if(item instanceof CrackReadingEntity) {
-            new insertAsyncTask(mCrackReadingDao, item).execute((CrackReadingEntity) item);
-        } else if(item instanceof ReadingEntity) {
-            new insertAsyncTask(mReadingDao, item).execute((ReadingEntity) item);
-        }
-        while(item.getRoastId() < 1); // TODO VERY BAD!!! JUST MAKING THE TEST PASS
-        return item.getRoastId(); // todo get the id dangit
+    public Future<Long> insert(RoastComponent item) {
+//        if(item instanceof RoastEntity) {
+//            new insertAsyncTask(mRoastDao, item).execute((RoastEntity) item);
+//        } else if(item instanceof DetailsEntity) {
+//            new insertAsyncTask(mDetailsDao, item).execute((DetailsEntity) item);
+//        } else if(item instanceof CrackReadingEntity) {
+//            new insertAsyncTask(mCrackReadingDao, item).execute((CrackReadingEntity) item);
+//        } else if(item instanceof ReadingEntity) {
+//            new insertAsyncTask(mReadingDao, item).execute((ReadingEntity) item);
+//        }
+//        while(item.getRoastId() < 1); // TODO VERY BAD!!! JUST MAKING THE TEST PASS
+//        // instead, wait for a callback to return
+//        long id =
+//        return item.getRoastId(); // todo get the id dangit
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Callable<Long> insertCallable = () -> mRoastDao.insert((RoastEntity)item);
+        return executorService.submit(insertCallable);
     }
 
     public void update(RoastComponent item) {
@@ -121,7 +130,7 @@ public class RoastRepository {
         new deleteAllAsyncTask(mReadingDao).execute();
     }
 
-    private class insertAsyncTask extends AsyncTask<RoastComponent, Void, Long> {
+    private class insertAsyncTask extends AsyncTask<RoastComponent, Void, Callable<Long>> {
         private BaseDao mAsyncTaskDao;
         private RoastComponent roastComponent;
 
@@ -131,31 +140,32 @@ public class RoastRepository {
         }
 
         @Override
-        protected Long doInBackground(final RoastComponent... params) {
-            return mAsyncTaskDao.insert(params[0]);
+        protected Callable<Long> doInBackground(final RoastComponent... params) {
+            Callable<Long> insertCallable = () -> mAsyncTaskDao.insert(params[0]);
+            return insertCallable;
         }
 
-        /**
-         * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
-         * {@link #doInBackground(RoastComponent[])} has finished.</p>
-         *
-         * <p>The default implementation simply invokes {@link #onCancelled()} and
-         * ignores the result. If you write your own implementation, do not call
-         * <code>super.onCancelled(result)</code>.</p>
-         *
-         * @param result The result, if any, computed in
-         *              {@link #doInBackground(RoastComponent[])}, can be null
-         * @see #cancel(boolean)
-         * @see #isCancelled()
-         */
-        @Override
-        protected void onCancelled(Long result) {
-            if(result == null) {
-                Log.w(getClass().toString(), "Insert canceled. No new rowId.");
-            } else {
-                Log.w(getClass().toString(), "Insert canceled. rowId: " + result);
-            }
-        }
+//        /**
+//         * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
+//         * {@link #doInBackground(RoastComponent[])} has finished.</p>
+//         *
+//         * <p>The default implementation simply invokes {@link #onCancelled()} and
+//         * ignores the result. If you write your own implementation, do not call
+//         * <code>super.onCancelled(result)</code>.</p>
+//         *
+//         * @param result The result, if any, computed in
+//         *              {@link #doInBackground(RoastComponent[])}, can be null
+//         * @see #cancel(boolean)
+//         * @see #isCancelled()
+//         */
+//        @Override
+//        protected void onCancelled(Long result) {
+//            if(result == null) {
+//                Log.w(getClass().toString(), "Insert canceled. No new rowId.");
+//            } else {
+//                Log.w(getClass().toString(), "Insert canceled. rowId: " + result);
+//            }
+//        }
 
         /**
          * <p>Runs on the UI thread after {@link #doInBackground}. The
