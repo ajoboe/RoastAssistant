@@ -142,7 +142,8 @@ public class RoastRepository {
         @Override
         protected Long doInBackground(final RoastComponent... params) {
 //            Callable<Long> insertCallable = () -> mAsyncTaskDao.insert(params[0]);
-            return params[0].getRoastId();
+//            return params[0].getRoastId();
+            return mAsyncTaskDao.insert(params[0]);
         }
 
 //        /**
