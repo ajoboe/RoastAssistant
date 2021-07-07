@@ -81,7 +81,7 @@ public class RoastRepository {
     }
 
     // todo use a Future here. see: https://www.baeldung.com/java-util-concurrent
-    public long insert(RoastComponent item) {
+    public void insert(RoastComponent item) {
         if(item instanceof RoastEntity) {
             new insertAsyncTask(mRoastDao, item).execute((RoastEntity) item);
         } else if(item instanceof DetailsEntity) {
@@ -92,18 +92,18 @@ public class RoastRepository {
             new insertAsyncTask(mReadingDao, item).execute((ReadingEntity) item);
         }
         // todo BAD BAD BAD BAD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        while(item.getRoastId() < 1); // TODO VERY BAD!!! JUST MAKING THE TEST PASS
+//        while(item.getRoastId() < 1); // TODO VERY BAD!!! JUST MAKING THE TEST PASS
 //        // instead, wait for a callback to return
 //        long id =
         // todo return a LiveData?...can't need the id to grab it
-        return item.getRoastId(); // todo get the id dangit
+//        return item.getRoastId(); // todo get the id dangit
 //        ExecutorService executorService = Executors.newSingleThreadExecutor();
 //        Callable<Long> insertCallable = () -> mRoastDao.insert((RoastEntity)item);
 //        return executorService.submit(insertCallable);
     }
 
-    public void insertRoast(RoastEntity roast, insertAsyncTask.InsertTaskDelegate task) {
-        new insertAsyncTask(mRoastDao, roast).execute((RoastEntity) roast);
+    public void insert(RoastComponent item, insertAsyncTask.InsertTaskDelegate task) {
+        insert(item);
     }
 
     public void update(RoastComponent item) {

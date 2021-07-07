@@ -6,8 +6,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.andrewkjacobson.android.roastassistant.db.entity.DetailsEntity;
+import com.andrewkjacobson.android.roastassistant.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant.db.entity.RoastEntity;
-import com.andrewkjacobson.android.roastassistant.model.Roast;
 import com.jraska.livedata.TestObserver;
 
 import junit.framework.TestCase;
@@ -17,6 +18,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class RoastRepositoryTest extends TestCase {
@@ -34,14 +38,14 @@ public class RoastRepositoryTest extends TestCase {
 
     @After
     public void tearDown() throws Exception {
+        repository.deleteAllReadings();
     }
 
     @Test
-    public void testGetRoastLiveData() throws InterruptedException {
+    public void testGetRoastLiveData() {
         RoastEntity r = new RoastEntity(); // todo hide setId...make it protected?
         r.setStartTime(123);
-//        long id = repository.insert(r);
-        repository.insertRoast(r, (id) -> {
+        repository.insert(r, (id) -> {
             try {
                 TestObserver.test(repository.getRoastLiveData(id))
                         .awaitValue()
@@ -52,12 +56,38 @@ public class RoastRepositoryTest extends TestCase {
         });
     }
 
+    @Test
     public void testGetDetailsLiveData() {
-        fail();
+        DetailsEntity d = new DetailsEntity(); // todo hide setId...make it protected?
+        d.setBatchSize(125);
+        repository.insert(d, (id) -> {
+            try {
+                TestObserver.test(repository.getDetailsLiveData(id))
+                        .awaitValue()
+                        .assertValue(d);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    public void testGetReadingsLiveData() {
-        fail();
+    @Test
+    public void testGetReadingsLiveData() throws InterruptedException {
+        List<ReadingEntity> readings = new ArrayList<>(4);
+        readings.add(new ReadingEntity(0, 250, 100, 999));
+        readings.add(new ReadingEntity(5, 150, 90, 999));
+        readings.add(new ReadingEntity(10, 160, 80, 999));
+
+        for(ReadingEntity r : readings) {
+            repository.insert(r); // todo need a multi-insert
+        }
+
+        Thread.sleep(100); // todo should use the version w/ callback...need multi-insert first
+        List<ReadingEntity> ret = TestObserver.test(repository.getReadingsLiveData(999))
+                .awaitValue()
+                .value();
+
+        assertEquals(readings.size(), ret.size());
     }
 
     public void testGetCracksLiveData() {
