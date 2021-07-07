@@ -6,6 +6,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.andrewkjacobson.android.roastassistant.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant.db.entity.DetailsEntity;
 import com.andrewkjacobson.android.roastassistant.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant.db.entity.RoastEntity;
@@ -39,6 +40,7 @@ public class RoastRepositoryTest extends TestCase {
     @After
     public void tearDown() throws Exception {
         repository.deleteAllReadings();
+        repository.deleteAllCracks();
     }
 
     @Test
@@ -90,8 +92,23 @@ public class RoastRepositoryTest extends TestCase {
         assertEquals(readings.size(), ret.size());
     }
 
-    public void testGetCracksLiveData() {
-        fail();
+    @Test
+    public void testGetCracksLiveData() throws InterruptedException {
+        List<CrackReadingEntity> cracks = new ArrayList<>(4);
+        cracks.add(new CrackReadingEntity(0, 250, 100, 1, true, 999 ));
+        cracks.add(new CrackReadingEntity(5, 150, 90, 2, false, 999));
+        cracks.add(new CrackReadingEntity(10, 160, 80, 1, true, 999));
+
+        for(ReadingEntity r : cracks) {
+            repository.insert(r); // todo need a multi-insert
+        }
+
+        Thread.sleep(100); // todo should use the version w/ callback...need multi-insert first
+        List<CrackReadingEntity> ret = TestObserver.test(repository.getCracksLiveData(999))
+                .awaitValue()
+                .value();
+
+        assertEquals(cracks.size(), ret.size());
     }
 
     public void testGetMostRecentRoast() {
