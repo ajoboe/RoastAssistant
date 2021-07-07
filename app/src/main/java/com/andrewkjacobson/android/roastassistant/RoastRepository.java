@@ -136,6 +136,10 @@ public class RoastRepository {
         new deleteAllAsyncTask(mReadingDao).execute();
     }
 
+    public void deleteAllCracks() {
+        new deleteAllAsyncTask(mCrackReadingDao).execute();
+    }
+
     private static class insertAsyncTask extends AsyncTask<RoastComponent, Void, Long> {
         //declare a delegate with type of protocol declared in this task
         private InsertTaskDelegate delegate;
@@ -237,15 +241,22 @@ public class RoastRepository {
     }
 
     private class deleteAllAsyncTask extends AsyncTask<Void, Void, Void> {
-        private ReadingDao mAsyncTaskDao;
+        private BaseDao mAsyncTaskDao;
 
-        deleteAllAsyncTask(ReadingDao dao) {
+        deleteAllAsyncTask(BaseDao dao) {
             mAsyncTaskDao = dao;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            mAsyncTaskDao.deleteAll();
+            if(mAsyncTaskDao instanceof ReadingDao) {
+                ((ReadingDao) mAsyncTaskDao).deleteAll();
+            } else if(mAsyncTaskDao instanceof CrackReadingDao) {
+                ((CrackReadingDao) mAsyncTaskDao).deleteAll();
+            } else {
+                throw new UnsupportedOperationException();
+            }
+
             return null;
         }
     }

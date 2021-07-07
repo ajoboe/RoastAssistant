@@ -13,4 +13,7 @@ public abstract class CrackReadingDao extends BaseDao<CrackReadingEntity> {
 
         @Query("SELECT * FROM crack_reading_entity WHERE roastId=:roastId AND seconds=:seconds")
         public abstract LiveData<CrackReadingEntity> get(long roastId, int seconds);
+
+        @Query("DELETE FROM crack_reading_entity")
+        public abstract void deleteAll();
 }
