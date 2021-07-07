@@ -119,6 +119,10 @@ public class RoastRepositoryTest extends TestCase {
         fail();
     }
 
+    public void testMultiInsert() {
+        fail();
+    }
+
     public void testUpdate() {
         fail();
     }
