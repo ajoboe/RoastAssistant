@@ -47,7 +47,7 @@ public class RoastRepositoryTest extends TestCase {
                         .awaitValue()
                         .assertValue(r);
             } catch (InterruptedException e) {
-
+                e.printStackTrace();
             }
         });
     }
