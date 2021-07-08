@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Objects;
 
 public class RoastDetailsActivity extends AppCompatActivity {
+    private RoastViewModel viewModel;
     private final String DETAILS_KEY = "roast details";
     public static final String EXTRA_REPLY = "com.andrewkjacobson.android.roastassistant.REPLY";
     private DetailsEntity mDetails;
@@ -33,7 +34,7 @@ public class RoastDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_roast_details);
         mDetails = null;
-        RoastViewModel viewModel = new ViewModelProvider(this).get(RoastViewModel.class);
+        viewModel = new ViewModelProvider(this).get(RoastViewModel.class);
 
         viewModel.getDetails().observe(this, details -> {
             if(details != null) populateUI(details);
@@ -74,11 +75,13 @@ public class RoastDetailsActivity extends AppCompatActivity {
         saveAndReturn();
     }
 
+    // todo should save to the database any time that a text box loses focus
     private void saveAndReturn()  {
         Intent replyIntent = new Intent();
         mDetails = fetchDetailsFromControls();
-        replyIntent.putExtra(EXTRA_REPLY, mDetails);
-        setResult(RESULT_OK, replyIntent);
+//        replyIntent.putExtra(EXTRA_REPLY, mDetails);
+        viewModel.recordDetails(mDetails);
+//        setResult(RESULT_OK, replyIntent);
         finish();
     }
 
@@ -106,7 +109,8 @@ public class RoastDetailsActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         mDetails = fetchDetailsFromControls();
-        outState.putParcelable(DETAILS_KEY, mDetails);
+//        outState.putParcelable(DETAILS_KEY, mDetails);
+        viewModel.recordDetails(mDetails);
     }
 
     private DetailsEntity fetchDetailsFromControls() {

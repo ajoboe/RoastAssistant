@@ -139,6 +139,21 @@ public class RoastRepositoryTest extends TestCase {
         assertEquals(lastCreatedTime, ret.getCreatedTime());
     }
 
+    public void testInsertDetails() {
+        DetailsEntity d = new DetailsEntity(); // todo hide setId...make it protected?
+        d.setBatchSize(125);
+        repository.insert(d, (id) -> {
+            try {
+                TestObserver.test(repository.getDetailsLiveData(id))
+                        .awaitValue()
+                        .assertValue(d);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    // todo need a separate insert test for each entity
     public void testInsert() {
         fail();
     }

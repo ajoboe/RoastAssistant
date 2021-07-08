@@ -138,9 +138,4 @@ public class DetailsEntityTest extends TestCase {
         assertEquals(100, d.getAmbientTemperature());
         assertNotSame(-100, d.getAmbientTemperature());
     }
-
-    public void testDescribeContents() {
-        DetailsEntity d = new DetailsEntity();
-        assertNotNull(d.describeContents());
-    }
 }
