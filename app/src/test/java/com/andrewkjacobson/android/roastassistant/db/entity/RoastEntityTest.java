@@ -2,6 +2,8 @@ package com.andrewkjacobson.android.roastassistant.db.entity;
 
 import junit.framework.TestCase;
 
+import java.time.Instant;
+
 public class RoastEntityTest extends TestCase {
 
     private RoastEntity roastEntity;
@@ -86,6 +88,18 @@ public class RoastEntityTest extends TestCase {
         roastEntity = new RoastEntity();
         roastEntity.setStartTime(123456l);
         assertEquals(123456l, roastEntity.getStartTime());
+    }
+
+    public void testSetCreatedTime() {
+        roastEntity = new RoastEntity();
+        roastEntity.setCreatedTime(123456l);
+        assertEquals(123456l, roastEntity.getCreatedTime());
+    }
+
+    public void testGetCreatedTime() {
+        roastEntity = new RoastEntity();
+        long time = Instant.now().toEpochMilli();
+        assertEquals(time, roastEntity.getCreatedTime());
     }
 
     public void testEquals() {

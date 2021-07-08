@@ -6,6 +6,8 @@ import androidx.room.PrimaryKey;
 
 import com.andrewkjacobson.android.roastassistant.model.Roast;
 
+import java.time.Instant;
+
 /**
  * Represents a single roast
  */
@@ -19,10 +21,12 @@ public class RoastEntity extends RoastComponent implements Roast {
     private boolean isRunning = false;
     private boolean isFinished = false;
     private long startTime = -1;
+    private long createdTime;
 
     // constructors
     public RoastEntity() {
 //        this.id = Long.valueOf(Instant.now().getEpochSecond()).intValue();
+        this.createdTime = Instant.now().toEpochMilli();
     }
 
     // public methods
@@ -77,6 +81,22 @@ public class RoastEntity extends RoastComponent implements Roast {
     @Override
     public long getStartTime() {
         return startTime;
+    }
+
+    /**
+     *  Do not use; this is set automatically in the constructor. This method is for use by
+     *  Room only.
+     *
+     * @param epochMilli Do not use.
+     */
+    @Override
+    public void setCreatedTime(long epochMilli) {
+        this.createdTime = epochMilli;
+    }
+
+    @Override
+    public long getCreatedTime() {
+        return createdTime;
     }
 
     @Override

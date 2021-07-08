@@ -82,6 +82,12 @@ public class RoastRepository {
         return mCracksLiveData;
     }
 
+    /**
+     * Gets the roast with the latest created time. The time is set when the roast object
+     * is instantiated.
+     *
+     * @return the most recent roast
+     */
     public LiveData<RoastEntity> getMostRecentRoast() {
         return mRoastDao.getMostRecent();
     }

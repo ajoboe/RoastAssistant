@@ -11,4 +11,6 @@ public interface Roast {
     void setStartTime(long seconds);
     void startRoast();
     void endRoast();
+    void setCreatedTime(long epochMilli);
+    long getCreatedTime();
 }

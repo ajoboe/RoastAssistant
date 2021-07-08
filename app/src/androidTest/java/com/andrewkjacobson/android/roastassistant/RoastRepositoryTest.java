@@ -119,25 +119,24 @@ public class RoastRepositoryTest extends TestCase {
     public void testGetMostRecentRoast() throws InterruptedException {
         for(int i = 0; i <= 2; i++) {
             RoastEntity r = new RoastEntity();
-            r.setStartTime(Instant.now().toEpochMilli());
             repository.insert(r);
+            Thread.sleep(2);
         }
 
         List<RoastEntity> all = TestObserver.test(repository.getAllRoasts())
                 .value();
 
-        long lastStartTime = 0;
+        long lastCreatedTime = 0;
         for(RoastEntity r : all) {
-            if(r.getStartTime() > lastStartTime) {
-                lastStartTime = r.getStartTime();
+            if(r.getCreatedTime() > lastCreatedTime) {
+                lastCreatedTime = r.getCreatedTime();
             }
         }
-        // todo judges most recent by start time--therefore, this should be set automatically
         RoastEntity ret = TestObserver.test(repository.getMostRecentRoast())
                 .awaitValue()
                 .value();
 
-        assertEquals(lastStartTime, ret.getStartTime());
+        assertEquals(lastCreatedTime, ret.getCreatedTime());
     }
 
     public void testInsert() {
