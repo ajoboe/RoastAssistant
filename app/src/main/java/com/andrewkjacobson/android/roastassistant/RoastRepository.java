@@ -114,13 +114,13 @@ public class RoastRepository {
 
     public void update(RoastComponent item) {
         if(item instanceof RoastEntity) {
-            new updateAsyncTask(mRoastDao).execute((RoastEntity) item);
+            new updateAsyncTask(mRoastDao).execute(item);
         } else if(item instanceof DetailsEntity) {
-            new updateAsyncTask(mDetailsDao).execute((DetailsEntity) item);
+            new updateAsyncTask(mDetailsDao).execute(item);
         } else if(item instanceof CrackReadingEntity) {
-            new updateAsyncTask(mCrackReadingDao).execute((CrackReadingEntity) item);
+            new updateAsyncTask(mCrackReadingDao).execute(item);
         } else if(item instanceof ReadingEntity) {
-            new updateAsyncTask(mReadingDao).execute((ReadingEntity) item);
+            new updateAsyncTask(mReadingDao).execute(item);
         }
     }
 
