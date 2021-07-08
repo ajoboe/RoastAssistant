@@ -10,6 +10,7 @@ import com.andrewkjacobson.android.roastassistant.db.entity.CrackReadingEntity;
 import com.andrewkjacobson.android.roastassistant.db.entity.DetailsEntity;
 import com.andrewkjacobson.android.roastassistant.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant.db.entity.RoastEntity;
+import com.andrewkjacobson.android.roastassistant.model.Roast;
 import com.jraska.livedata.TestObserver;
 
 import junit.framework.TestCase;
@@ -20,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,6 +92,7 @@ public class RoastRepositoryTest extends TestCase {
                 .value();
 
         assertEquals(readings.size(), ret.size());
+        assertTrue(ret.containsAll(readings));
     }
 
     @Test
@@ -109,10 +112,32 @@ public class RoastRepositoryTest extends TestCase {
                 .value();
 
         assertEquals(cracks.size(), ret.size());
+        assertTrue(ret.containsAll(cracks));
     }
 
-    public void testGetMostRecentRoast() {
-        fail();
+    @Test
+    public void testGetMostRecentRoast() throws InterruptedException {
+        for(int i = 0; i <= 2; i++) {
+            RoastEntity r = new RoastEntity();
+            r.setStartTime(Instant.now().toEpochMilli());
+            repository.insert(r);
+        }
+
+        List<RoastEntity> all = TestObserver.test(repository.getAllRoasts())
+                .value();
+
+        long lastStartTime = 0;
+        for(RoastEntity r : all) {
+            if(r.getStartTime() > lastStartTime) {
+                lastStartTime = r.getStartTime();
+            }
+        }
+        // todo judges most recent by start time--therefore, this should be set automatically
+        RoastEntity ret = TestObserver.test(repository.getMostRecentRoast())
+                .awaitValue()
+                .value();
+
+        assertEquals(lastStartTime, ret.getStartTime());
     }
 
     public void testInsert() {

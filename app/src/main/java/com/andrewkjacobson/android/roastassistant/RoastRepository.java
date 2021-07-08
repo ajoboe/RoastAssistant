@@ -17,6 +17,7 @@ import com.andrewkjacobson.android.roastassistant.db.entity.DetailsEntity;
 import com.andrewkjacobson.android.roastassistant.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant.db.entity.RoastComponent;
 import com.andrewkjacobson.android.roastassistant.db.entity.RoastEntity;
+import com.andrewkjacobson.android.roastassistant.model.Roast;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -53,6 +54,11 @@ public class RoastRepository {
             mRoastLiveData = mRoastDao.getLiveData(roastId);
         }
         return mRoastLiveData;
+    }
+
+
+    public LiveData<List<RoastEntity>> getAllRoasts() {
+        return mRoastDao.getAll();
     }
 
     public LiveData<DetailsEntity> getDetailsLiveData(long roastId) {
