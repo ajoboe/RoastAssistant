@@ -200,10 +200,10 @@ public class RoastViewModel extends AndroidViewModel {
                     getRoast().getRoastId());
     }
 
-    public void recordDetails(DetailsEntity details) {
-        details.setRoastId(getRoast().getRoastId());
-        repository.insert(details);
-    }
+//    public void recordDetails(DetailsEntity details) {
+//        details.setRoastId(getRoast().getRoastId()); // todo NullPointerException
+//        repository.insert(details);
+//    }
 
     public boolean isRunning() {
         return mRoast.isRunning();

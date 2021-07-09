@@ -1,44 +1,41 @@
 package com.andrewkjacobson.android.roastassistant.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.andrewkjacobson.android.roastassistant.R;
 import com.andrewkjacobson.android.roastassistant.db.entity.DetailsEntity;
-import com.andrewkjacobson.android.roastassistant.viewmodel.RoastViewModel;
+import com.andrewkjacobson.android.roastassistant.viewmodel.DetailsViewModel;
 import com.google.android.material.textfield.TextInputEditText;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Objects;
 
 public class RoastDetailsActivity extends AppCompatActivity {
-    private RoastViewModel viewModel;
-    private final String DETAILS_KEY = "roast details";
-    public static final String EXTRA_REPLY = "com.andrewkjacobson.android.roastassistant.REPLY";
-    private DetailsEntity mDetails;
+    private DetailsViewModel viewModel;
+//    private final String DETAILS_KEY = "roast details";
+//    public static final String EXTRA_REPLY = "com.andrewkjacobson.android.roastassistant.REPLY";
     private ArrayAdapter<CharSequence> mSpinnerAdapter;
+    private long roastId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_roast_details);
-        mDetails = null;
-        viewModel = new ViewModelProvider(this).get(RoastViewModel.class);
+        roastId = getIntent().getLongExtra(RoastActivity.ROAST_ID_KEY, -1);
+//        mDetails = null;
+        viewModel = new ViewModelProvider(this).get(DetailsViewModel.class);
 
-        viewModel.getDetails().observe(this, details -> {
-            if(details != null) populateUI(details);
-        });
+//        viewModel.getDetails(roastId).observe(this, details -> {
+//            if(details != null) populateUI(details);
+//        });
 
         // action bar
         ActionBar actionBar = getSupportActionBar();
@@ -64,9 +61,20 @@ public class RoastDetailsActivity extends AppCompatActivity {
 
         // restore state
         if(savedInstanceState != null) {
-            mDetails = savedInstanceState.getParcelable(DETAILS_KEY);
-            populateUI(mDetails);
+//            mDetails = savedInstanceState.getParcelable(DETAILS_KEY);
+
+            if(roastId >= 0) {
+                roastId = savedInstanceState.getLong(RoastActivity.ROAST_ID_KEY, -1);
+            }
+
+//            mDetails = viewModel.getDetails(roastId);
+//            populateUI(mDetails);
         }
+
+        // populate ui
+        viewModel.getDetails(roastId).observe(this, details -> {
+            if(details != null) populateUI(details);
+        });
     }
 
     @Override
@@ -77,10 +85,10 @@ public class RoastDetailsActivity extends AppCompatActivity {
 
     // todo should save to the database any time that a text box loses focus
     private void saveAndReturn()  {
-        Intent replyIntent = new Intent();
-        mDetails = fetchDetailsFromControls();
+//        Intent replyIntent = new Intent();
+//        mDetails = fetchDetailsFromControls();
 //        replyIntent.putExtra(EXTRA_REPLY, mDetails);
-        viewModel.recordDetails(mDetails);
+        viewModel.recordDetails(fetchDetailsFromControls(), roastId);
 //        setResult(RESULT_OK, replyIntent);
         finish();
     }
@@ -108,9 +116,9 @@ public class RoastDetailsActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        mDetails = fetchDetailsFromControls();
-//        outState.putParcelable(DETAILS_KEY, mDetails);
-        viewModel.recordDetails(mDetails);
+//        mDetails = fetchDetailsFromControls();
+        outState.putLong(RoastActivity.ROAST_ID_KEY, roastId);
+        viewModel.recordDetails(fetchDetailsFromControls(), roastId); // todo this should be done onLoseFocus of each box
     }
 
     private DetailsEntity fetchDetailsFromControls() {

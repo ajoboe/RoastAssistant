@@ -75,7 +75,7 @@ public class RoastActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_CODE_ROAST_DETAILS_ACTIVITY:
                 if(resultCode == RESULT_OK && data != null)
-                    roastViewModel.recordDetails(data.getParcelableExtra(RoastDetailsActivity.EXTRA_REPLY));
+//                    roastViewModel.recordDetails(data.getParcelableExtra(RoastDetailsActivity.EXTRA_REPLY));
                 break;
         }
     }
@@ -89,7 +89,8 @@ public class RoastActivity extends AppCompatActivity {
     private void showRoastDetails() {
         Intent roastDetailsIntent = new Intent(this, RoastDetailsActivity.class);
         roastDetailsIntent.putExtra(ROAST_ID_KEY, roastViewModel.getRoast().getRoastId());
-        startActivityForResult(roastDetailsIntent, REQUEST_CODE_ROAST_DETAILS_ACTIVITY);
+//        startActivityForResult(roastDetailsIntent, REQUEST_CODE_ROAST_DETAILS_ACTIVITY);
+        startActivity(roastDetailsIntent);
     }
 
 
@@ -104,6 +105,7 @@ public class RoastActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
+        MenuItem item = menu.findItem(R.id.action_roast_details);
         inflater.inflate(R.menu.main_menu, menu);
         return true;
     }
