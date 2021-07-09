@@ -139,6 +139,7 @@ public class RoastRepositoryTest extends TestCase {
         assertEquals(lastCreatedTime, ret.getCreatedTime());
     }
 
+    @Test
     public void testInsertDetails() {
         DetailsEntity d = new DetailsEntity(); // todo hide setId...make it protected?
         d.setBatchSize(125);
@@ -153,9 +154,68 @@ public class RoastRepositoryTest extends TestCase {
         });
     }
 
-    // todo need a separate insert test for each entity
-    public void testInsert() {
-        fail();
+    @Test
+    public void testInsertCrackReadingEntity() throws InterruptedException {
+        CrackReadingEntity exp = new CrackReadingEntity(1,222,90,1,false,888);
+        repository.insert(exp, (id) -> {
+            try {
+                assertTrue(
+                        TestObserver.test(repository.getCracksLiveData(888))
+                            .awaitValue()
+                            .value().contains(exp)
+                );
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        CrackReadingEntity exp2 = new CrackReadingEntity(2,333,55,2,true,777);
+        repository.insert(exp2);
+        Thread.sleep(100);
+        assertTrue(
+            TestObserver.test(repository.getCracksLiveData(777))
+                .awaitValue()
+                .value()
+                .contains(exp2)
+        );
+    }
+
+    @Test
+    public void testInsertReadingEntity() throws InterruptedException {
+        ReadingEntity exp = new ReadingEntity(1,222,90,888);
+        repository.insert(exp, (id) -> {
+            try {
+                assertTrue(
+                        TestObserver.test(repository.getReadingsLiveData(888))
+                                .awaitValue()
+                                .value().contains(exp)
+                );
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        ReadingEntity exp2 = new ReadingEntity(2,333,55,777);
+        repository.insert(exp2);
+        Thread.sleep(100);
+        assertTrue(
+                TestObserver.test(repository.getReadingsLiveData(777))
+                        .awaitValue()
+                        .value()
+                        .contains(exp2)
+        );
+    }
+    @Test
+    public void testInsertRoastEntity() throws InterruptedException {
+        RoastEntity r = new RoastEntity();
+        r.setStartTime(123);
+        repository.insert(r, (id) -> {
+            try {
+                TestObserver.test(repository.getRoastLiveData(id))
+                        .awaitValue()
+                        .assertValue(r);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void testMultiInsert() {
