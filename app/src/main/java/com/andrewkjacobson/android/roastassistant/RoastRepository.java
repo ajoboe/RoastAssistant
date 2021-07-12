@@ -157,8 +157,8 @@ public class RoastRepository {
             void onTaskFinished(long id);
         }
 
-        private BaseDao mAsyncTaskDao;
-        private RoastComponent roastComponent;
+        private final BaseDao mAsyncTaskDao;
+        private final RoastComponent roastComponent;
 
         insertAsyncTask(BaseDao dao, RoastComponent roastComponent) {
             mAsyncTaskDao = dao;
