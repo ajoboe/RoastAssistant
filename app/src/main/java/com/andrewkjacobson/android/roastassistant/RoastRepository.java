@@ -2,10 +2,7 @@ package com.andrewkjacobson.android.roastassistant;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
-
 import com.andrewkjacobson.android.roastassistant.db.RoastRoomDatabase;
 import com.andrewkjacobson.android.roastassistant.db.dao.BaseDao;
 import com.andrewkjacobson.android.roastassistant.db.dao.CrackReadingDao;
@@ -17,13 +14,7 @@ import com.andrewkjacobson.android.roastassistant.db.entity.DetailsEntity;
 import com.andrewkjacobson.android.roastassistant.db.entity.ReadingEntity;
 import com.andrewkjacobson.android.roastassistant.db.entity.RoastComponent;
 import com.andrewkjacobson.android.roastassistant.db.entity.RoastEntity;
-import com.andrewkjacobson.android.roastassistant.model.Roast;
-
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 // Repository modules handle data operations. They provide a clean API so that the rest of the app
 // can retrieve this data easily. They know where to get the data from and what API calls to make
@@ -50,7 +41,9 @@ public class RoastRepository {
     }
 
     public LiveData<RoastEntity> getRoastLiveData(long roastId) {
-        if(mRoastLiveData == null || mRoastLiveData.getValue().getRoastId() != roastId) {
+        if(mRoastLiveData == null ||
+                mRoastLiveData.getValue() == null ||
+                mRoastLiveData.getValue().getRoastId() != roastId) {
             mRoastLiveData = mRoastDao.getLiveData(roastId);
         }
         return mRoastLiveData;
@@ -62,21 +55,29 @@ public class RoastRepository {
     }
 
     public LiveData<DetailsEntity> getDetailsLiveData(long roastId) {
-        if(mDetailsLiveData == null || mDetailsLiveData.getValue().getRoastId() != roastId) {
+        if(mDetailsLiveData == null ||
+                mDetailsLiveData.getValue() == null ||
+                mDetailsLiveData.getValue().getRoastId() != roastId) {
             mDetailsLiveData = mDetailsDao.get(roastId);
         }
         return mDetailsLiveData;
     }
 
     public LiveData<List<ReadingEntity>> getReadingsLiveData(long roastId) {
-        if(mReadingsLiveData == null || mReadingsLiveData.getValue().get(0).getRoastId() != roastId) {
+        if(mReadingsLiveData == null ||
+                mReadingsLiveData.getValue() == null ||
+                mReadingsLiveData.getValue().size() == 0 ||
+                mReadingsLiveData.getValue().get(0).getRoastId() != roastId) {
             mReadingsLiveData = mReadingDao.getAll(roastId);
         }
         return mReadingsLiveData;
     }
 
     public LiveData<List<CrackReadingEntity>> getCracksLiveData(long roastId) {
-        if(mCracksLiveData == null || mCracksLiveData.getValue().get(0).getRoastId() != roastId) {
+        if(mCracksLiveData == null ||
+                mCracksLiveData.getValue() == null ||
+                mCracksLiveData.getValue().size() == 0 ||
+                mCracksLiveData.getValue().get(0).getRoastId() != roastId) {
             mCracksLiveData = mCrackReadingDao.getAll(roastId);
         }
         return mCracksLiveData;
@@ -95,13 +96,13 @@ public class RoastRepository {
     // todo use a Future here. see: https://www.baeldung.com/java-util-concurrent
     public void insert(RoastComponent item) {
         if(item instanceof RoastEntity) {
-            new insertAsyncTask(mRoastDao, item).execute((RoastEntity) item);
+            new insertAsyncTask(mRoastDao, item).execute(item);
         } else if(item instanceof DetailsEntity) {
-            new insertAsyncTask(mDetailsDao, item).execute((DetailsEntity) item);
+            new insertAsyncTask(mDetailsDao, item).execute(item);
         } else if(item instanceof CrackReadingEntity) {
-            new insertAsyncTask(mCrackReadingDao, item).execute((CrackReadingEntity) item);
+            new insertAsyncTask(mCrackReadingDao, item).execute(item);
         } else if(item instanceof ReadingEntity) {
-            new insertAsyncTask(mReadingDao, item).execute((ReadingEntity) item);
+            new insertAsyncTask(mReadingDao, item).execute(item);
         }
         // todo BAD BAD BAD BAD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //        while(item.getRoastId() < 1); // TODO VERY BAD!!! JUST MAKING THE TEST PASS
@@ -116,6 +117,22 @@ public class RoastRepository {
 
     public void insert(RoastComponent item, insertAsyncTask.InsertTaskDelegate task) {
         insert(item);
+    }
+
+//    public void insertAll(List<? extends RoastComponent> items) {
+//        insertAll();
+//    }
+
+    public void insertAll(RoastComponent[] items) {
+        if(items instanceof RoastEntity[]) {
+            new insertAllAsyncTask(mRoastDao).execute(items);
+        } else if(items instanceof DetailsEntity[]) {
+            new insertAllAsyncTask(mDetailsDao).execute(items);
+        } else if(items instanceof CrackReadingEntity[]) {
+            new insertAllAsyncTask(mCrackReadingDao).execute(items);
+        } else if(items instanceof ReadingEntity[]) {
+            new insertAllAsyncTask(mReadingDao).execute(items);
+        }
     }
 
     public void update(RoastComponent item) {
@@ -268,6 +285,27 @@ public class RoastRepository {
             } else {
                 throw new UnsupportedOperationException();
             }
+
+            return null;
+        }
+    }
+
+    private class insertAllAsyncTask extends AsyncTask<RoastComponent, Void, Void> {
+        private BaseDao mAsyncTaskDao;
+
+        insertAllAsyncTask(BaseDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(RoastComponent... items) {
+//            if(mAsyncTaskDao instanceof ReadingDao) {
+                (mAsyncTaskDao).insertAll(items);
+//            } else if(mAsyncTaskDao instanceof CrackReadingDao) {
+//                ((CrackReadingDao) mAsyncTaskDao).insertAll(items);
+//            } else {
+//                throw new UnsupportedOperationException();
+//            }
 
             return null;
         }
