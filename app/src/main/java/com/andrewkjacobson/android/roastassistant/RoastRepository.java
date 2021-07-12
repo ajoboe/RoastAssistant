@@ -16,11 +16,6 @@ import com.andrewkjacobson.android.roastassistant.db.entity.RoastComponent;
 import com.andrewkjacobson.android.roastassistant.db.entity.RoastEntity;
 import java.util.List;
 
-// Repository modules handle data operations. They provide a clean API so that the rest of the app
-// can retrieve this data easily. They know where to get the data from and what API calls to make
-// when data is updated. You can consider repositories to be mediators between different data
-// sources, such as persistent models, web services, and caches.
-
 public class RoastRepository {
     private final RoastDao mRoastDao;
     private final DetailsDao mDetailsDao;
@@ -48,7 +43,6 @@ public class RoastRepository {
         }
         return mRoastLiveData;
     }
-
 
     public LiveData<List<RoastEntity>> getAllRoasts() {
         return mRoastDao.getAll();
@@ -104,24 +98,11 @@ public class RoastRepository {
         } else if(item instanceof ReadingEntity) {
             new insertAsyncTask(mReadingDao, item).execute(item);
         }
-        // todo BAD BAD BAD BAD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//        while(item.getRoastId() < 1); // TODO VERY BAD!!! JUST MAKING THE TEST PASS
-//        // instead, wait for a callback to return
-//        long id =
-        // todo return a LiveData?...can't need the id to grab it
-//        return item.getRoastId(); // todo get the id dangit
-//        ExecutorService executorService = Executors.newSingleThreadExecutor();
-//        Callable<Long> insertCallable = () -> mRoastDao.insert((RoastEntity)item);
-//        return executorService.submit(insertCallable);
     }
 
     public void insert(RoastComponent item, insertAsyncTask.InsertTaskDelegate task) {
         insert(item);
     }
-
-//    public void insertAll(List<? extends RoastComponent> items) {
-//        insertAll();
-//    }
 
     public void insertAll(RoastComponent[] items) {
         if(items instanceof RoastEntity[]) {
@@ -159,8 +140,6 @@ public class RoastRepository {
         }
     }
 
-
-
     public void deleteAllReadings() {
         new deleteAllAsyncTask(mReadingDao).execute();
     }
@@ -188,33 +167,8 @@ public class RoastRepository {
 
         @Override
         protected Long doInBackground(final RoastComponent... params) {
-//            Callable<Long> insertCallable = () -> mAsyncTaskDao.insert(params[0]);
-//            return params[0].getRoastId();
             return mAsyncTaskDao.insert(params[0]);
-//            return mAsyncTaskDao.insert(params[0]);
         }
-
-//        /**
-//         * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
-//         * {@link #doInBackground(RoastComponent[])} has finished.</p>
-//         *
-//         * <p>The default implementation simply invokes {@link #onCancelled()} and
-//         * ignores the result. If you write your own implementation, do not call
-//         * <code>super.onCancelled(result)</code>.</p>
-//         *
-//         * @param result The result, if any, computed in
-//         *              {@link #doInBackground(RoastComponent[])}, can be null
-//         * @see #cancel(boolean)
-//         * @see #isCancelled()
-//         */
-//        @Override
-//        protected void onCancelled(Long result) {
-//            if(result == null) {
-//                Log.w(getClass().toString(), "Insert canceled. No new rowId.");
-//            } else {
-//                Log.w(getClass().toString(), "Insert canceled. rowId: " + result);
-//            }
-//        }
 
         /**
          * <p>Runs on the UI thread after {@link #doInBackground}. The
@@ -232,8 +186,6 @@ public class RoastRepository {
         @Override
         protected void onPostExecute(Long id) {
             super.onPostExecute(id);
-//            Log.w(getClass().toString(),"New rowId: " + result);
-//            roastComponent.setRoastId(result.longValue());
             if(delegate != null) {
                 delegate.onTaskFinished(id);
             }
@@ -299,14 +251,7 @@ public class RoastRepository {
 
         @Override
         protected Void doInBackground(RoastComponent... items) {
-//            if(mAsyncTaskDao instanceof ReadingDao) {
-                (mAsyncTaskDao).insertAll(items);
-//            } else if(mAsyncTaskDao instanceof CrackReadingDao) {
-//                ((CrackReadingDao) mAsyncTaskDao).insertAll(items);
-//            } else {
-//                throw new UnsupportedOperationException();
-//            }
-
+            mAsyncTaskDao.insertAll(items);
             return null;
         }
     }
