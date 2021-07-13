@@ -27,17 +27,12 @@ public class DetailsViewModelTest extends TestCase {
     @Rule
     public InstantTaskExecutorRule instantExecutorRule = new InstantTaskExecutorRule();
     private DetailsViewModel viewModel;
-    private ViewModelStore viewModelStore;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         Application application = (Application)InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         viewModel = new DetailsViewModel(application, null);
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
